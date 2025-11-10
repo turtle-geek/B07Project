@@ -2,8 +2,8 @@ package com.example.myapplication.models;
 import java.util.ArrayList;
 
 public class Provider extends User{
-    private String email;
-    private String password;
+    String email;
+    String password;
     private final ArrayList<Integer> patients;
 
     public Provider(int id, String name, String email, String password, String role) {
