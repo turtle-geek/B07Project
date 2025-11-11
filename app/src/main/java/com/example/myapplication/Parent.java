@@ -1,21 +1,20 @@
 package com.example.myapplication;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 public class Parent extends User{
-    private String email;
-    private String password;
     private final ArrayList<Child> children;
     private int providerID;
+    private ArrayList<SharedAccessInvite> invites;
 
     public Parent(int id, String name, String email, String password, String role) {
-        super(id, name, role);
-        this.email = email;
-        this.password = password;
+        super(id, name, role, email, password);
         this.children = new ArrayList<>(); // Using diamond operator for cleaner code
     }
 
-    public void createChild(int idChild, int idParent, String name) {
-        Child child = new Child(idChild, idParent, name, "child");
+    public void createChild(int idChild, int idParent, String name, LocalDate dateOfBirth) {
+        Child child = new Child(idChild, idParent, name, "child", getEmail(), getPassword(), dateOfBirth);
         children.add(child);
     }
 
@@ -24,21 +23,6 @@ public class Parent extends User{
     }
 
     // Public Getters and Setters
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public ArrayList<Child> getChildren() {
         // Return a copy or an unmodifiable list for better encapsulation if needed,
@@ -50,4 +34,20 @@ public class Parent extends User{
         return providerID;
     }
     // Note: addProvider(int) serves as the setter for providerID
+
+    // ----- Sharing invitation -----
+
+    public SharedAccessInvite generateInvite(int providerID, int childID, EnumSet<HealthInfo> sharedFields) {
+        SharedAccessInvite invite = new SharedAccessInvite(providerID, childID, sharedFields, 7);
+        invites.add(invite);
+        return invite;
+    }
+
+    public SharedAccessInvite getInviteByCode(String code) {
+        for (SharedAccessInvite invite : invites) {
+            if (invite.getInviteCode().equals(code))
+                return invite;
+        }
+        return null;
+    }
 }

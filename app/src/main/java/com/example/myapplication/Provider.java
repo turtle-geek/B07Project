@@ -2,14 +2,10 @@ package com.example.myapplication;
 import java.util.ArrayList;
 
 public class Provider extends User{
-    private String email;
-    private String password;
     private final ArrayList<Integer> patients;
 
     public Provider(int id, String name, String email, String password, String role) {
-        super(id, name, role);
-        this.email = email;
-        this.password = password;
+        super(id, name, role, email, password);
         patients = new ArrayList<>(); // Using diamond operator
     }
 
@@ -21,25 +17,37 @@ public class Provider extends User{
     }
 
     // Public Getters and Setters
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public ArrayList<Integer> getPatients() {
         return patients;
     }
 
     // Setter for patients is omitted; the addPatient method controls modification.
+
+    // ----- Sharing invitation -----
+    public HealthProfile redeemInvite(Parent parent, String code) {
+        SharedAccessInvite invite = parent.getInviteByCode(code);
+        if (invite != null && invite.isValid()) {
+            invite.markAsUsed();
+            Child child = /* lookup by invite.getChildID() */;
+            return filterProfileByInvite(child.getHealthProfile(), invite);
+        }
+        return null;
+    }
+
+    private HealthProfile filterProfileByInvite(HealthProfile full, SharedAccessInvite invite) {
+        HealthProfile shared = new HealthProfile();
+        for (HealthInfo field : invite.getSharedFields()) {
+            switch (field) {
+                case RESCUE_LOGS -> shared.addRescueLog(full.getRescueLogs());
+                case CONTROLLER_ADHERENCE -> shared.addControllerAdherence(full.getControllerAdherence());
+                case SYMPTOMS -> shared.addSymptom(full.getSymptoms());
+                case TRIGGERS -> shared.addTrigger(full.getTriggers());
+                case PEF -> shared.setPEF(full.getPEF());
+                case TRIAGE_INCIDENTS -> shared.addTriageIncident(full.getTriageIncidents());
+                case CHARTS -> shared.addChart(full.getCharts());
+            }
+        }
+        return shared;
+    }
+
 }
