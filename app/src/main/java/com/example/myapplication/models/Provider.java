@@ -2,14 +2,11 @@ package com.example.myapplication.models;
 import java.util.ArrayList;
 
 public class Provider extends User{
-    String email;
-    String password;
     private final ArrayList<Integer> patients;
 
-    public Provider(int id, String name, String email, String password, String role) {
-        super(id, name, role);
+    public Provider(String id, String name, String email) {
+        super(id, name);
         this.email = email;
-        this.password = password;
         patients = new ArrayList<>(); // Using diamond operator
     }
 
@@ -27,14 +24,6 @@ public class Provider extends User{
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public ArrayList<Integer> getPatients() {

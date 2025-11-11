@@ -1,20 +1,22 @@
 package com.example.myapplication.models;
 
 public abstract class User {
-    private final int id;
-    private final String name;
-    private final String role;
+    final String id;
+    final String name;
+    String email;
 
-    public User(){};
+    public User(){//Firestore apparently needs no-arg constructor for reading data
+        id = "";
+        name = "";
+    }
 
-    public User(int id, String name, String role) {
+    public User(String id, String name) {
         this.id = id;
         this.name = name;
-        this.role = role;
     }
 
     // Public Getters
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -22,8 +24,8 @@ public abstract class User {
         return name;
     }
 
-    public String getRole() {
-        return role;
+    public String getEmail(){
+        return email;
     }
 
     // Setters are omitted to prevent outside modification of ID/Role/Name after creation

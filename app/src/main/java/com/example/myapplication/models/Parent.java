@@ -2,20 +2,17 @@ package com.example.myapplication.models;
 import java.util.ArrayList;
 
 public class Parent extends User{
-    private String email;
-    private String password;
     private final ArrayList<Child> children;
     private int providerID;
 
-    public Parent(int id, String name, String email, String password, String role) {
-        super(id, name, role);
+    public Parent(String id, String name, String email) {
+        super(id, name);
         this.email = email;
-        this.password = password;
         this.children = new ArrayList<>(); // Using diamond operator for cleaner code
     }
 
-    public void createChild(int idChild, int idParent, String name) {
-        Child child = new Child(idChild, idParent, name, "child");
+    public void createChild(String idChild, String idParent, String name) {
+        Child child = new Child(idChild, idParent, name);
         children.add(child);
     }
 
@@ -30,14 +27,6 @@ public class Parent extends User{
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public ArrayList<Child> getChildren() {
