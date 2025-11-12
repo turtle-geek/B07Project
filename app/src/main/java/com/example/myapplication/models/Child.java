@@ -30,14 +30,25 @@ public class Child extends User{
 
     // Constructor to create child profile under a parent
     // Package private
-    Child(String id, String parentID, String name, String email, String nestedStatus) {
+
+    /**
+     * Constructor to create child profile under a parent. This constructor also calls
+     * addToDataBase in auth.AuthMan to add the user into the database, as a nested child profile
+     * cannot be logged into the app directly with email and password.
+     * @param id of the child user
+     * @param parentID
+     * @param name
+     * @param parentEmail
+     * @param nestedStatus
+     */
+    Child(String id, String parentID, String name, String parentEmail, String nestedStatus) {
         super(id, name);
         if (!nestedStatus.equals("nested")) {
             // is this ok
             throw new IllegalArgumentException("nestedStatus must be 'nested'");
         }
         this.parentID = parentID;
-        this.email = email;
+        this.email = parentEmail;
         // Add to firebase firestore
         addToDatabase(this);
     }

@@ -2,8 +2,8 @@ package com.example.myapplication.models;
 
 public abstract class User {
     final String id;
-    final String name;
-    String email;
+    String name; // name should be modifiable
+    String email; // email should be modifiable
 
     public User(){//Firestore apparently needs no-arg constructor for reading data
         id = "";
@@ -33,5 +33,9 @@ public abstract class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setName(String name){
+        this.name = name;
     }
 }

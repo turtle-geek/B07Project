@@ -11,6 +11,7 @@ public class Parent extends User{
     private final ArrayList<Child> children;
     private int providerID;
     private ArrayList<SharedAccessInvite> invites;
+    static int idChildModifier;
 
     public Parent(String id, String name, String email) {
         super(id, name);
@@ -18,8 +19,10 @@ public class Parent extends User{
         this.children = new ArrayList<>(); // Using diamond operator for cleaner code
     }
 
-    public void createChild(String idChild, String idParent, String name) {
-        Child child = new Child(idChild, idParent, name, email, "nested");
+    public void createChild(String idParent, String childName) {
+        String idChild = id + idChildModifier;
+        idChildModifier++;
+        Child child = new Child(idChild, idParent, name, email,"nested");
         children.add(child);
     }
 
