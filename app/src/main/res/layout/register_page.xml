@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="Register"
+                android:text="@string/register"
                 android:textColor="#000000"
                 android:fontFamily="times"
                 android:textStyle="bold"
@@ -51,7 +51,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Name"
+                android:text="@string/name"
                 android:textColor="#000000"
                 android:fontFamily="times"
                 android:textStyle="bold"
@@ -69,7 +69,7 @@
                 android:layout_marginBottom="10dp"
                 app:boxStrokeColor="#ffff"
                 android:id="@+id/nameID"
-                android:hint="Name ID"
+                android:hint="@string/name_id"
                 style="@style/CardView.Dark">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -83,7 +83,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Email"
+                android:text="@string/email"
                 android:textColor="#000000"
                 android:fontFamily="times"
                 android:textStyle="bold"
@@ -101,7 +101,7 @@
                 android:layout_marginBottom="10dp"
                 app:boxStrokeColor="#ffff"
                 android:id="@+id/mailLayout"
-                android:hint="Email Address"
+                android:hint="@string/email_address"
                 style="@style/CardView.Dark">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -116,7 +116,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Password"
+                android:text="@string/password"
                 android:textColor="#000000"
                 android:fontFamily="times"
                 android:textStyle="bold"
@@ -134,13 +134,13 @@
                 android:layout_marginBottom="10dp"
                 app:boxStrokeColor="#ffff"
                 android:id="@+id/passwordLayout"
-                android:hint="Password"
+                android:hint="@string/password"
                 style="@style/CardView.Dark">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/passwordET"
+                    android:id="@+id/confirmPasswordET1"
                     android:inputType="textPassword" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -148,7 +148,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Confirm Password"
+                android:text="@string/confirm_password"
                 android:textColor="#000000"
                 android:fontFamily="times"
                 android:textStyle="bold"
@@ -166,13 +166,13 @@
                 android:layout_marginBottom="10dp"
                 app:boxStrokeColor="#ffff"
                 android:id="@+id/confirmPasswordLayout"
-                android:hint="Password"
+                android:hint="@string/password"
                 style="@style/CardView.Dark">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/confirmPasswordET"
+                    android:id="@+id/confirmPasswordET2"
                     android:inputType="textPassword" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -182,7 +182,7 @@
                 android:layout_width="280dp"
                 android:layout_height="52dp"
                 android:layout_marginTop="19dp"
-                android:text="Login"
+                android:text="@string/login"
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:fontFamily="times"
