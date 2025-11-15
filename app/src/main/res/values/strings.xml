@@ -13,7 +13,7 @@
 
     //identity choosing
     <string name="parent_button">Parent</string>
-    <string name="childern">childern\n</string>
+    <string name="children">Children\n</string>
     <string name="doctor">Doctor</string>
     <string name="what_is_your_role">What is Your Role?</string>
     <string name="register">Register</string>
@@ -21,4 +21,10 @@
     <string name="email">Email</string>
     <string name="email_address">Email Address</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="add_new_child">Add new child</string>
+    <string name="children_management">Children Management</string>
+    <string name="edit_children_name_1">Edit Children Name 1</string>
+    <string name="profile">Profile</string>
+    <string name="home">Home</string>
+    <string name="file">File</string>
 </resources>
