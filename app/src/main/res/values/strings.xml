@@ -1,7 +1,7 @@
 <resources>
     //login page
     <string name="app_name">My Application</string>
-    <string name="email_address_name">Email Address / Name ID</string>
+    <string name="email_address_name">Email Address</string>
     <string name="welcome_to_mcjerry">Welcome to McJerry!</string>
     <string name="name">Name</string>
     <string name="password">Password</string>
@@ -27,4 +27,14 @@
     <string name="profile">Profile</string>
     <string name="home">Home</string>
     <string name="file">File</string>
+    <string name="add">+Add</string>
+    <string name="click_quot_add_quot_to_add_children">Click \"+Add\" to add children</string>
+    <string name="xxxxxx">xxxxxx</string>
+    <string name="birthday">Birthday:</string>
+    <string name="share">Share</string>
+    <string name="record">Record</string>
+    <string name="more">More</string>
+    <string name="notifications">Notifications</string>
+    <string name="comfirmPassword">Comfirm Password</string>
+    <string name="Provider">Provider</string>
 </resources>
