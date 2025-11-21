@@ -1,8 +1,12 @@
 package com.example.myapplication.models;
-import java.util.ArrayList;
-import java.util.EnumSet;
 
 import com.example.myapplication.HealthInfo;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import com.example.myapplication.Chart;
+import com.example.myapplication.HealthInfo;
+import com.example.myapplication.HealthProfile;
 import com.example.myapplication.SharedAccessInvite;
 
 public class Parent extends User{
@@ -29,6 +33,14 @@ public class Parent extends User{
     }
 
     // Public Getters and Setters
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public ArrayList<Child> getChildren() {
         // Return a copy or an unmodifiable list for better encapsulation if needed,
         // but for now, returning the reference allows access to the list contents.
