@@ -4,10 +4,8 @@ plugins {
 }
 
 android {
-    namespace = "com.example.loginapp"
-    compileSdk {
-        version = release(36)
-    }
+    namespace = "com.example.myapplication"
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.myapplication"
@@ -45,4 +43,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("jp.wasabeef:blurry:4.0.1")
 }

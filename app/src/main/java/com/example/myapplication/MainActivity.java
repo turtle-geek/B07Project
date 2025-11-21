@@ -1,9 +1,13 @@
-package com.example.loginapp;
+package com.example.myapplication;
 
 import android.content.Intent;
 import android.widget.Toast;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.myapplication.ui.ChildHomeActivity;
+import com.example.myapplication.ui.ParentHomeActivity;
+import com.example.myapplication.ui.ProviderHomeActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -21,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_page);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -43,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
         // use users' id to find their own documents
         // if document exists, find users' role on it, then depending on users' role land them on specific home page
         //If system cannot operate, show failure messages
-        DocumentReference Userdoc = fStore.collection("users").document(userId);
-                Userdoc.get().addOnSuccessListener(documentInfo -> {
+        DocumentReference userDoc = fStore.collection("users").document(userId);
+                userDoc.get().addOnSuccessListener(documentInfo -> {
                     if(documentInfo.exists()){
                         String role = documentInfo.getString("role");
                         landonSpecificPage(role);
