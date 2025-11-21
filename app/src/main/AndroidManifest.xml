@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".peakflow.PeakFlowTracker"
+            android:name=".peakflow.PeakFlowInput"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

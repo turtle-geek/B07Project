@@ -5,14 +5,14 @@ import com.example.myapplication.Chart;
 import java.util.ArrayList;
 
 public class HealthProfile {
-    private ArrayList<String> rescueLogs;
-    private ArrayList<String> controllerAdherence;
-    private ArrayList<String> symptoms;
-    private ArrayList<String> triggers;
-    private ArrayList<PeakFlow> PEF_LOG;
+    private final ArrayList<String> rescueLogs;
+    private final ArrayList<String> controllerAdherence;
+    private final ArrayList<String> symptoms;
+    private final ArrayList<String> triggers;
+    private final ArrayList<PeakFlow> PEF_LOG;
     private int PEF_PB;
-    private ArrayList<String> triageIncidents;
-    private ArrayList<Chart> charts;
+    private final ArrayList<String> triageIncidents;
+    private final ArrayList<Chart> charts;
 
     // Default constructor
     public HealthProfile() {
