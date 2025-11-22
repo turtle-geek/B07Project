@@ -5,7 +5,17 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.loginapp.com.example.myapplication.ChildHomeActivity">
+    android:background="@drawable/testbg1"
+    tools:context=".auth.LoginPage">
+
+    <ImageView
+        android:id="@+id/backgroundImageMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/testbg1"
+        android:scaleType="centerCrop"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -15,4 +25,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
