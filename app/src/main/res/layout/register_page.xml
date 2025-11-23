@@ -5,7 +5,7 @@
     android:id="@+id/registerPage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/testbg3"
+    android:background="@drawable/testbg1"
     tools:context=".auth.LoginPage">
 
     <ImageView
