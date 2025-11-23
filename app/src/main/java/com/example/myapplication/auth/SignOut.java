@@ -18,7 +18,7 @@ public class SignOut extends AppCompatActivity {
 
         authManager = new AuthManager();
 
-        btnSignOut = findViewById(R.id.button_logout);
+        btnSignOut = findViewById(R.id.LogoutButton);
         btnSignOut.setOnClickListener(v -> {
             authManager.signOut();
             navigateToLogin();
