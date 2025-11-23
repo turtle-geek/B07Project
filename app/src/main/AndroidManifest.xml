@@ -13,12 +13,11 @@
         android:theme="@style/Theme.MyApplication">
 
         <activity
-            android:name=".peakflow.PeakFlowInput"
+            android:name=".ui.PeakFlowInput"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
-            android:name=".MainActivity"  android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -46,6 +45,9 @@
         <activity
             android:name=".ui.ProviderHomeActivity"  android:exported="true">
         </activity>
+
+        <activity android:name=".auth.UserRole" />
+
 
     </application>
 

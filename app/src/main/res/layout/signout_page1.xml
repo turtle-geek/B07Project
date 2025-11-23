@@ -2,28 +2,229 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/homePage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignOut">
+    android:background="@drawable/testbg2"
+    tools:context=".auth.SignOut">
 
-    <Button
-        android:id="@+id/button_logout"
-        android:layout_width="280dp"
-        android:layout_height="52dp"
-        android:layout_marginTop="19dp"
-        android:text="Signout"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        android:fontFamily="times"
-        android:layout_gravity="center_horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/testbg2"
+        android:scaleType="centerCrop"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.672" />
+        app:layout_constraintBottom_toTopOf="@id/menuBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/topBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="#064200"
+                android:padding="30dp"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/pfp_logo"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/pfp_logo"
+                    android:background="@drawable/circle_background"
+                    android:scaleType="centerCrop"
+                    app:tint="#8A90A5"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Rachel Wong"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:fontFamily="times"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"/>
+
+            </LinearLayout>
+
+            <!-- Menu List Items -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="15dp">
+
+                <!-- Medication History Item -->
+                <LinearLayout
+                    android:id="@+id/medicationHistoryItem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="20dp"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@android:drawable/ic_menu_recent_history"
+                        android:contentDescription="Medication History Icon"
+                        app:tint="#064200"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Medication History"
+                        android:textSize="20sp"
+                        android:textColor="#064200"
+                        android:fontFamily="@font/quicksand"
+                        android:textStyle="bold"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="16dp"/>
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_more"
+                        android:contentDescription="Arrow"
+                        app:tint="#8A90A5"
+                        android:rotation="270"/>
+
+                </LinearLayout>
+
+                <!-- Invite Item -->
+                <LinearLayout
+                    android:id="@+id/inviteItem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="20dp"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@android:drawable/ic_menu_share"
+                        android:contentDescription="Invite Icon"
+                        app:tint="#064200"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Invite"
+                        android:textSize="20sp"
+                        android:textColor="#064200"
+                        android:fontFamily="@font/quicksand"
+                        android:textStyle="bold"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="16dp"/>
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_more"
+                        android:contentDescription="Arrow"
+                        app:tint="#8A90A5"
+                        android:rotation="270"/>
+
+                </LinearLayout>
+
+                <!-- Report Item -->
+                <LinearLayout
+                    android:id="@+id/reportItem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="20dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@android:drawable/ic_menu_report_image"
+                        android:contentDescription="Report Icon"
+                        app:tint="#064200"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Report"
+                        android:textSize="20sp"
+                        android:textColor="#064200"
+                        android:fontFamily="@font/quicksand"
+                        android:textStyle="bold"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="16dp"/>
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_more"
+                        android:contentDescription="Arrow"
+                        app:tint="#8A90A5"
+                        android:rotation="270"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/LogoutButton"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="@string/log_out"
+                android:textSize="24sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/quicksand"
+                android:textStyle="bold"
+                android:backgroundTint="#064200"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/menuBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#064200"
+        app:itemBackground="@drawable/circle_background"
+        app:itemIconTint="#8A90A5"
+        app:itemTextColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu="@menu/menu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

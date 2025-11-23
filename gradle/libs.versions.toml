@@ -7,11 +7,10 @@ appcompat = "1.7.1"
 material = "1.13.0"
 activity = "1.11.0"
 constraintlayout = "2.2.1"
-googleGmsGoogleServices = "4.4.4"
-firebaseFirestore = "26.0.2"
-googleServices = "4.4.0"
+googleServices = "4.4.4"
 firebaseBom = "33.5.1"
 firebaseAuth = "24.0.1"
+firebaseFirestore = "24.10.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -21,13 +20,12 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
+# --- Firebase Dependencies ---
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
-google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
-
-
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" } # Keeping the master alias
