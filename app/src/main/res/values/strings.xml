@@ -35,7 +35,6 @@
     <string name="weekly_rescue_time">Weekly Rescue Time</string>
     <string name="daily_checkin">Daily Check-in</string>
     <string name="birthday">Birthday</string>
-    <string name="children_management">Children Management</string>
-    <string name="legalName">Legal Name</string>
-    <string name="medicine_details">Medicine Details</string>
+    <string name="provider">Provider</string>
+    <string name="next">Next</string>
 </resources>
