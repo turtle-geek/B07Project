@@ -18,6 +18,7 @@
         android:contentDescription="@null"
         android:importantForAccessibility="no"/>
 
+    <!-- Top Bar -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -28,6 +29,7 @@
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- pf Button -->
         <ImageButton
             android:id="@+id/pfp_logo"
             android:layout_width="40dp"
@@ -50,6 +52,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"/>
 
+        <!-- remind Button -->
         <ImageButton
             android:id="@+id/bell"
             android:layout_width="40dp"
@@ -62,6 +65,7 @@
 
     </LinearLayout>
 
+    <!-- Today Header -->
     <LinearLayout
         android:id="@+id/todayHeader"
         android:layout_width="match_parent"
@@ -96,6 +100,7 @@
 
     </LinearLayout>
 
+    <!-- Horizontal Scrollable Status Containers -->
     <HorizontalScrollView
         android:id="@+id/statusScrollView"
         android:layout_width="match_parent"
@@ -114,6 +119,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <!-- Status Card 1 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard1"
                 android:layout_width="300dp"
@@ -152,6 +158,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Status Card 2 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard2"
                 android:layout_width="300dp"
@@ -190,6 +197,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Status Card 3 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard3"
                 android:layout_width="300dp"
@@ -230,6 +238,7 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <!-- Scrollable Details View -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -244,48 +253,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:visibility="gone">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/dailyCheckInCard"
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:layout_marginBottom="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#ABFFFFFF">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Daily Check-in"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#064200"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2 due today"
-                        android:textSize="14sp"
-                        android:textColor="#666666"
-                        android:layout_marginTop="8dp"/>
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            <!-- Details will be populated dynamically when a card is clicked -->
 
         </LinearLayout>
     </ScrollView>
+
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
