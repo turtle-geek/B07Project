@@ -3,16 +3,24 @@ package com.example.myapplication.health;
 import java.time.LocalDateTime;
 
 public class InventoryItem {
+    private final String name;
     private double amount;
     private final double capacity;
     private final LocalDateTime purchaseDate;
     private final LocalDateTime expiryDate;
+    private final MedicineLabel label;
 
-    public InventoryItem(double amount, double capacity, LocalDateTime purchaseDate, LocalDateTime expiryDate) {
+    public InventoryItem(String name, double amount, double capacity, LocalDateTime purchaseDate, LocalDateTime expiryDate, MedicineLabel label) {
+        this.name = name;
         this.amount = amount;
         this.capacity = capacity;
         this.purchaseDate = purchaseDate;
         this.expiryDate = expiryDate;
+        this.label = label;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public double getAmount() {
@@ -33,6 +41,10 @@ public class InventoryItem {
 
     public LocalDateTime getPurchaseDate() {
         return purchaseDate;
+    }
+
+    public MedicineLabel getLabel() {
+        return label;
     }
 
     public boolean lowVolumeAlert() {
