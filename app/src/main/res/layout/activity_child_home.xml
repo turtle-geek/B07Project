@@ -142,7 +142,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+<<<<<<< HEAD
                         android:text="@string/today_status"
+=======
+                        android:text="Appointments"
+>>>>>>> 1c30fa8 (add activity daily check in ui)
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#064200"/>
@@ -181,7 +185,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+<<<<<<< HEAD
                         android:text="@string/last_rescue_time"
+=======
+                        android:text="Medications"
+>>>>>>> 1c30fa8 (add activity daily check in ui)
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#064200"/>
@@ -219,7 +227,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+<<<<<<< HEAD
                         android:text="@string/weekly_rescue_time"
+=======
+                        android:text="Checkups"
+>>>>>>> 1c30fa8 (add activity daily check in ui)
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#064200"/>
@@ -249,6 +261,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
+<<<<<<< HEAD
             android:id="@+id/graphContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -294,6 +307,18 @@
 
         </LinearLayout>
 
+=======
+            android:id="@+id/detailsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone">
+
+            <!-- Details will be populated dynamically when a card is clicked -->
+
+        </LinearLayout>
+>>>>>>> 1c30fa8 (add activity daily check in ui)
     </ScrollView>
 
 

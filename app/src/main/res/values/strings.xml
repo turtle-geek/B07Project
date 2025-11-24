@@ -17,6 +17,7 @@
     <string name="name">Name</string>
     <string name="confirmPassword">Confirm Password</string>
     <string name="logo">logo</string>
+<<<<<<< HEAD
     <string name="doctor">Doctor</string>
     <string name="what_is_your_role">What is Your Role?</string>
     <string name="parent">Parent</string>
@@ -29,6 +30,8 @@
     <string name="weekly_rescue_time">Weekly Rescue Time</string>
     <string name="daily_checkin">Daily Checkin</string>
     <string name="birthday">Birthday</string>
+=======
+>>>>>>> 1c30fa8 (add activity daily check in ui)
 
     <string name="profile_picture_button">Profile Picture Button</string>
     <string name="reminder_button">Reminder Bell Button</string>
