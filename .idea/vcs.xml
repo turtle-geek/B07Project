@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="VcsDirectoryMappings">
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <mapping directory="" vcs="Git" />
-=======
-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
->>>>>>> 538cfb2 (add asthma check in class structure)
-=======
-    <mapping directory="" vcs="Git" />
->>>>>>> 394a122 (add user role checker)
-  </component>
+    <component name="VcsDirectoryMappings">
+        <mapping directory="" vcs="Git" />
+    </component>
 </project>
