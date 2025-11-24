@@ -70,7 +70,7 @@
                 app:boxCornerRadiusTopEnd="30dp"
                 app:boxCornerRadiusBottomEnd="30dp"
                 app:boxCornerRadiusBottomStart="30dp"
-                app:hintTextColor="@color/white"
+                app:hintTextColor="@color/black"
                 app:boxStrokeColor="#ffff"
                 app:startIconDrawable="@drawable/pfp_logo2">
 
@@ -96,7 +96,7 @@
                 app:boxCornerRadiusTopEnd="30dp"
                 app:boxCornerRadiusBottomEnd="30dp"
                 app:boxCornerRadiusBottomStart="30dp"
-                app:hintTextColor="@color/white"
+                app:hintTextColor="@color/black"
                 app:boxStrokeColor="#ffff"
                 app:startIconDrawable="@drawable/lock_logo"
                 app:endIconMode="password_toggle">
@@ -170,6 +170,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"
                 android:text="@string/don_t_have_an_account_register"
+                android:textStyle="bold"
                 android:fontFamily="@font/quicksand"
                 android:textColor="#1A1A1A"
                 android:textSize="16sp"

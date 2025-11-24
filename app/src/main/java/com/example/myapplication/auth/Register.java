@@ -3,9 +3,12 @@ package com.example.myapplication.auth;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,20 +53,19 @@ public class Register extends AppCompatActivity {
         confirmPasswordET = findViewById(R.id.confirmPasswordETRegister);
         registerButton = findViewById(R.id.loginBotton);
 
-        // Apply blur effect to the register container
-        ViewGroup registerContainer = findViewById(R.id.registerContainer);
+        // Apply blur effect to the register container - FIXED VERSION
+        ViewGroup loginContainer = findViewById(R.id.registerContainer);
         Blurry.with(this)
-                .radius(25)
-                .sampling(2)
-                .color(Color.argb(66, 255, 255, 255))
-                .async()
-                .animate(500);
+                .radius(25)              // Blur intensity (higher = more blur)
+                .sampling(2)             // Down sampling (higher = faster but lower quality)
+                .color(Color.argb(66, 255, 255, 255))  // White overlay with transparency
+                .async()                 // Do it asynchronously for better performance
+                .animate(500);           // Fade in animation (milliseconds)
+
 
         // Register button click listener
         registerButton.setOnClickListener(v -> registerUser());
     }
-
-
 
     private void registerUser() {
         String name = nameET.getText().toString().trim();

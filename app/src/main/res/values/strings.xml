@@ -22,4 +22,5 @@
     <string name="parent">Parent</string>
     <string name="children">Children</string>
     <string name="log_out">Log out</string>
+    <string name="legalName">Legal Name</string>
 </resources>
