@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#E8F5E9"
     tools:context=".ui.TriageDecisionCard">
+
+
+    <TextView
+        android:id="@+id/liabilityWarning2"
+        android:layout_width="270dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="28dp"
+        android:text="Warning: This is guidance, not a diagnosis. If in doubt, call emergency"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <!--Non-Emergency View -->
     <androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:visibility="visible">
-
-        <TextView
-        android:id="@+id/liabilityWarning2"
-            android:layout_width="270dp"
-            android:layout_height="46dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginEnd="28dp"
-            android:text="Warning: This is guidance, not a diagnosis. If in doubt, call emergency"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-        </TextView>
+        android:id="@+id/NonSOS"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:visibility="gone">
 
         <ImageView
             android:id="@+id/yellow_card"
@@ -67,10 +69,10 @@
             android:id="@+id/yes_button"
             android:layout_width="97dp"
             android:layout_height="60dp"
+            android:backgroundTint="#008000"
             android:text="YES"
             android:textColor="#000000"
             android:textSize="15sp"
-            android:backgroundTint="#008000"
             tools:layout_editor_absoluteX="225dp"
             tools:layout_editor_absoluteY="486dp" />
 
@@ -78,10 +80,10 @@
             android:id="@+id/sos_button"
             android:layout_width="97dp"
             android:layout_height="60dp"
-            android:text="CALL 91"
+            android:backgroundTint="#FF0000"
+            android:text="CALL 911"
             android:textColor="#000000"
             android:textSize="15sp"
-            android:backgroundTint="#FF0000"
             tools:layout_editor_absoluteX="106dp"
             tools:layout_editor_absoluteY="486dp" />
 
@@ -90,21 +92,10 @@
 
     <!--Emergency View -->
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/SOS"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:visibility="gone">
-
-        <TextView
-            android:id="@+id/liabilityWarning"
-            android:layout_width="270dp"
-            android:layout_height="46dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginEnd="28dp"
-            android:text="Warning: This is guidance, not a diagnosis. If in doubt, call emergency"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-        </TextView>
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/red_card"
@@ -137,7 +128,7 @@
             android:id="@+id/textView2"
             android:layout_width="247dp"
             android:layout_height="25dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="28dp"
             android:text="CALLING 911 IN X SECONDS"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
@@ -150,9 +141,9 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="187dp"
             android:layout_height="52dp"
-            android:layout_marginBottom="56dp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView4"
-            tools:layout_editor_absoluteX="112dp" />
+            android:layout_marginBottom="60dp"
+            app:layout_constraintBottom_toBottomOf="@+id/red_card"
+            tools:layout_editor_absoluteX="117dp" />
 
         <Button
             android:id="@+id/cancel_button"
@@ -163,9 +154,17 @@
             android:text="DO NOT CALL 911"
             android:textColor="#000000"
             android:textSize="8sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+            app:layout_constraintBottom_toBottomOf="@+id/red_card"
             app:layout_constraintTop_toBottomOf="@+id/progressBar"
             tools:layout_editor_absoluteX="145dp" />
+
+        <ImageView
+            android:id="@+id/warningSymbol"
+            android:layout_width="42dp"
+            android:layout_height="57dp"
+            app:srcCompat="@drawable/warning"
+            tools:layout_editor_absoluteX="47dp"
+            tools:layout_editor_absoluteY="16dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ViewSwitcher>
+</androidx.constraintlayout.widget.ConstraintLayout>
