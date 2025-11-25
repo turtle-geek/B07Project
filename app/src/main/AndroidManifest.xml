@@ -60,6 +60,7 @@
             </intent-filter>
         </activity>
 
+<<<<<<< HEAD
         <activity
             android:name=".ui.ParentTutorial"  android:exported="true">
         </activity>
@@ -80,6 +81,8 @@
             android:name=".ui.ProviderManagement"  android:exported="false">
         </activity>
 
+=======
+>>>>>>> 4cca377 (update daily check in ui with quiz questions and buttons)
     </application>
 
 </manifest>
