@@ -3,6 +3,7 @@ package com.example.myapplication.models;
 import android.util.Log;
 import java.time.LocalDate;
 
+import com.example.myapplication.health.Inventory;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -15,6 +16,9 @@ public class Child extends User{
     private LocalDate dateOfBirth;
     private String notes;
     private HealthProfile healthProfile;
+    private Inventory inventory;
+    private StreakCount streakCount;
+    private Badges badges;
 
     // Constructor to create child profile under a parent
     // Package private
@@ -47,9 +51,8 @@ public class Child extends User{
         this.parentID = parentID;
         if (email != null)
             this.email = email;
-
-
     }
+
     // Public Setters
     public void setDOB(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
@@ -58,6 +61,12 @@ public class Child extends User{
     public void setHealthProfile(HealthProfile profile){
         this.healthProfile = profile;
     }
+
+    public void setInventory(Inventory inventory){ this.inventory = inventory; }
+
+    public void setStreakCount(StreakCount streakCount) { this.streakCount = streakCount; }
+
+    public void setBadges(Badges badges) { this.badges = badges; }
 
     public HealthProfile getHealthProfile(){
         return healthProfile;
@@ -90,7 +99,11 @@ public class Child extends User{
         return dateOfBirth;
     }
 
+    public Inventory getInventory() { return inventory; }
 
+    public StreakCount getStreakCount() { return streakCount; }
+
+    public Badges getBadges() { return badges; }
 
     // Setter is omitted as parentID shouldn't change after creation.
     // For reference, LocalDate.of(int year, int month, int day) may be used for changing if needed
