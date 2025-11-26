@@ -124,11 +124,11 @@ public class DailyCheckInActivity extends AppCompatActivity {
             return false;
         }
 
-        // Check that at least one trigger was selected
-        if (collectedTriggers.isEmpty()) {
-            Toast.makeText(this, "Please select at least one Trigger.", Toast.LENGTH_LONG).show();
-            return false;
-        }
+//        // Check that at least one trigger was selected
+//        if (collectedTriggers.isEmpty()) {
+//            Toast.makeText(this, "Please select at least one Trigger.", Toast.LENGTH_LONG).show();
+//            return false;
+//        }
 
         // If all checks pass
         return true;
@@ -179,27 +179,27 @@ public class DailyCheckInActivity extends AppCompatActivity {
         int selectedLimitId = limitsGroup.getCheckedRadioButtonId();
         int activityLimits;
         if (selectedLimitId == R.id.rbLimit0)
-            activityLimits = 1;
+            activityLimits = 0;
         else if (selectedLimitId == R.id.rbLimit1)
-            activityLimits = 2;
+            activityLimits = 1;
         else
-            activityLimits = 3; // Must be 3 if a button was selected (validation ensures this)
+            activityLimits = 2; // Must be 3 if a button was selected (validation ensures this)
 
-        // Get Cough/Wheeze (Mapping RadioButton ID to 1-5)
+        // Get Cough/Wheeze (Mapping RadioButton ID to 0-4)
         RadioGroup coughGroup = findViewById(R.id.radioGroupCoughWheeze);
         int selectedCoughId = coughGroup.getCheckedRadioButtonId();
         int coughWheeze = 0;
 
         if (selectedCoughId == R.id.rbCough1)
-            coughWheeze = 1;
+            coughWheeze = 0;
         else if (selectedCoughId == R.id.rbCough2)
-            coughWheeze = 2;
+            coughWheeze = 1;
         else if (selectedCoughId == R.id.rbCough3)
-            coughWheeze = 3;
+            coughWheeze = 2;
         else if (selectedCoughId == R.id.rbCough4)
-            coughWheeze = 4;
+            coughWheeze = 3;
         else if (selectedCoughId == R.id.rbCough5)
-            coughWheeze = 5;
+            coughWheeze = 4;
 
         // no need for else ... = -1 because you already check for valid input
 
