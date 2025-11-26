@@ -18,7 +18,6 @@
         android:contentDescription="@null"
         android:importantForAccessibility="no"/>
 
-    <!-- Top Bar -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -29,7 +28,6 @@
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- pf Button -->
         <ImageButton
             android:id="@+id/pfp_logo"
             android:layout_width="40dp"
@@ -52,7 +50,6 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"/>
 
-        <!-- remind Button -->
         <ImageButton
             android:id="@+id/bell"
             android:layout_width="40dp"
@@ -65,7 +62,6 @@
 
     </LinearLayout>
 
-    <!-- Today Header -->
     <LinearLayout
         android:id="@+id/todayHeader"
         android:layout_width="match_parent"
@@ -100,7 +96,6 @@
 
     </LinearLayout>
 
-    <!-- Horizontal Scrollable Status Containers -->
     <HorizontalScrollView
         android:id="@+id/statusScrollView"
         android:layout_width="match_parent"
@@ -119,7 +114,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <!-- Status Card 1 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard1"
                 android:layout_width="300dp"
@@ -142,11 +136,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-<<<<<<< HEAD
-                        android:text="@string/today_status"
-=======
                         android:text="Appointments"
->>>>>>> 1c30fa8 (add activity daily check in ui)
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#064200"/>
@@ -162,7 +152,6 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Status Card 2 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard2"
                 android:layout_width="300dp"
@@ -185,11 +174,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-<<<<<<< HEAD
-                        android:text="@string/last_rescue_time"
-=======
                         android:text="Medications"
->>>>>>> 1c30fa8 (add activity daily check in ui)
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#064200"/>
@@ -205,7 +190,6 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Status Card 3 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard3"
                 android:layout_width="300dp"
@@ -227,11 +211,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-<<<<<<< HEAD
-                        android:text="@string/weekly_rescue_time"
-=======
                         android:text="Checkups"
->>>>>>> 1c30fa8 (add activity daily check in ui)
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#064200"/>
@@ -250,7 +230,6 @@
         </LinearLayout>
     </HorizontalScrollView>
 
-    <!-- Scrollable Details View -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -261,17 +240,17 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
-<<<<<<< HEAD
-            android:id="@+id/graphContainer"
-            android:layout_width="wrap_content"
+            android:id="@+id/detailsContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/graphCard"
-                android:layout_width="379dp"
+                android:id="@+id/dailyCheckInCard"
+                android:layout_width="match_parent"
                 android:layout_height="180dp"
-                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="16dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
@@ -289,7 +268,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/daily_checkin"
+                        android:text="Daily Check-in"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#064200"/>
@@ -306,21 +285,7 @@
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
-
-=======
-            android:id="@+id/detailsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:visibility="gone">
-
-            <!-- Details will be populated dynamically when a card is clicked -->
-
-        </LinearLayout>
->>>>>>> 1c30fa8 (add activity daily check in ui)
     </ScrollView>
-
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
