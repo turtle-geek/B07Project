@@ -10,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.R;
@@ -22,8 +21,8 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class ParentManagement extends AppCompatActivity {
+// Extend BaseParentActivity for auto-logout functionality
+public class ParentManagement extends BaseParentActivity {
 
     private ImageButton btnAddChild;
     private TextView tvEmptyState;

@@ -46,38 +46,32 @@ public class SignOut extends AppCompatActivity {
             setupBottomNavigation();
         }
 
-        // Set click listeners for cards
-//        if (medicationHistoryCard != null) {
-//            medicationHistoryCard.setOnClickListener(v -> {
-//                // Navigate to Medication History Activity
-//                Toast.makeText(this, "Opening Medication History", Toast.LENGTH_SHORT).show();
-//                 Intent intent = new Intent(this, MedicationHistoryActivity.class);
-//                 startActivity(intent);
-//            });
-//        }
-//
-//        if (inviteCard != null) {
-//            inviteCard.setOnClickListener(v -> {
-//                // Navigate to Invite Activity
-//                Toast.makeText(this, "Opening Invite", Toast.LENGTH_SHORT).show();
-//                 Intent intent = new Intent(this, InviteActivity.class);
-//                 startActivity(intent);
-//            });
-//        }
-//
-//        if (reportCard != null) {
-//            reportCard.setOnClickListener(v -> {
-//                // Navigate to Report Activity
-//                Toast.makeText(this, "Opening Report", Toast.LENGTH_SHORT).show();
-//                 Intent intent = new Intent(this, ReportActivity.class);
-//                 startActivity(intent);
-//            });
-//        }
+        // Set click listeners for cards (for future features)
+        if (medicationHistoryCard != null) {
+            medicationHistoryCard.setOnClickListener(v -> {
+                Toast.makeText(this, "Opening Medication History", Toast.LENGTH_SHORT).show();
+                // TODO: Implement medication history
+            });
+        }
 
-        // Logout button
+        if (inviteCard != null) {
+            inviteCard.setOnClickListener(v -> {
+                Toast.makeText(this, "Opening Invite", Toast.LENGTH_SHORT).show();
+                // TODO: Implement invite feature
+            });
+        }
+
+        if (reportCard != null) {
+            reportCard.setOnClickListener(v -> {
+                Toast.makeText(this, "Opening Report", Toast.LENGTH_SHORT).show();
+                // TODO: Implement report feature
+            });
+        }
+
+        // Logout button - Manual logout
         if (logoutButton != null) {
             logoutButton.setOnClickListener(v -> {
-                logout();
+                manualLogout();
             });
         }
     }
@@ -126,7 +120,8 @@ public class SignOut extends AppCompatActivity {
         }
     }
 
-    private void logout() {
+    // Manual logout - when user clicks the logout button
+    private void manualLogout() {
         try {
             // Sign out from Firebase
             mAuth.signOut();
