@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 
 public class Inventory {
     private ArrayList<InventoryItem> inventory;
-    private ArrayList<String> controllerLog;
-    private ArrayList<String> rescueLog;
+    private ArrayList<MedicineUsageLog> controllerLog;
+    private ArrayList<MedicineUsageLog> rescueLog;
 
     public Inventory() {
         inventory = new ArrayList<>();
@@ -18,11 +18,19 @@ public class Inventory {
         return inventory;
     }
 
+    public ArrayList<MedicineUsageLog> getControllerLog() {
+        return controllerLog;
+    }
+
+    public ArrayList<MedicineUsageLog> getRescueLog() {
+        return rescueLog;
+    }
+
     public void addItem(InventoryItem medicine) {
         inventory.add(medicine);
     }
 
-    public boolean useMedicine(int index, double amount) {
+    public boolean useMedicine(int index, double amount, LocalDateTime timestamp) {
         if (index < 0 || index >= inventory.size())
             return false;
         InventoryItem medicine = inventory.get(index);
@@ -32,18 +40,12 @@ public class Inventory {
             medicine.setAmount(medicine.getAmount() - amount);
             if (medicine.getAmount() == 0) {
                 inventory.remove(medicine);
-                if (medicine.getLabel() == MedicineLabel.CONTROLLER)
-                    controllerLog.add("Medicine removed from inventory: " + medicine.getName());
-                else
-                    rescueLog.add("Medicine removed from inventory: " + medicine.getName());
             }
             if (medicine.getLabel() == MedicineLabel.CONTROLLER)
-                controllerLog.add("Medicine used: " + medicine.getName() + ", Amount: " + amount+ "Time: " + LocalDateTime.now());
+                controllerLog.add(new MedicineUsageLog(medicine.getName(), amount, timestamp));
             else
-                rescueLog.add("Medicine used: " + medicine.getName() + ", Amount: " + amount+ "Time: " + LocalDateTime.now());
+                rescueLog.add(new MedicineUsageLog(medicine.getName(), amount, timestamp));
             return true;
         }
     }
-
-
 }
