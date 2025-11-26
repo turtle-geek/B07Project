@@ -7,16 +7,16 @@ public class DailyCheckIn {
     private String entryAuthor;
     private boolean nightWaking;
     private int activityLimits; // scale from 0-3
-    private int coughWheeze; // scale from 1-5
+    private int cough; // scale from 1-5
     private List<String> selectedTriggers;
 
     public DailyCheckIn(long checkInTimestamp, String entryAuthor, boolean nightWaking,
-                        int activityLimits, int coughWheeze, List<String> selectedTriggers) {
+                        int activityLimits, int cough, List<String> selectedTriggers) {
         this.checkInTimestamp = checkInTimestamp;
         this.entryAuthor = entryAuthor;
         this.nightWaking = nightWaking;
         this.activityLimits = activityLimits;
-        this.coughWheeze = coughWheeze;
+        this.cough = cough;
         this.selectedTriggers = selectedTriggers;
     }
 
@@ -36,7 +36,7 @@ public class DailyCheckIn {
         this.entryAuthor = entryAuthor;
     }
 
-    public boolean isNightWaking() {
+    public boolean getNightWaking() {
         return nightWaking;
     }
 
@@ -52,12 +52,12 @@ public class DailyCheckIn {
         this.activityLimits = activityLimits;
     }
 
-    public int getCoughWheeze() {
-        return coughWheeze;
+    public int getCough() {
+        return cough;
     }
 
-    public void setCoughWheeze(int coughWheeze) {
-        this.coughWheeze = coughWheeze;
+    public void setCough(int cough) {
+        this.cough = cough;
     }
 
     public List<String> getSelectedTriggers() {
