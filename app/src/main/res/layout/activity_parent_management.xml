@@ -87,7 +87,7 @@
 
         </LinearLayout>
 
-        <!-- Doctor Tags Container (Initially Hidden) -->
+        <!-- Doctor Tags Container -->
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/doctorChipGroup"
             android:layout_width="match_parent"
@@ -103,7 +103,6 @@
                 android:layout_height="wrap_content"
                 android:text="All Providers"
                 android:checked="true"
-                android:visibility="gone"
                 app:chipBackgroundColor="#064200"
                 app:chipStrokeWidth="0dp"/>
 
@@ -133,9 +132,9 @@
                 android:id="@+id/tvEmptyState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Press '+' to add a child"
+                android:text="Press '+' to resgister for children"
                 android:textSize="18sp"
-                android:textColor="#2F2F2F"
+                android:textColor="#000000"
                 android:gravity="center"
                 android:padding="32dp"
                 android:visibility="visible"/>
