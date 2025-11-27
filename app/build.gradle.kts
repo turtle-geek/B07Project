@@ -50,4 +50,5 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.4")
     implementation("jp.wasabeef:blurry:4.0.1")
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
