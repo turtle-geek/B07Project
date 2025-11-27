@@ -222,7 +222,7 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@android:drawable/ic_menu_today"
+                            android:src="@android:drawable/ic_menu_sort_by_size"
                             tools:tint="#757575"
                             android:layout_marginEnd="8dp"/>
 
