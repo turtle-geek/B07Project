@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.example.myapplication.health.Inventory;
+import com.example.myapplication.health.MedicineLabel;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -113,8 +114,8 @@ public class Child extends User{
     // For reference, LocalDate.of(int year, int month, int day) may be used for changing if needed
 
     // When use medicine, automatically add to streak
-    public void useMedicine(int index, double amount, LocalDateTime timestamp, TechniqueQuality techniqueQuality) {
-        inventory.useMedicine(index, amount, timestamp, techniqueQuality);
+    public void useMedicine(MedicineLabel label, double amount, LocalDateTime timestamp) {
+        inventory.useMedicine(label, amount, timestamp);
         streakCount.countStreaks();
         badges.updateControllerBadge();
         badges.updateTechniqueBadge();
