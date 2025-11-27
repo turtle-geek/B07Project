@@ -2,6 +2,7 @@ package com.example.myapplication.models;
 
 import android.util.Log;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.example.myapplication.health.Inventory;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -19,6 +20,9 @@ public class Child extends User{
     private Inventory inventory;
     private StreakCount streakCount;
     private Badges badges;
+
+    // Constructor is not updated to initialize the new fields yet
+    // If update, remember to link inventory to streakCount and streakCount to badges
 
     // Constructor to create child profile under a parent
     // Package private
@@ -108,4 +112,12 @@ public class Child extends User{
     // Setter is omitted as parentID shouldn't change after creation.
     // For reference, LocalDate.of(int year, int month, int day) may be used for changing if needed
 
+    // When use medicine, automatically add to streak
+    public void useMedicine(int index, double amount, LocalDateTime timestamp, TechniqueQuality techniqueQuality) {
+        inventory.useMedicine(index, amount, timestamp, techniqueQuality);
+        streakCount.countStreaks();
+        badges.updateControllerBadge();
+        badges.updateTechniqueBadge();
+        badges.updateRescueBadge();
+    }
 }
