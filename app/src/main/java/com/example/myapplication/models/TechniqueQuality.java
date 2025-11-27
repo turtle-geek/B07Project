@@ -4,5 +4,5 @@ public enum TechniqueQuality {
     HIGH,
     MEDIUM,
     LOW,
-    NA;
+    NA
 }
