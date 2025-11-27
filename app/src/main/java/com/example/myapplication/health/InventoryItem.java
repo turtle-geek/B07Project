@@ -54,4 +54,9 @@ public class InventoryItem {
     public boolean expiryAlert() {
         return LocalDateTime.now().isAfter(expiryDate);
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
