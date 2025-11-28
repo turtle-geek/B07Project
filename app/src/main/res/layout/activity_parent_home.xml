@@ -31,13 +31,12 @@
 
         <!-- pf Button -->
         <ImageButton
-            android:id="@+id/pfp_logo"
+            android:id="@+id/logo"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/pfp_logo"
+            android:src="@drawable/logo"
             android:background="@drawable/circle_background"
-            android:scaleType="centerCrop"
-            app:tint="@color/gray"/>
+            android:scaleType="centerCrop" />
 
         <TextView
             android:layout_width="0dp"
