@@ -1,26 +1,18 @@
 package com.example.myapplication.health;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class InventoryItem {
-    private final String name;
     private double amount;
     private final double capacity;
-    private final LocalDateTime purchaseDate;
-    private final LocalDateTime expiryDate;
-    private final MedicineLabel label;
+    private final LocalDate purchaseDate;
+    private final LocalDate expiryDate;
 
-    public InventoryItem(String name, double amount, double capacity, LocalDateTime purchaseDate, LocalDateTime expiryDate, MedicineLabel label) {
-        this.name = name;
+    public InventoryItem(double amount, double capacity, LocalDate purchaseDate, LocalDate expiryDate) {
         this.amount = amount;
         this.capacity = capacity;
         this.purchaseDate = purchaseDate;
         this.expiryDate = expiryDate;
-        this.label = label;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public double getAmount() {
@@ -35,16 +27,12 @@ public class InventoryItem {
         return capacity;
     }
 
-    public LocalDateTime getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public LocalDateTime getPurchaseDate() {
+    public LocalDate getPurchaseDate() {
         return purchaseDate;
-    }
-
-    public MedicineLabel getLabel() {
-        return label;
     }
 
     public boolean lowVolumeAlert() {
@@ -52,16 +40,6 @@ public class InventoryItem {
     }
 
     public boolean expiryAlert() {
-        return LocalDateTime.now().isAfter(expiryDate);
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
-        return name;
+        return LocalDate.now().isAfter(expiryDate);
     }
 }
