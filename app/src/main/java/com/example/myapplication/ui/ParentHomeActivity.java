@@ -1,5 +1,6 @@
 package com.example.myapplication.ui;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +18,6 @@ import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.auth.SignOut;
 import com.example.myapplication.models.PeakFlow;
-import com.example.myapplication.ui.TrendSnippet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,14 +38,20 @@ public class ParentHomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private BottomNavigationView bottomNavigationView;
-    private ImageButton profileButton;
     private ImageButton bellButton;
-    private TextView todayDate;
+    private TextView todayDate, selectedChildName;
     private CardView statusCard1, statusCard2, statusCard3, graphCard;
+    private LinearLayout childSelectorLayout;
 
     // Trend Snippet
     private LinearLayout trendContainer;
     private TrendSnippet trendSnippet;
+
+    // Child data
+    private List<ChildInfo> childrenList;
+    private String selectedChildId = null;
+    private String selectedChildNameStr = "Select a child";
+    private int selectedChildPersonalBest = 400;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,7 @@ public class ParentHomeActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        childrenList = new ArrayList<>();
 
         // Initialize views
         initializeViews();
@@ -74,21 +81,130 @@ public class ParentHomeActivity extends AppCompatActivity {
         // Set up card listeners
         setupCardListeners();
 
-        // Setup and load trend snippet
+        // Setup child selector
+        setupChildSelector();
+
+        // Setup trend snippet
         setupTrendSnippet();
-        loadPeakFlowData();
+
+        // Load children list
+        loadChildrenList();
     }
 
     private void initializeViews() {
-        profileButton = findViewById(R.id.pfp_logo);
         bellButton = findViewById(R.id.bell);
         todayDate = findViewById(R.id.todayDate);
+        selectedChildName = findViewById(R.id.selectedChildName);
+        childSelectorLayout = findViewById(R.id.childSelectorLayout);
         statusCard1 = findViewById(R.id.statusCard1);
         statusCard2 = findViewById(R.id.statusCard2);
         statusCard3 = findViewById(R.id.statusCard3);
         graphCard = findViewById(R.id.graphCard);
         bottomNavigationView = findViewById(R.id.menuBar);
         trendContainer = findViewById(R.id.trendContainer);
+    }
+
+    private void setupChildSelector() {
+        if (childSelectorLayout != null) {
+            childSelectorLayout.setOnClickListener(v -> showChildSelectionDialog());
+        }
+    }
+
+    private void loadChildrenList() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            Log.w(TAG, "No user logged in");
+            return;
+        }
+
+        String parentId = currentUser.getUid();
+
+        // Query all children of this parent
+        db.collection("users")
+                .whereEqualTo("role", "child")
+                .whereEqualTo("parentID", parentId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    childrenList.clear();
+
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        String childId = doc.getId();
+                        String childName = doc.getString("name");
+                        Integer personalBest = doc.getLong("PEF_PB") != null ?
+                                doc.getLong("PEF_PB").intValue() : 400;
+
+                        childrenList.add(new ChildInfo(childId, childName, personalBest));
+                    }
+
+                    Log.d(TAG, "Loaded " + childrenList.size() + " children");
+
+                    // If only one child, auto-select them
+                    if (childrenList.size() == 1) {
+                        ChildInfo child = childrenList.get(0);
+                        selectedChildId = child.id;
+                        selectedChildNameStr = child.name;
+                        selectedChildPersonalBest = child.personalBest;
+
+                        if (selectedChildName != null) {
+                            selectedChildName.setText(selectedChildNameStr);
+                        }
+
+                        loadPeakFlowData();
+                    } else if (childrenList.isEmpty()) {
+                        // No children - show empty state
+                        if (selectedChildName != null) {
+                            selectedChildName.setText("No children registered");
+                        }
+                        loadTestData();
+                    } else {
+                        // Multiple children - show prompt to select
+                        if (selectedChildName != null) {
+                            selectedChildName.setText("Select a child");
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error loading children list", e);
+                    Toast.makeText(this, "Failed to load children", Toast.LENGTH_SHORT).show();
+                    loadTestData();
+                });
+    }
+
+    private void showChildSelectionDialog() {
+        if (childrenList.isEmpty()) {
+            Toast.makeText(this, "No children registered yet", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Create array of child names
+        List<String> names = new ArrayList<>();
+        for (ChildInfo child : childrenList) {
+            names.add(child.name);
+        }
+
+        String[] nameArray = names.toArray(new String[0]);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Child");
+        builder.setItems(nameArray, (dialog, which) -> {
+            // Specific child selected
+            ChildInfo selectedChild = childrenList.get(which);
+            selectedChildId = selectedChild.id;
+            selectedChildNameStr = selectedChild.name;
+            selectedChildPersonalBest = selectedChild.personalBest;
+
+            // Update UI
+            if (selectedChildName != null) {
+                selectedChildName.setText(selectedChildNameStr);
+            }
+
+            // Reload data for selected child
+            loadPeakFlowData();
+
+            Toast.makeText(this, "Showing data for: " + selectedChildNameStr, Toast.LENGTH_SHORT).show();
+        });
+
+        builder.show();
     }
 
     private void setupTrendSnippet() {
@@ -100,68 +216,34 @@ public class ParentHomeActivity extends AppCompatActivity {
             trendContainer.removeAllViews();
             trendContainer.addView(trendSnippet);
         }
-
     }
 
     private void loadPeakFlowData() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            Log.w(TAG, "No user logged in");
+        if (selectedChildId == null) {
+            Log.w(TAG, "No child selected");
+            if (trendSnippet != null) {
+                trendSnippet.showLoading();
+            }
             return;
         }
-
-        String parentId = currentUser.getUid();
 
         // Show loading
         if (trendSnippet != null) {
             trendSnippet.showLoading();
         }
 
-        // Query all children of this parent
-        db.collection("users")
-                .whereEqualTo("role", "child")
-                .whereEqualTo("parentID", parentId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        Log.d(TAG, "No children found for parent: " + parentId);
-                        // Show empty state with test data for demo
-                        loadTestData();
-                        return;
-                    }
-
-                    List<PeakFlow> allPeakFlows = new ArrayList<>();
-                    int[] childrenProcessed = {0}; // Counter for async operations
-                    int totalChildren = queryDocumentSnapshots.size();
-
-                    // For each child, get their peak flow data
-                    for (QueryDocumentSnapshot childDoc : queryDocumentSnapshots) {
-                        String childId = childDoc.getId();
-                        Integer personalBest = childDoc.getLong("PEF_PB") != null ?
-                                childDoc.getLong("PEF_PB").intValue() : 400;
-
-                        loadChildPeakFlowData(childId, personalBest, allPeakFlows, () -> {
-                            childrenProcessed[0]++;
-                            if (childrenProcessed[0] == totalChildren) {
-                                // All children processed
-                                updateTrendSnippet(allPeakFlows);
-                            }
-                        });
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error loading children", e);
-                    Toast.makeText(this, "Failed to load data", Toast.LENGTH_SHORT).show();
-                    // Load test data on failure
-                    loadTestData();
-                });
+        // Load data for the selected child
+        List<PeakFlow> peakFlows = new ArrayList<>();
+        loadChildPeakFlowData(selectedChildId, selectedChildPersonalBest, peakFlows, () -> {
+            updateTrendSnippet(peakFlows);
+        });
     }
 
     private void loadChildPeakFlowData(String childId, int personalBest, List<PeakFlow> allPeakFlows, Runnable onComplete) {
         db.collection("users").document(childId)
                 .collection("peakFlowLogs")
                 .orderBy("time", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                .limit(30) // Get last 30 entries
+                .limit(30)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
@@ -171,7 +253,6 @@ public class ParentHomeActivity extends AppCompatActivity {
                             com.google.firebase.Timestamp timestamp = doc.getTimestamp("time");
 
                             if (timestamp != null && peakFlowValue > 0) {
-                                // Convert Firebase Timestamp to LocalDateTime
                                 Date date = timestamp.toDate();
                                 LocalDateTime localDateTime = LocalDateTime.ofInstant(
                                         date.toInstant(),
@@ -180,7 +261,7 @@ public class ParentHomeActivity extends AppCompatActivity {
 
                                 PeakFlow pf = new PeakFlow(peakFlowValue, localDateTime);
 
-                                // Compute zone
+                                // Compute zone based on personal best
                                 if (peakFlowValue >= 0.8 * personalBest) {
                                     pf.setZone("green");
                                 } else if (peakFlowValue >= 0.5 * personalBest) {
@@ -206,7 +287,7 @@ public class ParentHomeActivity extends AppCompatActivity {
     private void updateTrendSnippet(List<PeakFlow> peakFlows) {
         if (trendSnippet != null) {
             if (peakFlows.isEmpty()) {
-                // Load test data if no real data
+                // Show test data if no real data
                 loadTestData();
             } else {
                 trendSnippet.setData(peakFlows);
@@ -215,17 +296,14 @@ public class ParentHomeActivity extends AppCompatActivity {
     }
 
     private void loadTestData() {
-        // Create test data for demonstration
         List<PeakFlow> testData = new ArrayList<>();
 
         for (int i = 0; i < 30; i++) {
             LocalDateTime time = LocalDateTime.now().minusDays(i);
-            // Generate random peak flow between 250-400
             int value = 250 + (int)(Math.random() * 150);
 
             PeakFlow pf = new PeakFlow(value, time);
 
-            // Compute zone based on value
             if (value >= 360) {
                 pf.setZone("green");
             } else if (value >= 250) {
@@ -273,7 +351,7 @@ public class ParentHomeActivity extends AppCompatActivity {
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error setting up navigation", e);
         }
     }
 
@@ -283,21 +361,13 @@ public class ParentHomeActivity extends AppCompatActivity {
             String currentDate = dateFormat.format(new Date());
             todayDate.setText(currentDate);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error setting date", e);
         }
     }
 
     private void setupButtonListeners() {
-        if (profileButton != null) {
-            profileButton.setOnClickListener(v -> {
-                // TODO: Navigate to profile page
-                Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show();
-            });
-        }
-
         if (bellButton != null) {
             bellButton.setOnClickListener(v -> {
-                // TODO: Navigate to notifications page
                 Toast.makeText(this, "Notifications", Toast.LENGTH_SHORT).show();
             });
         }
@@ -340,7 +410,20 @@ public class ParentHomeActivity extends AppCompatActivity {
                 finish();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error in onStart", e);
+        }
+    }
+
+    // Inner class to hold child information
+    private static class ChildInfo {
+        String id;
+        String name;
+        int personalBest;
+
+        ChildInfo(String id, String name, int personalBest) {
+            this.id = id;
+            this.name = name;
+            this.personalBest = personalBest;
         }
     }
 }
