@@ -10,6 +10,13 @@ public class DailyCheckIn {
     private int cough; // scale from 1-5
     private List<String> selectedTriggers;
 
+    // 🏆 FIX: Public no-argument constructor required by Firestore toObject()
+    public DailyCheckIn() {
+        // This empty constructor is essential for Firebase to correctly map
+        // the JSON fields from the database document into a Java object.
+    }
+
+    // Existing full constructor (for creating new entries)
     public DailyCheckIn(long checkInTimestamp, String entryAuthor, boolean nightWaking,
                         int activityLimits, int cough, List<String> selectedTriggers) {
         this.checkInTimestamp = checkInTimestamp;
@@ -19,6 +26,8 @@ public class DailyCheckIn {
         this.cough = cough;
         this.selectedTriggers = selectedTriggers;
     }
+
+    // --- Getters ---
 
     public long getCheckInTimestamp() {
         return checkInTimestamp;

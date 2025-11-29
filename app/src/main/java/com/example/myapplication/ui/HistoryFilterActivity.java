@@ -93,18 +93,22 @@ public class HistoryFilterActivity extends AppCompatActivity {
 
         LinearLayout header = findViewById(headerId);
 
+        // Define the listener to ONLY toggle visibility (open/close dropdown)
         View.OnClickListener toggleListener = v -> {
             toggleVisibility(dropdownLayout);
         };
 
+        // Attach the toggle listener to the header and button
         header.setOnClickListener(toggleListener);
         toggleButton.setOnClickListener(toggleListener);
 
+        // The main checkbox should ONLY toggle the child checkboxes (select all/none)
         mainCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             toggleChildCheckboxes(dropdownLayout, isChecked);
         });
 
-        mainCheckbox.setOnClickListener(toggleListener);
+        // *** REMOVED THE LINE BELOW TO FIX THE ISSUE ***
+        // mainCheckbox.setOnClickListener(toggleListener);
     }
 
     private void toggleVisibility(LinearLayout layout) {
