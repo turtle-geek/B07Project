@@ -73,7 +73,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Filter by Doctor"
+                android:text="Share by Provider"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="#064200"/>
@@ -87,13 +87,12 @@
 
         </LinearLayout>
 
-        <!-- Doctor Tags Container (Initially Hidden) -->
+        <!-- Doctor Tags Container -->
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/doctorChipGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:visibility="gone"
             app:singleSelection="false"
             app:chipSpacing="8dp">
 
@@ -102,7 +101,7 @@
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="All Doctors"
+                android:text="All Providers"
                 android:checked="true"
                 app:chipBackgroundColor="#064200"
                 app:chipStrokeWidth="0dp"/>
@@ -133,9 +132,9 @@
                 android:id="@+id/tvEmptyState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Press '+' to add a child"
+                android:text="Press '+' to resgister for children"
                 android:textSize="18sp"
-                android:textColor="#2F2F2F"
+                android:textColor="#000000"
                 android:gravity="center"
                 android:padding="32dp"
                 android:visibility="visible"/>
