@@ -4,8 +4,6 @@ import com.example.myapplication.health.HealthInfo;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import com.example.myapplication.SharedAccessInvite;
-
-import com.example.myapplication.health.SharedAccessInvite;
 import com.example.myapplication.health.Inventory;
 
 public class Parent extends User{
@@ -15,6 +13,7 @@ public class Parent extends User{
     static int idChildModifier;
 
     public Parent(){}
+
     public Parent(String id, String name, String emailUsername, String role) {
         super(id, name, role);
         this.emailUsername = emailUsername;
