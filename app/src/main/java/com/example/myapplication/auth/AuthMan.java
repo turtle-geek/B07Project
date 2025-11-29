@@ -4,6 +4,7 @@ import com.example.myapplication.models.Child;
 import com.example.myapplication.models.Parent;
 import com.example.myapplication.models.Provider;
 import com.example.myapplication.models.User;
+import com.example.myapplication.auth.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
@@ -25,7 +26,37 @@ public class AuthMan {
                         FirebaseUser FBUser = auth.getCurrentUser();
                         if (FBUser != null) {
                             String id = FBUser.getUid();
-                            User user =; //tk: fetch the user id somehow
+                            User user;
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            db.collection("users").document(id).get().addOnSuccessListener(documentSnapshot -> {
+                                        if (documentSnapshot.exists()) {
+                                            String role = documentSnapshot.getString("role");
+                                            if (role == null) {
+                                                throw new IllegalStateException("User role not found in database");
+                                            } else {
+                                                // Create an instance of SessionManager (set current user)
+                                                String name = documentSnapshot.getString("name");
+                                                switch(role){
+                                                    case "Parent":
+                                                        user = new Parent(id, name, email, role);
+                                                        break;
+                                                    case "Provider":
+                                                        user = new Provider(id, name, email, role);
+                                                        break;
+                                                    case "Child":
+                                                        throw new IllegalStateException("Child should not have an email log-in");
+
+
+
+
+                                                }
+                                                user = fetchUser(id, role); // tk come back to this
+                                                Log.d("AuthMan", "User signed in with ID: " + id);
+                                            }
+                                        }
+                                    }
+
+                            // Create an instance of SessionManager (set current user)
                             SessionMangager.getInstance().setCurrentUser(user);
                             // what is this
                             Log.d("AuthMan", "User signed in with ID: " + id);
@@ -127,9 +158,9 @@ public class AuthMan {
         // Create user with email and password
         switch (role) {
             case "Parent":
-                return new Parent(id, name, email); // does this affect the compiling
+                return new Parent(id, name, email, role); // does this affect the compiling
             case "Provider":
-                return new Provider(id, name, email);
+                return new Provider(id, name, email, role);
             default:
                 throw new IllegalArgumentException("Invalid role: " + role);
         }

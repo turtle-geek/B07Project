@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".ui.parentSettings"
+            android:exported="false" />
+        <activity
             android:name=".ui.HomeStepsRecovery"
             android:exported="false" />
         <activity

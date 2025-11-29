@@ -12,16 +12,16 @@ public class Parent extends User{
     private ArrayList<SharedAccessInvite> invites;
     static int idChildModifier;
 
-    public Parent(String id, String name, String email) {
-        super(id, name);
-        this.email = email;
+    public Parent(String id, String name, String email, String role) {
+        super(id, name, role);
+        this.emailUsername = email;
         this.children = new ArrayList<>(); // Using diamond operator for cleaner code
     }
 
     public void createChild(String idParent, String childName) {
         String idChild = id + idChildModifier;
         idChildModifier++;
-        Child child = new Child(idChild, idParent, name, email,"nested");
+        Child child = new Child(idChild, idParent, name, emailUsername, role, "nested");
         children.add(child);
     }
 
@@ -30,12 +30,12 @@ public class Parent extends User{
     }
 
     // Public Getters and Setters
-    public String getEmail() {
-        return email;
+    public String getEmailUsername() {
+        return emailUsername;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmailUsername(String emailUsername) {
+        this.emailUsername = emailUsername;
     }
 
     public ArrayList<Child> getChildren() {

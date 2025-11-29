@@ -81,11 +81,11 @@ public class TriageDecisionCard extends AppCompatActivity {
             // TODO: CALL 911
         });
         cancel_button.setOnClickListener(v -> {
-            // TODO: DO NOT CALL 911
+            // 911 IS NOT CALLED
             nonSOSDecision();
         });
         yes_button.setOnClickListener(v -> {
-            startActivity(new Intent(this, ChildTutorial.class));
+            startActivity(new Intent(this, HomeStepsRecovery.class)); // code redundancy
         });
 
     }
@@ -120,6 +120,7 @@ public class TriageDecisionCard extends AppCompatActivity {
     void nonSOSDecision(){
         SOS.setVisibility(View.GONE);
         NonSos.setVisibility(View.VISIBLE);
+        startActivity(new Intent(this, HomeStepsRecovery.class));
     }
 
 }
