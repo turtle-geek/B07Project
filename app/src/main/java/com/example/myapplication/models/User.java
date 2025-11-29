@@ -8,7 +8,6 @@ public abstract class User {
 
     public User(){//Firestore apparently needs no-arg constructor for reading data
         id = "";
-        name = "";
     }
 
     public User(String id, String name, String role) {

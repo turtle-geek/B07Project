@@ -4,12 +4,10 @@ import com.example.myapplication.models.Child;
 import com.example.myapplication.models.Parent;
 import com.example.myapplication.models.Provider;
 import com.example.myapplication.models.User;
-import com.example.myapplication.auth.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.example.myapplication.auth.SessionManager;
 
 import android.util.Log;
 
@@ -18,58 +16,72 @@ import androidx.annotation.NonNull;
 public class AuthMan {
     private static final FirebaseAuth auth = FirebaseAuth.getInstance();
 
-    public static void signIn(String email, String password) {
-        auth.signInWithEmailAndPassword(email, password)
+    public static void signIn(String emailUsername, String password) {
+        auth.signInWithEmailAndPassword(emailUsername, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // User signed in successfully
+                        // Sign in success, update UI with the signed-in user's information
                         FirebaseUser FBUser = auth.getCurrentUser();
                         if (FBUser != null) {
-                            String id = FBUser.getUid();
-                            User user;
-                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            db.collection("users").document(id).get().addOnSuccessListener(documentSnapshot -> {
-                                        if (documentSnapshot.exists()) {
-                                            String role = documentSnapshot.getString("role");
-                                            if (role == null) {
-                                                throw new IllegalStateException("User role not found in database");
-                                            } else {
-                                                // Create an instance of SessionManager (set current user)
-                                                String name = documentSnapshot.getString("name");
-                                                switch(role){
-                                                    case "Parent":
-                                                        user = new Parent(id, name, email, role);
-                                                        break;
-                                                    case "Provider":
-                                                        user = new Provider(id, name, email, role);
-                                                        break;
-                                                    case "Child":
-                                                        throw new IllegalStateException("Child should not have an email log-in");
-
-
-
-
-                                                }
-                                                user = fetchUser(id, role); // tk come back to this
-                                                Log.d("AuthMan", "User signed in with ID: " + id);
-                                            }
-                                        }
-                                    }
-
-                            // Create an instance of SessionManager (set current user)
-                            SessionMangager.getInstance().setCurrentUser(user);
-                            // what is this
-                            Log.d("AuthMan", "User signed in with ID: " + id);
+                            fetchUser(FBUser, user -> {
+                                if (user != null) {
+                                    SessionManager.getInstance().setCurrentUser(user);
+                                    Log.d("AuthMan", "User fetched successfully");
+                                } else {
+                                    Log.w("AuthMan", "Sign in succeeded but user unauthenticated.");
+                                }
+                            });
+                        } else {
+                            Log.w("AuthMan", "User fetched unsuccessfully.");
                         }
-                    } else {
-                        // Error signing in
-                        Log.w("AuthMan", "Sign in failed", task.getException());
-
+                    }else {
+                        Log.w("AuthMan", "signInWithEmail:failure", task.getException());
+                        // TODO: some extra handling of the errors?
                     }
                 });
+    }
 
+    private static void fetchUser(FirebaseUser fbUser, UserCallback callback) {
+        String id = fbUser.getUid();
+        // Fetch user profile from Firebase Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(id).get()
+            .addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    String name = documentSnapshot.getString("name");
+                    String emailUsername = documentSnapshot.getString("emailUsername");
+                    String role = documentSnapshot.getString("role");
 
+                    User user = null;
 
+                    if (role != null) {
+                        switch (role) {
+                            case "Parent":
+                                user = new Parent(id, name, emailUsername, role);
+                                break;
+                            case "Provider":
+                                user = new Provider(id, name, emailUsername, role);
+                                break;
+                            case "Child":
+                                String parentID = documentSnapshot.getString("parentID");
+                                String parentEmail = documentSnapshot.getString("parentEmail");
+                                user = new Child(id, parentID, name, emailUsername, role);
+                                break;
+                            default:
+                                Log.w("AuthMan", "Invalid role: " + role);
+                                break;
+                        }
+                    }
+                    callback.onUserFetched(user);
+
+                } else {
+                    Log.w("AuthMan", "User profile not found for ID: " + id);
+                    callback.onUserFetched(null);
+            }
+        }).addOnFailureListener(e -> {
+            Log.w("AuthMan", "Error fetching user profile", e);
+            callback.onUserFetched(null);
+        });
     }
 
     public static void signUp(String email, String password, String name, String role) {
@@ -114,6 +126,7 @@ public class AuthMan {
         // For later development: Check whether user existed before adding new entry
     }
 
+    // Depending on Rachel's code this may have to be removed
     public static boolean validateInput(@NonNull String email, String password) {
         // Check for empty fields
         if (email.isEmpty() || password.isEmpty()) {
@@ -166,15 +179,6 @@ public class AuthMan {
         }
 
     }
-
-    // Overloaded method for creating an independent child profile
-    public static User createUserProfile(String id, String name, String email, String parentID, String role){
-        if (!role.equals("Child")) {
-            throw new IllegalArgumentException("Invalid role: " + role);
-        }
-        return new Child(id, parentID, name, email); // front end might have to pull ID from database using a different field, like email
-    }
-
     public static void signOut() {
         auth.signOut();
         Log.d("AuthMan", "User signed out");

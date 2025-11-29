@@ -7,21 +7,25 @@ import com.example.myapplication.SharedAccessInvite;
 
 
 public class Parent extends User{
-    private final ArrayList<Child> children;
+    private ArrayList<Child> children;
     private String providerID;
     private ArrayList<SharedAccessInvite> invites;
     static int idChildModifier;
 
-    public Parent(String id, String name, String email, String role) {
+    public Parent(){}
+    public Parent(String id, String name, String emailUsername, String role) {
         super(id, name, role);
-        this.emailUsername = email;
+        this.emailUsername = emailUsername;
         this.children = new ArrayList<>(); // Using diamond operator for cleaner code
     }
 
     public void createChild(String idParent, String childName) {
         String idChild = id + idChildModifier;
         idChildModifier++;
-        Child child = new Child(idChild, idParent, name, emailUsername, role, "nested");
+        Child child = new Child(idChild, idParent, name, emailUsername, role);
+        if (children == null) {
+            children = new ArrayList<>();
+        }
         children.add(child);
     }
 
@@ -32,10 +36,6 @@ public class Parent extends User{
     // Public Getters and Setters
     public String getEmailUsername() {
         return emailUsername;
-    }
-
-    public void setEmailUsername(String emailUsername) {
-        this.emailUsername = emailUsername;
     }
 
     public ArrayList<Child> getChildren() {
