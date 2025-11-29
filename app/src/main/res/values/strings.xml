@@ -37,5 +37,6 @@
     <string name="birthday">Birthday</string>
     <string name="provider">Provider</string>
     <string name="next">Next</string>
+    <string name="medicine_details">Medicine Details</string>
     <string name="default_start_date">Start Date: (Tap to select)</string>
 </resources>
