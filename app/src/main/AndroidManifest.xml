@@ -31,13 +31,8 @@
         <activity
             android:name=".ui.TriageDecisionCard"
             android:exported="false" />
-            android:exported="false" />
-        <activity
-            android:name=".ui.BaseChildActivity"
-            android:exported="false" />
         <activity
             android:name=".ui.TriageActivity"
-            android:exported="false" />
             android:exported="false" />
         <activity
             android:name=".ui.PeakFlowInput"
