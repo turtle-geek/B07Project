@@ -20,14 +20,22 @@ public class ParentTutorial extends BaseParentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parent_technique_help);
 
+        // Get medicine details from intent
+        String medicineLabel = getIntent().getStringExtra("medicineLabel");
+        String medicineName = getIntent().getStringExtra("medicineName");
+        double dosage = getIntent().getDoubleExtra("dosage", 0);
+
         // Initialize Finish button
         btnFinish = findViewById(R.id.btnSaveMedicine);
 
         // Set up Finish button click listener
         btnFinish.setOnClickListener(v -> {
-            // Go back to ChildHomeActivity and show prepost_check
+            // Go back to ChildHomeActivity and show prepost_check with medicine details
             Intent intent = new Intent(ParentTutorial.this, ChildHomeActivity.class);
             intent.putExtra("SHOW_PREPOST_CHECK", true);
+            intent.putExtra("medicineLabel", medicineLabel);
+            intent.putExtra("medicineName", medicineName);
+            intent.putExtra("dosage", dosage);
             startActivity(intent);
             finish();
         });
