@@ -1,7 +1,10 @@
 package com.example.myapplication.ui;
 
+import static java.time.LocalDate.parse;
+
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -99,61 +102,6 @@ public class ParentRegisterLogin extends AppCompatActivity {
         });
     }
 
-    private void registerChild() {
-        String displayName = etChildName.getText().toString().trim();
-        String birthday = etBirthday.getText().toString().trim();
-        String specialNote = etSpecialNote.getText().toString().trim();
-
-        // Validation
-        if (TextUtils.isEmpty(displayName)) {
-            etChildName.setError("Child name is required");
-            etChildName.requestFocus();
-            return;
-        }
-
-        if (TextUtils.isEmpty(birthday)) {
-            etBirthday.setError("Birthday is required");
-            etBirthday.requestFocus();
-            return;
-        }
-
-        // Get current parent ID
-        String parentId = fAuth.getCurrentUser().getUid();
-
-        // Create an account with firebase Auth
-        AuthMan.signUp(childUsername, childPassword, displayName, "Child", task -> {
-            if (!task.isSuccessful())
-                Log.w("ParentRegisterLogin", "Error creating child account", task.getException());
-        });
-
-        // Query for child's generated document ID
-        Query query = db.collection("users")
-                .whereEqualTo("emailUsername", childUsername);
-
-        query.get().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
-                System.err.println("Error getting documents: " + task.getException());
-            }
-            // Retrieve Firestore documents
-            else {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    id = document.getId();
-                }
-            }
-            if (id==null)
-                Toast.makeText(this, "Error: child account not found", Toast.LENGTH_SHORT).show();
-
-            Log.d("ParentRegisterLogin", "Child ID: " + id);
-        });
-
-        // Construct child object to add to Firestore
-        Child child = new Child(id, parentId, displayName, childUsername, "child");
-        child.setDOB(LocalDate.parse(birthday));
-        child.setNotes(specialNote);
-
-        AuthMan.addToDatabase(child);
-        signParentBackIn(parentId);
-    }
     private void signParentBackIn(String parentId) {
         // After creating child account, we need to sign the parent back in
         // Get parent's email from Firestore
@@ -181,5 +129,64 @@ public class ParentRegisterLogin extends AppCompatActivity {
                             "Error: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 });
+    }
+    private void registerChild() {
+        String displayName = etChildName.getText().toString().trim();
+        String birthday = etBirthday.getText().toString().trim();
+        String specialNote = etSpecialNote.getText().toString().trim();
+
+        // Validation
+        if (TextUtils.isEmpty(displayName)) {
+            etChildName.setError("Child name is required");
+            etChildName.requestFocus();
+            return;
+        }
+
+        if (TextUtils.isEmpty(birthday)) {
+            etBirthday.setError("Birthday is required");
+            etBirthday.requestFocus();
+            return;
+        }
+
+        // Get current parent ID
+        String parentId = fAuth.getCurrentUser().getUid();
+        String childEmail = childUsername + "@mcjerry.app";
+
+        // Create an account with firebase Auth
+        fAuth.createUserWithEmailAndPassword(childEmail, childPassword)
+                .addOnSuccessListener(authResult -> {
+                    String childId = authResult.getUser().getUid();
+
+                    Child child = new Child(childId, parentId, displayName, childEmail, "child");
+                    // TODO What if it's an older build version
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        child.setDOB(birthday);
+                    }
+                    child.setNotes(specialNote);
+
+                    db.collection("users").document(childId)
+                            .set(child)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(ParentRegisterLogin.this,
+                                        "Child account created successfully!",
+                                        Toast.LENGTH_SHORT).show();
+
+                                // Sign the parent back in
+                                signParentBackIn(parentId);
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(ParentRegisterLogin.this,
+                                        "Failed to save child data: " + e.getMessage(),
+                                        Toast.LENGTH_LONG).show();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(ParentRegisterLogin.this,
+                            "Failed to create account: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                });
+
+
+
     }
 }

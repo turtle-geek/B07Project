@@ -15,7 +15,7 @@ import static com.example.myapplication.auth.AuthMan.addToDatabase;
 public class Child extends User{
 
     final String parentID;
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
     private String notes;
     private HealthProfile healthProfile;
     private Inventory inventory;
@@ -36,7 +36,7 @@ public class Child extends User{
     public void setNotes(String notes) {
         this.notes = notes;
     }
-    public void setDOB(LocalDate dateOfBirth) {
+    public void setDOB(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -77,7 +77,7 @@ public class Child extends User{
                 });
     }
 
-    public LocalDate getDateOfBirth() {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
 

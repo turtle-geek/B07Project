@@ -123,12 +123,15 @@ public class LoginPage extends AppCompatActivity {
     private void loginUser() {
         String input = mailET.getText().toString().trim();
         String password = passwordET.getText().toString().trim();
+        String email = input;
 
         // Validation
         if (TextUtils.isEmpty(input)) {
             mailET.setError("Email or Username required");
             mailET.requestFocus();
             return;
+        } else if (!input.contains("@")){
+            email=input+"@mcjerry.app";
         }
 
         if (TextUtils.isEmpty(password)) {
@@ -137,11 +140,12 @@ public class LoginPage extends AppCompatActivity {
             return;
         }
 
-        fAuth.signInWithEmailAndPassword(input, password)
+        fAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Login successful
-                        Toast.makeText(LoginPage.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginPage.this, "Login successful!",
+                                Toast.LENGTH_SHORT).show();
 
                         // Save credentials if "Remember Me" is checked
                         saveCredentials(input, password);
@@ -152,7 +156,8 @@ public class LoginPage extends AppCompatActivity {
                         finish();
                     } else {
                         // Login failed
-                        Toast.makeText(LoginPage.this, "Login failed: " + task.getException().getMessage(),
+                        Toast.makeText(LoginPage.this,
+                                "Login failed: " + task.getException().getMessage(),
                                 Toast.LENGTH_LONG).show();
                     }
                 });
