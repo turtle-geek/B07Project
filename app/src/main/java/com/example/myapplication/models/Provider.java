@@ -1,10 +1,6 @@
 package com.example.myapplication.models;
 import android.util.Log;
 
-import android.util.Log;
-
-import android.util.Log;
-
 import java.util.ArrayList;
 import com.example.myapplication.health.HealthInfo;
 import com.example.myapplication.health.SharedAccessInvite;
@@ -14,9 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class Provider extends User{
     private final ArrayList<String> patients;
 
-    public Provider() {}
-
-    public Provider(String id, String name, String emailUsername, String role) {
+    public Provider(String id, String name, String email, String role) {
         super(id, name, role);
         this.emailUsername = email;
         patients = new ArrayList<>(); // Using diamond operator
@@ -65,152 +59,7 @@ public class Provider extends User{
             OnSuccessListener<HealthProfile> listener
     ) {
         SharedAccessInvite invite = parent.getInviteByCode(code);
-    public HealthProfile redeemInvite(Parent parent, String code) {
-        SharedAccessInvite invite = parent.getInviteByCode(code);
-        if (invite != null && invite.isValid()) {
-            invite.markAsUsed();
-            Child child = /* lookup by invite.getChildID() */;
-            return filterProfileByInvite(child.getHealthProfile(), invite);
-        }
-        return null;
-    }
 
-    private HealthProfile filterProfileByInvite(HealthProfile full, SharedAccessInvite invite) {
-        HealthProfile shared = new HealthProfile();
-        for (HealthInfo field : invite.getSharedFields()) {
-            switch (field) {
-                case RESCUE_LOGS -> shared.addRescueLog(full.getRescueLogs());
-                case CONTROLLER_ADHERENCE -> shared.addControllerAdherence(full.getControllerAdherence());
-                case SYMPTOMS -> shared.addSymptom(full.getSymptoms());
-                case TRIGGERS -> shared.addTrigger(full.getTriggers());
-                case PEF_LOG -> shared.setPEF(full.getPEF());
-                case TRIAGE_INCIDENTS -> shared.addTriageIncident(full.getTriageIncidents());
-                case CHARTS -> shared.addChart(full.getCharts());
-            }
-        }
-        return shared;
-    }
-
-    // Helper method
-    private void findChildById(String childId, OnSuccessListener<Child> listener) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("users")  // or "children" if stored differently
-                .document(childId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Child child = documentSnapshot.toObject(Child.class);
-                        listener.onSuccess(child);
-                    } else {
-                        listener.onSuccess(null);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.w("Firestore", "Failed to fetch child", e);
-                    listener.onSuccess(null);
-                });
-    }
-
-    public void redeemInvite(
-            Parent parent,
-            String code,
-            OnSuccessListener<HealthProfile> listener
-    ) {
-        SharedAccessInvite invite = parent.getInviteByCode(code);
-
-    // Helper method
-    private void findChildById(String childId, OnSuccessListener<Child> listener) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("users")  // or "children" if stored differently
-                .document(childId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Child child = documentSnapshot.toObject(Child.class);
-                        listener.onSuccess(child);
-                    } else {
-                        listener.onSuccess(null);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.w("Firestore", "Failed to fetch child", e);
-                    listener.onSuccess(null);
-                });
-    }
-
-    public void redeemInvite(
-            Parent parent,
-            String code,
-            OnSuccessListener<HealthProfile> listener
-    ) {
-        SharedAccessInvite invite = parent.getInviteByCode(code);
-
-        if (invite == null || !invite.isValid()) {
-            listener.onSuccess(null);
-            return;
-        }
-
-        invite.markAsUsed();
-
-        findChildById(invite.getChildID(), child -> {
-            if (child == null) {
-                listener.onSuccess(null);
-                return;
-            }
-
-            HealthProfile filtered = filterProfileByInvite(child.getHealthProfile(), invite);
-            listener.onSuccess(filtered);
-        });
-    }
-
-    private HealthProfile filterProfileByInvite(HealthProfile full, SharedAccessInvite invite) {
-        HealthProfile shared = new HealthProfile();
-        for (HealthInfo field : invite.getSharedFields()) {
-            switch (field) {
-                case RESCUE_LOGS:
-                    shared.setRescueLogs(full.getRescueLogs());
-                    break;
-                case CONTROLLER_ADHERENCE:
-                    shared.setControllerAdherence(full.getControllerAdherence());
-                    break;
-                case SYMPTOMS:
-                    shared.setSymptoms(full.getSymptoms());
-                    break;
-                case TRIGGERS:
-                    shared.setTriggers(full.getTriggers());
-                    break;
-                case PEF_LOG:
-                    shared.setPEF_PB(full.getPEF_PB());
-                    break;
-                case TRIAGE_INCIDENTS:
-                    shared.setTriageIncidents(full.getTriageIncidents());
-                    break;
-                case CHARTS:
-                    shared.setCharts(full.getCharts());
-                    break;
-            }
-        }
-        return shared;
-    }
-        if (invite == null || !invite.isValid()) {
-            listener.onSuccess(null);
-            return;
-        }
-
-        invite.markAsUsed();
-
-        findChildById(invite.getChildID(), child -> {
-            if (child == null) {
-                listener.onSuccess(null);
-                return;
-            }
-
-            HealthProfile filtered = filterProfileByInvite(child.getHealthProfile(), invite);
-            listener.onSuccess(filtered);
-        });
-    }
         if (invite == null || !invite.isValid()) {
             listener.onSuccess(null);
             return;

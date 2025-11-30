@@ -29,8 +29,7 @@ public class Child extends User{
         super(id, name, role);
         this.parentID = parentID;
         this.emailUsername = parentEmail;
-        // Add to firebase firestore
-        addToDatabase(this);
+        this.emailUsername = parentEmail;
     }
 
     // Public Setters
@@ -87,6 +86,10 @@ public class Child extends User{
     public StreakCount getStreakCount() { return streakCount; }
 
     public Badges getBadges() { return badges; }
+
+    public String getNotes(){
+        return notes;
+    }
 
     // Setter is omitted as parentID shouldn't change after creation.
     // For reference, LocalDate.of(int year, int month, int day) may be used for changing if needed

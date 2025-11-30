@@ -52,16 +52,15 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"/>
 
-        <!-- remind Button -->
+        <!-- SOS Button -->
         <ImageButton
-            android:id="@+id/bell"
+            android:id="@+id/sosButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/bell_logo"
             android:background="@android:color/transparent"
-            android:scaleType="centerInside"
             android:padding="1dp"
-            app:tint="@color/white"/>
+            android:scaleType="centerInside"
+            android:src="@drawable/sos_button" />
 
     </LinearLayout>
 

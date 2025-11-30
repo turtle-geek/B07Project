@@ -4,6 +4,8 @@ import com.example.myapplication.models.Child;
 import com.example.myapplication.models.Parent;
 import com.example.myapplication.models.Provider;
 import com.example.myapplication.models.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
@@ -84,12 +86,7 @@ public class AuthMan {
         });
     }
 
-    public static void signUp(String email, String password, String name, String role) {
-        if (!validateInput(email, password)) {
-            //TO-DO add an explicit error message?
-            return;
-        }
-
+    public static void signUp(String email, String password, String name, String role, OnCompleteListener<AuthResult> listener) {
         // Create user with email and password
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(task -> {
@@ -112,8 +109,8 @@ public class AuthMan {
                     Log.w("AuthMan", "createUserWithEmail:failure", task.getException());
                     // some extra handling of the errors? work it out
                 }
-        });
-
+                listener.onComplete(task);
+            });
     }
 
     /**
@@ -126,45 +123,6 @@ public class AuthMan {
         // For later development: Check whether user existed before adding new entry
     }
 
-    // Depending on Rachel's code this may have to be removed
-    public static boolean validateInput(@NonNull String email, String password) {
-        // Check for empty fields
-        if (email.isEmpty() || password.isEmpty()) {
-            throw new IllegalArgumentException("Email and password cannot be empty");
-        }
-        // Check for proper email format
-        if (!email.contains("@.")) {
-            throw new IllegalArgumentException("Invalid email format");
-        }
-        // Check for password length
-        if (password.length() < 8) {
-            throw new IllegalArgumentException("Password must be at least 8 characters long");
-        }
-        // Check for password complexity
-        boolean hasUpperCase = false;
-        boolean hasLowerCase = false;
-        boolean hasDigit = false;
-        for (char c : password.toCharArray()) {
-            if (Character.isUpperCase(c)) {
-                hasUpperCase = true;
-            } else if (Character.isLowerCase(c)) {
-                hasLowerCase = true;
-            } else if (Character.isDigit(c)) {
-                hasDigit = true;
-            }
-        }
-        if (!hasUpperCase) {
-            throw new IllegalArgumentException("Password must contain at least one uppercase letter");
-        }
-        if (!hasLowerCase) {
-            throw new IllegalArgumentException("Password must contain at least one lowercase letter");
-        }
-        if (!hasDigit) {
-            throw new IllegalArgumentException("Password must contain at least one digit");
-        }
-
-        return true;
-    }
 
     // Method to create a Parent or Provider profile
     public static User createUserProfile(String id, String name, String email, String role) {

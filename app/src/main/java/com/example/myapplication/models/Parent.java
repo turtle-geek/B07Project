@@ -3,7 +3,7 @@ package com.example.myapplication.models;
 import com.example.myapplication.health.HealthInfo;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import com.example.myapplication.SharedAccessInvite;
+import com.example.myapplication.health.SharedAccessInvite;
 import com.example.myapplication.health.Inventory;
 
 public class Parent extends User{

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -11,11 +12,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
+import com.example.myapplication.auth.AuthMan;
+import com.example.myapplication.models.Child;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -30,8 +36,9 @@ public class ParentRegisterLogin extends AppCompatActivity {
     private FirebaseAuth fAuth;
     private FirebaseFirestore db;
 
-    private String childName, childUserId, childPassword;
+    private String childName, childUsername, childPassword;
     private Calendar calendar;
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +54,7 @@ public class ParentRegisterLogin extends AppCompatActivity {
         // Get data from previous activity (ParentRegisterChild)
         Intent intent = getIntent();
         childName = intent.getStringExtra("childName");
-        childUserId = intent.getStringExtra("childUserId");
+        childUsername = intent.getStringExtra("childUsername");
         childPassword = intent.getStringExtra("childPassword");
 
         // Initialize UI components
@@ -113,49 +120,40 @@ public class ParentRegisterLogin extends AppCompatActivity {
         // Get current parent ID
         String parentId = fAuth.getCurrentUser().getUid();
 
-        // Generate a unique email for Firebase Auth (since userId is for login display)
-        // Format: userId@mcjerry.app (this is just for Firebase Auth, user won't see it)
-        String childEmail = childUserId + "@mcjerry.app";
+        // Create an account with firebase Auth
+        AuthMan.signUp(childUsername, childPassword, displayName, "Child", task -> {
+            if (!task.isSuccessful())
+                Log.w("ParentRegisterLogin", "Error creating child account", task.getException());
+        });
 
-        // Create child account in Firebase Auth
-        fAuth.createUserWithEmailAndPassword(childEmail, childPassword)
-                .addOnSuccessListener(authResult -> {
-                    String childId = authResult.getUser().getUid();
+        // Query for child's generated document ID
+        Query query = db.collection("users")
+                .whereEqualTo("emailUsername", childUsername);
 
-                    // Create child document in Firestore
-                    Map<String, Object> childData = new HashMap<>();
-                    childData.put("name", displayName);
-                    childData.put("userId", childUserId);      // User ID for login
-                    childData.put("password", childPassword);  // Store password for parent reference
-                    childData.put("email", childEmail);        // Email for Firebase Auth (hidden from user)
-                    childData.put("role", "child");
-                    childData.put("parentID", parentId);
-                    childData.put("dateOfBirth", birthday);
-                    childData.put("notes", specialNote);
+        query.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                System.err.println("Error getting documents: " + task.getException());
+            }
+            // Retrieve Firestore documents
+            else {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    id = document.getId();
+                }
+            }
+            if (id==null)
+                Toast.makeText(this, "Error: child account not found", Toast.LENGTH_SHORT).show();
 
-                    db.collection("users").document(childId)
-                            .set(childData)
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(ParentRegisterLogin.this,
-                                        "Child account created successfully!",
-                                        Toast.LENGTH_SHORT).show();
+            Log.d("ParentRegisterLogin", "Child ID: " + id);
+        });
 
-                                // Sign the parent back in
-                                signParentBackIn(parentId);
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(ParentRegisterLogin.this,
-                                        "Failed to save child data: " + e.getMessage(),
-                                        Toast.LENGTH_LONG).show();
-                            });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(ParentRegisterLogin.this,
-                            "Failed to create account: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                });
+        // Construct child object to add to Firestore
+        Child child = new Child(id, parentId, displayName, childUsername, "child");
+        child.setDOB(LocalDate.parse(birthday));
+        child.setNotes(specialNote);
+
+        AuthMan.addToDatabase(child);
+        signParentBackIn(parentId);
     }
-
     private void signParentBackIn(String parentId) {
         // After creating child account, we need to sign the parent back in
         // Get parent's email from Firestore
