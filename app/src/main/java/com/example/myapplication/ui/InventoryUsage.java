@@ -90,16 +90,16 @@ public class InventoryUsage extends AppCompatActivity {
             if (success) {
                 child.getStreakCount().countStreaks();
 
-                // Get medicine name
-//                String medicineName = child.getInventory().getMedicine(label).getName();
+                // Get the medicine item and dosage for passing to next activities
+                InventoryItem medicineItem = child.getInventory().getMedicine(label);
 
                 setResult(RESULT_OK);
 
                 //Navigate to technique help page (tutorial) with medicine details
                 Intent tutorialIntent = new Intent(InventoryUsage.this, ParentTutorial.class);
                 tutorialIntent.putExtra("medicineLabel", label.toString());
-//                tutorialIntent.putExtra("medicineName", medicineName);
-                tutorialIntent.putExtra("dosage", (int)amount);
+                tutorialIntent.putExtra("medicineName", medicineItem.toString());
+                tutorialIntent.putExtra("dosage", amount);
                 startActivity(tutorialIntent);
 
                 finish();

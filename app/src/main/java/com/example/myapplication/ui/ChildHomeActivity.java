@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,14 +19,23 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.myapplication.health.*;
+        import com.example.myapplication.models.*;
+        import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.time.LocalDateTime;
 
 import jp.wasabeef.blurry.Blurry;
 
 public class ChildHomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private View prepostCheckPopup;
+    private Child child;
+
+    private String medicineLabel;
+    private String medicineName;
+    private double dosage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +47,13 @@ public class ChildHomeActivity extends AppCompatActivity {
             return insets;
         });
         mAuth = FirebaseAuth.getInstance();
+
+        // TODO: Load child from Firebase
+
+        // Get medicine details from intent
+        medicineLabel = getIntent().getStringExtra("medicineLabel");
+        medicineName = getIntent().getStringExtra("medicineName");
+        dosage = getIntent().getDoubleExtra("dosage", 0);
 
         // Initialize prepost check popup
         prepostCheckPopup = findViewById(R.id.prepostCheckPopup);
@@ -69,27 +86,60 @@ public class ChildHomeActivity extends AppCompatActivity {
 
         if (betterBtn != null) {
             betterBtn.setOnClickListener(v -> {
-                // Handle "Better" selection
-                // TODO: Save the response to database
+                saveNewLogWithRating("Better");
                 hidePrePostCheck();
             });
         }
 
         if (sameBtn != null) {
             sameBtn.setOnClickListener(v -> {
-                // Handle "Same" selection
-                // TODO: Save the response to database
+                saveNewLogWithRating("Same");
                 hidePrePostCheck();
             });
         }
 
         if (worseBtn != null) {
             worseBtn.setOnClickListener(v -> {
-                // Handle "Worse" selection
-                // TODO: Save the response to database
+                saveNewLogWithRating("Worse");
                 hidePrePostCheck();
             });
         }
+    }
+
+    private void saveNewLogWithRating(String rating) {
+        if (child == null) {
+            Toast.makeText(this, "Error: Child data not loaded", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Get the medicine label
+        MedicineLabel label = MedicineLabel.valueOf(medicineLabel);
+
+        // Get the InventoryItem from the child's inventory
+        InventoryItem medicineItem = child.getInventory().getMedicine(label);
+
+        // Create a NEW log entry with the rating
+        LocalDateTime timestamp = LocalDateTime.now();
+        TechniqueQuality quality = (label == MedicineLabel.CONTROLLER) ? TechniqueQuality.HIGH : TechniqueQuality.NA;
+
+        MedicineUsageLog newLog = new MedicineUsageLog(
+                medicineItem,
+                dosage,
+                timestamp,
+                quality,
+                rating  // Include the rating
+        );
+
+        // Add the new log to the appropriate list (Controller or Rescue)
+        if (label == MedicineLabel.CONTROLLER) {
+            child.getInventory().getControllerLog().add(newLog);
+        } else {
+            child.getInventory().getRescueLog().add(newLog);
+        }
+
+        // TODO: Save updated child data to Firebase
+
+        Toast.makeText(this, "Rating saved: " + rating, Toast.LENGTH_SHORT).show();
     }
 
     //This method is to block users' access to visit this app's Child Home Activities,
