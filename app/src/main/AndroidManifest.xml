@@ -93,6 +93,8 @@
         <activity
             android:name=".ui.ParentRegisterLogin"  android:exported="true">
         </activity>
+
+
       
     </application>
 
