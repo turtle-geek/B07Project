@@ -18,6 +18,7 @@ public class Parent extends User{
         super(id, name, role);
         this.emailUsername = emailUsername;
         this.children = new ArrayList<>(); // Using diamond operator for cleaner code
+        this.invites = new ArrayList<>();
     }
 
     public void createChild(String idParent, String childName) {

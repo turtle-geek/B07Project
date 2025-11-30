@@ -29,6 +29,10 @@ public abstract class User {
         return emailUsername;
     }
 
+    public String getRole() {
+        return role;
+    }
+
     // Setters are omitted to prevent outside modification of ID/Role/Name after creation
     // If modification is needed, you would add public setters here.
 

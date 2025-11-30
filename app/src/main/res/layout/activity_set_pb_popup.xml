@@ -22,7 +22,7 @@
         app:cardBackgroundColor="#ABFFFFFF">
 
         <EditText
-            android:id="@+id/editTextNumber"
+            android:id="@+id/editPB"
             android:layout_width="152dp"
             android:layout_height="72dp"
             android:ems="10"

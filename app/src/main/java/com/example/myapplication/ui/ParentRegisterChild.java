@@ -83,7 +83,54 @@ public class ParentRegisterChild extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String email = documentSnapshot.getString("email");
-                        validateInput();
+                        String name = nameET.getText().toString().trim();
+                        String username = userIdET.getText().toString().trim();
+                        String password = passwordET.getText().toString().trim();
+                        String confirmPassword = confirmPasswordET.getText().toString().trim();
+
+                        // Validation
+                        if (TextUtils.isEmpty(name)) {
+                            nameET.setError("Name is required");
+                            nameET.requestFocus();
+                            return;
+                        }
+
+                        if (TextUtils.isEmpty(username)) {
+                            userIdET.setError("User is required");
+                            userIdET.requestFocus();
+                            return;
+                        }
+
+                        if (!isUsernameValid) {
+                            userIdET.setError("Please choose a valid and unique ID");
+                            userIdET.requestFocus();
+                            return;
+                        }
+
+                        if (TextUtils.isEmpty(password)) {
+                            passwordET.setError("Password is required");
+                            passwordET.requestFocus();
+                            return;
+                        }
+
+                        if (password.length() < 6) {
+                            passwordET.setError("Password must be at least 6 characters");
+                            passwordET.requestFocus();
+                            return;
+                        }
+
+                        if (!password.equals(confirmPassword)) {
+                            confirmPasswordET.setError("Passwords do not match");
+                            confirmPasswordET.requestFocus();
+                            return;
+                        }
+
+                        // All validation passed, proceed to health info page
+                        Intent intent = new Intent(ParentRegisterChild.this, ParentRegisterLogin.class);
+                        intent.putExtra("childName", name);
+                        intent.putExtra("childUsername", username);
+                        intent.putExtra("childPassword", password);
+                        startActivity(intent);
                     }
                 });
     }
@@ -99,7 +146,12 @@ public class ParentRegisterChild extends AppCompatActivity {
                         userIdLayout.setError("Username is occupied, please use another one");
                         userIdLayout.setErrorEnabled(true);
                         isUsernameValid = false;
-                    } else {
+                    } else if (username.indexOf(' ') >= 0){
+                        isUsernameValid = false;
+                        userIdLayout.setError("Username cannot contain spaces");
+                        userIdLayout.setErrorEnabled(true);
+                    }
+                    else {
                         // ID is available
                         userIdLayout.setError(null);
                         userIdLayout.setErrorEnabled(false);
@@ -111,57 +163,5 @@ public class ParentRegisterChild extends AppCompatActivity {
                     userIdLayout.setError("Unable to verify Username availability");
                     isUsernameValid = false;
                 });
-    }
-
-    // TODO: Remove, this is basically auth stuff
-    private void validateInput() {
-        String name = nameET.getText().toString().trim();
-        String username = userIdET.getText().toString().trim();
-        String password = passwordET.getText().toString().trim();
-        String confirmPassword = confirmPasswordET.getText().toString().trim();
-
-        // Validation
-        if (TextUtils.isEmpty(name)) {
-            nameET.setError("Name is required");
-            nameET.requestFocus();
-            return;
-        }
-
-        if (TextUtils.isEmpty(username)) {
-            userIdET.setError("User is required");
-            userIdET.requestFocus();
-            return;
-        }
-
-        if (!isUsernameValid) {
-            userIdET.setError("Please choose a valid and unique ID");
-            userIdET.requestFocus();
-            return;
-        }
-
-        if (TextUtils.isEmpty(password)) {
-            passwordET.setError("Password is required");
-            passwordET.requestFocus();
-            return;
-        }
-
-        if (password.length() < 6) {
-            passwordET.setError("Password must be at least 6 characters");
-            passwordET.requestFocus();
-            return;
-        }
-
-        if (!password.equals(confirmPassword)) {
-            confirmPasswordET.setError("Passwords do not match");
-            confirmPasswordET.requestFocus();
-            return;
-        }
-
-        // All validation passed, proceed to health info page
-        Intent intent = new Intent(ParentRegisterChild.this, ParentRegisterLogin.class);
-        intent.putExtra("childName", name);
-        intent.putExtra("childUsername", username);
-        intent.putExtra("childPassword", password);
-        startActivity(intent);
     }
 }

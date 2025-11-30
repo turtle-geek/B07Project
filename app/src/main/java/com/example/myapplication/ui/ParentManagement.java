@@ -181,7 +181,7 @@ public class ParentManagement extends AppCompatActivity {
                             String notes = document.getString("notes");
 
                             Child child = new Child(childId, currentParentId, childName, username, "child");
-                            child.setDOB(LocalDate.parse(dob));
+                            child.setDOB(dob);
                             child.setNotes(notes);
 
                             childrenList.add(child);
