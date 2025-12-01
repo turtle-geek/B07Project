@@ -93,6 +93,9 @@ public class HistoryFilterActivity extends AppCompatActivity {
 
         setupPdfLauncher();
 
+        // Setup the back button listener
+        setupBackButton();
+
         setupSymptomFilter("nw", R.id.filterNightWaking, R.id.nwFilterHeader, R.id.nwFilterDropdownOptions, R.id.nwBtnToggleDropdown, R.id.nwCbFilterMain);
         setupSymptomFilter("al", R.id.filterActivityLimits, R.id.alFilterHeader, R.id.alFilterDropdownOptions, R.id.alBtnToggleDropdown, R.id.alCbFilterMain);
         setupSymptomFilter("cw", R.id.filterCoughWheeze, R.id.cwFilterHeader, R.id.cwFilterDropdownOptions, R.id.cwBtnToggleDropdown, R.id.cwCbFilterMain);
@@ -102,6 +105,19 @@ public class HistoryFilterActivity extends AppCompatActivity {
         tvEndDate.setOnClickListener(v -> showDatePicker(tvEndDate, endDateCalendar, false));
 
         findViewById(R.id.btnApplyFilter).setOnClickListener(v -> applyFiltersAndSave());
+    }
+
+    /**
+     * Finds the back button and sets an OnClickListener to close the activity.
+     */
+    private void setupBackButton() {
+        ImageButton backButton = findViewById(R.id.btnBack);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                // Closes the current activity and returns to the previous activity
+                finish();
+            });
+        }
     }
 
     // --- Date Picker and Range Logic ---
