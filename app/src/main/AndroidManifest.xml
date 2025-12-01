@@ -98,8 +98,10 @@
             android:exported="true" />
 
         <activity
-            android:name=".ui.ParentRegisterLogin"  android:exported="true">
-        </activity>
+            android:name=".ui.ChildManagement"
+            android:exported="true" />
+
+
 
     </application>
 
