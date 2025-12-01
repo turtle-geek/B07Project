@@ -16,18 +16,29 @@ import java.util.Calendar;
 
 import com.example.myapplication.health.*;
 import com.example.myapplication.models.*;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class InventoryRefill extends AppCompatActivity {
 
     private TextInputEditText etPurchaseDate, etExpiryDate, etCapacity, etRemainingAmount;
     private Button btnSave;
     private ImageButton btnBack;
-
     private MedicineLabel label;
     private boolean isEdit;
     private Child child;
-
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private FirebaseFirestore db;
+    private String childId;
+
+    private void loadChild() {
+        db.collection("children").document(childId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        child = snapshot.toObject(Child.class);
+                    }
+                });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +56,10 @@ public class InventoryRefill extends AppCompatActivity {
         label = MedicineLabel.valueOf(getIntent().getStringExtra("label"));
         isEdit = getIntent().getBooleanExtra("isEdit", false);
 
-        // TODO: Load child from Firebase here
+        // Load child from firebase
+        db = FirebaseFirestore.getInstance();
+        childId = getIntent().getStringExtra("childId");
+        loadChild();
 
         // --- Disable save button initially ---
         btnSave.setEnabled(false);

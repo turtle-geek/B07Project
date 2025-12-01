@@ -20,16 +20,28 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 import com.example.myapplication.health.*;
-        import com.example.myapplication.models.*;
+import com.example.myapplication.models.*;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class InventoryUsage extends AppCompatActivity {
 
     private TextInputEditText etDate, etTime, etDosage;
     private Button btnSaveMedicine;
     private ImageButton btnBack;
-
     private MedicineLabel label;
     private Child child;
+    private FirebaseFirestore db;
+    private String childId;
+
+    private void loadChild() {
+        db.collection("children").document(childId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        child = snapshot.toObject(Child.class);
+                    }
+                });
+    }
 
     private final DateTimeFormatter dateFormatter =
             DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -48,7 +60,10 @@ public class InventoryUsage extends AppCompatActivity {
 
         label = MedicineLabel.valueOf(getIntent().getStringExtra("label"));
 
-        // TODO: Load child from Firebase here
+        // Load child from firebase
+        db = FirebaseFirestore.getInstance();
+        childId = getIntent().getStringExtra("childId");
+        loadChild();
 
         // --- Disable save button initially ---
         btnSaveMedicine.setEnabled(false);

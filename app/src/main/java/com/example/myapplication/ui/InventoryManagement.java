@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.example.myapplication.health.*;
 import com.example.myapplication.models.*;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class InventoryManagement extends AppCompatActivity {
@@ -25,6 +26,19 @@ public class InventoryManagement extends AppCompatActivity {
     private MaterialSwitch switchLogFilter;
     private MedicineLabel currentLabel = MedicineLabel.CONTROLLER;
     private Child child;
+    private FirebaseFirestore db;
+    private String childId;
+
+    private void loadChild() {
+        db.collection("children").document(childId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        child = snapshot.toObject(Child.class);
+                        updateUI();
+                    }
+                });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +57,10 @@ public class InventoryManagement extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         switchLogFilter = findViewById(R.id.switchLogFilter);
 
-        // TODO: Load child from firebase
+        // Load child from firebase
+        db = FirebaseFirestore.getInstance();
+        childId = getIntent().getStringExtra("childId");
+        loadChild();
 
         // Switch listener to toggle between controller and rescue
         switchLogFilter.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -67,9 +84,6 @@ public class InventoryManagement extends AppCompatActivity {
             intent.putExtra("label", currentLabel.name());
             startActivityForResult(intent, 2);
         });
-
-        // Initial UI update
-        updateUI();
     }
 
     private void updateUI() {
@@ -90,6 +104,7 @@ public class InventoryManagement extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
+            loadChild();
             updateUI();
             child.getStreakCount().countStreaks();  // Update streaks after changes
         }
