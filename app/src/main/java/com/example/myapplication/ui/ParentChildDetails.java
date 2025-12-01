@@ -17,15 +17,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class ParentChildDetails extends AppCompatActivity {
 
     private TextView tvLegalName;
-
     private TextView tvUserID;
-
     private TextView tvUserEmail;
     private TextView tvChildPassword;
     private TextView tvDetailBirthday;
     private TextView tvDetailSpecialNote;
-    private TextView tvUserId;
-    private TextView tvPassword;
     private ImageButton btnBack;
     private ImageButton btnEdit;
     private EditText editPB;
