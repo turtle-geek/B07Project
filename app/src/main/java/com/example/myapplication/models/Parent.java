@@ -12,7 +12,7 @@ public class Parent extends User{
     private ArrayList<SharedAccessInvite> invites;
     static int idChildModifier;
 
-    public Parent(){}
+    public Parent(){} // Empty Constructor for Firestore
 
     public Parent(String id, String name, String emailUsername, String role) {
         super(id, name, role);

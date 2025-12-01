@@ -1,6 +1,7 @@
 package com.example.myapplication.ui;
 
 import android.os.Bundle;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -8,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ParentChildDetails extends AppCompatActivity {
 
@@ -19,6 +21,8 @@ public class ParentChildDetails extends AppCompatActivity {
     private TextView tvPassword;
     private ImageButton btnBack;
     private ImageButton btnEdit;
+    private EditText editPB;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +38,12 @@ public class ParentChildDetails extends AppCompatActivity {
         tvPassword = findViewById(R.id.tvChildPassword);
         btnBack = findViewById(R.id.btnBack);
         btnEdit = findViewById(R.id.btnEdit);
+        editPB = findViewById(R.id.editPB);
+
 
         // Get data from intent
-        String childId = getIntent().getStringExtra("childId");
         String childName = getIntent().getStringExtra("childName");
-        String childUserId = getIntent().getStringExtra("childUserId");
+        String childId = getIntent().getStringExtra("childId");
         String childEmail = getIntent().getStringExtra("childEmail");
         String childBirthday = getIntent().getStringExtra("childBirthday");
         String childNote = getIntent().getStringExtra("childNote");
@@ -65,7 +70,7 @@ public class ParentChildDetails extends AppCompatActivity {
         }
 
         if (tvUserId != null) {
-            tvUserId.setText(childUserId != null ? childUserId : "Not set");
+            tvUserId.setText(childId != null ? childId : "Not set");
         }
 
         if (tvPassword != null) {
@@ -89,6 +94,25 @@ public class ParentChildDetails extends AppCompatActivity {
                 // TODO: Navigate to edit activity
             });
         }
+
+        editPB.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                String newPB = editPB.getText().toString();
+                if (!newPB.isEmpty() && childId != null) {
+                    // Query by childId and update the personal best
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("users").document(childId)
+                                    .update("personalBest", newPB)
+                                    .addOnSuccessListener(aVoid ->
+                                        Toast.makeText(this, "New PB set to " + newPB,
+                                                Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e ->
+                                        Toast.makeText(this, "Failed to update PB",
+                                                Toast.LENGTH_SHORT).show());
+                }
+
+            }
+        });
     }
 
     private String maskPassword(String password) {

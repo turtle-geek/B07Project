@@ -22,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
+    private FirebaseUser currentUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         fStore = FirebaseFirestore.getInstance();
 
         // Check if user is logged in
-        FirebaseUser currentUser = fAuth.getCurrentUser();
+        currentUser = fAuth.getCurrentUser();
 
         if (currentUser == null) {
             // No user logged in, redirect to LoginPage
@@ -43,14 +44,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void checkRole(){
-        FirebaseUser user = fAuth.getCurrentUser();
         //if user does not exist
-        if(user == null){
+        if(currentUser == null){
             Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String userId = user.getUid();
+        String userId = currentUser.getUid();
 
         // use users' id to find their own documents
         // if document exists, find users' role on it, then depending on users' role land them on specific home page
@@ -59,7 +59,12 @@ public class MainActivity extends AppCompatActivity {
                 userDoc.get().addOnSuccessListener(documentInfo -> {
                     if(documentInfo.exists()){
                         String role = documentInfo.getString("role");
-                        landonSpecificPage(role);
+                        if (role != null)
+                            landonSpecificPage(role);
+                        else{
+                            Toast.makeText(this, "Cannot find user role", Toast.LENGTH_SHORT).show();
+                            // Handle error internally:
+                        }
                     }
                     else{
                         Toast.makeText(this, "Cannot find user information", Toast.LENGTH_SHORT).show();
@@ -72,18 +77,22 @@ public class MainActivity extends AppCompatActivity {
         //helper function: depends on users' role, land user on their specific page
         private void landonSpecificPage(String role){
             Intent intent;
-            if(role.equals("child")){
-                intent = new Intent(this, ChildHomeActivity.class);
-            }
-            else if(role.equals("parent")){
-                intent = new Intent(this, ParentHomeActivity.class);
-            }
-            else if(role.equals("provider")){
-                intent = new Intent(this, ProviderHomeActivity.class);
-            }
-            else{
-                Toast.makeText(this, "Unknown Character", Toast.LENGTH_SHORT).show();
-                return;
+            switch (role) {
+                case "child":
+                    intent = new Intent(this, ChildHomeActivity.class);
+                    intent.putExtra("id", currentUser.getUid());
+                    break;
+                case "parent":
+                    intent = new Intent(this, ParentHomeActivity.class);
+                    intent.putExtra("id", currentUser.getUid());
+                    break;
+                case "provider":
+                    intent = new Intent(this, ProviderHomeActivity.class);
+                    intent.putExtra("id", currentUser.getUid());
+                    break;
+                default:
+                    Toast.makeText(this, "Unknown Character", Toast.LENGTH_SHORT).show();
+                    return;
             }
             startActivity(intent);
             finish();

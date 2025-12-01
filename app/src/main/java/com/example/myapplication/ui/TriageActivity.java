@@ -8,30 +8,52 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 
 import com.example.myapplication.R;
+import com.example.myapplication.models.Child;
+import com.example.myapplication.models.HealthProfile;
 import com.example.myapplication.models.PeakFlow;
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class TriageActivity extends BaseChildActivity {
+public class TriageActivity extends AppCompatActivity {
 
     ChipGroup chipGroup;
     static int chipCount = 0;
     Button nextButton;
     EditText peakFlowInput;
 
+    HealthProfile hp;
+    Child currentChild;
+    int peakFlowValue;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_triage);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String id = getIntent().getStringExtra("id");
+        assert id != null;
+        db.collection("users").document(id).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) return;
+
+                    currentChild = documentSnapshot.toObject(Child.class);
+                    if (currentChild == null) return;
+
+                    hp = currentChild.getHealthProfile();
+                    });
 
         bindViews();
         nextButton.setOnClickListener(v -> redFlagCheck());

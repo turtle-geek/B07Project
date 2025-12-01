@@ -14,7 +14,7 @@ import static com.example.myapplication.auth.AuthMan.addToDatabase;
 
 public class Child extends User{
 
-    final String parentID;
+    private String parentID;
     private String dateOfBirth;
     private String notes;
     private HealthProfile healthProfile;
@@ -25,10 +25,11 @@ public class Child extends User{
     // Constructor is not updated to initialize the new fields yet
     // If update, remember to link inventory to streakCount and streakCount to badges
 
+    public Child(){} // Empty Constructor for Firestore
+
     public Child(String id, String parentID, String name, String parentEmail, String role) {
         super(id, name, role);
         this.parentID = parentID;
-        this.emailUsername = parentEmail;
         this.emailUsername = parentEmail;
     }
 

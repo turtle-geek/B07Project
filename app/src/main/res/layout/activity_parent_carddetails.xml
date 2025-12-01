@@ -113,7 +113,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Child Account ID"
+                        android:text="Child Username"
                         android:textSize="14sp"
                         android:textColor="#757575"
                         android:paddingBottom="4dp"/>
@@ -122,7 +122,7 @@
                         android:id="@+id/tvIDName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Acount ID"
+                        android:text="Username"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="#064200"/>
@@ -314,6 +314,7 @@
                             android:textSize="14sp"
                             android:textColor="#757575"/>
 
+
                     </LinearLayout>
 
                     <Button
@@ -326,6 +327,60 @@
                         android:layout_marginTop="8dp"/>
 
                 </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Set PB Section -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="4dp"
+                        tools:ignore="MissingConstraints">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="wrench logo"
+                            android:src="@drawable/wrench"
+                            tools:tint="#757575"
+                            android:layout_marginEnd="8dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Set Peak Flow Personal Best"
+                            android:textColor="#757575"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/editPB"
+                        android:layout_width="122dp"
+                        android:layout_height="45dp"
+                        android:layout_weight="1"
+                        android:autofillHints="Enter new Personal Best"
+                        android:ems="10"
+                        android:inputType="number"
+                        tools:ignore="MissingConstraints" />
+
+            </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 

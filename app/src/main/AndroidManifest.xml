@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +15,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:replace="android:label,android:icon">
+        <activity
+            android:name=".ui.FullScreenEscalationNotification"
+            android:exported="false" />
+        <activity
+            android:name=".ui.CheckupResponseActivity"
+            android:exported="false" />
+
+        <receiver
+            android:name=".CheckupNotificationReceiver"
+            android:exported="false" />
 
         <activity
             android:name=".ui.HomeStepsRecovery"
@@ -20,77 +33,56 @@
             android:name=".ui.TriageDecisionCard"
             android:exported="false" />
         <activity
-            android:name=".ui.BaseChildActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.TriageActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.PeakFlowInput"
-            android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".auth.LoginPage"
             android:exported="true" />
-
         <activity
             android:name=".auth.Register"
             android:exported="true" />
-
         <activity
             android:name=".auth.UserRole"
             android:exported="true" />
-
         <activity
             android:name=".auth.ForgotPassword"
             android:exported="true" />
-
         <activity
             android:name=".auth.SignOut"
             android:exported="true" />
-
         <activity
             android:name=".ui.ChildHomeActivity"
             android:exported="true" />
-
         <activity
             android:name=".ui.ParentHomeActivity"
             android:exported="true" />
-
         <activity
             android:name=".ui.ProviderHomeActivity"
             android:exported="true" />
-
         <activity
             android:name=".ui.ParentManagement"
             android:exported="false" />
-
         <activity
             android:name=".ui.ParentChildDetails"
             android:exported="false" />
-
         <activity
             android:name=".ui.ParentChildEdit"
             android:exported="false" />
-
         <activity
             android:name=".ui.ParentRegisterChild"
             android:exported="true" />
-
         <activity
             android:name=".ui.ParentRegisterLogin"
             android:exported="true" />
-
     </application>
-
 
 </manifest>

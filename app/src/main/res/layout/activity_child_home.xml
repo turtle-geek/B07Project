@@ -118,50 +118,102 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <!-- Status Card 1 -->
+            <!-- PEF Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/statusCard1"
+                android:id="@+id/pefCard"
                 android:layout_width="300dp"
-                android:layout_height="120dp"
+                android:layout_height="150dp"
                 android:layout_marginEnd="12dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="#ABFFFFFF">
+                app:cardBackgroundColor="#FFFF00"> <!-- Colour varies based on zone -->
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
+                    android:padding="5dp">
 
                     <TextView
+                        android:id="@+id/pefDisplay"
+                        android:layout_width="111dp"
+                        android:layout_height="33dp"
+                        android:layout_marginTop="4dp"
+                        android:text="80"
+                        android:textAlignment="center"
+                        android:textSize="30sp"
+                        app:layout_constraintTop_toBottomOf="@+id/textView5"
+                        tools:layout_editor_absoluteX="85dp" />
+
+                    <TextView
+                        android:id="@+id/pefDateTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/today_status"
+                        android:text="3:07 PM Nov 15, 2025"
+                        android:textColor="#666666"
+                        android:textSize="14sp"
+                        tools:layout_editor_absoluteX="74dp"
+                        tools:layout_editor_absoluteY="71dp" />
+
+                    <Button
+                        android:id="@+id/pefButton"
+                        android:layout_width="124dp"
+                        android:layout_height="40dp"
+                        android:text="Enter New Peak Flow"
+                        android:textColor="#000000"
+                        android:textSize="8sp"
+                        tools:layout_editor_absoluteX="81dp"
+                        tools:layout_editor_absoluteY="97dp" />
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Today's Peak Flow"
+                        android:textColor="#064200"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="#064200"/>
+                        tools:layout_editor_absoluteX="72dp"
+                        tools:layout_editor_absoluteY="5dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="3 scheduled"
-                        android:textSize="14sp"
-                        android:textColor="#666666"
-                        android:layout_marginTop="8dp"/>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/editPEF"
+                        android:layout_width="124dp"
+                        android:layout_height="60dp"
+                        android:background="#FFFFFF"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@id/pefButton"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@id/pefButton"
+                        tools:layout_editor_absoluteY="90dp">
 
-                </LinearLayout>
+
+                        <EditText
+                            android:id="@+id/editTextNumber"
+                            android:layout_width="110dp"
+                            android:layout_height="36dp"
+                            android:ems="10"
+                            android:gravity="center"
+                            android:hint="Enter a number"
+                            android:inputType="number"
+                            android:textSize="13sp"
+                            tools:layout_editor_absoluteX="3dp"
+                            tools:layout_editor_absoluteY="10dp" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
             <!-- Status Card 2 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard2"
                 android:layout_width="300dp"
-                android:layout_height="120dp"
+                android:layout_height="150dp"
                 android:layout_marginEnd="12dp"
                 android:clickable="true"
                 android:focusable="true"
@@ -200,7 +252,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard3"
                 android:layout_width="300dp"
-                android:layout_height="120dp"
+                android:layout_height="150dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"

@@ -189,9 +189,9 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <!-- Status Card 1 -->
+            <!-- pefCard -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/statusCard1"
+                android:id="@+id/pefCard"
                 android:layout_width="300dp"
                 android:layout_height="120dp"
                 android:layout_marginEnd="12dp"
@@ -200,32 +200,48 @@
                 android:foreground="?android:attr/selectableItemBackground"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="#ABFFFFFF">
+                app:cardBackgroundColor="#FFFF00"> <!-- Colour varies based on zone -->
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
+                    android:padding="16dp">
 
                     <TextView
+                        android:id="@+id/textView5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/today_status"
+                        android:text="Today's Peak Flow"
+                        android:textColor="#064200"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="#064200"/>
+                        tools:layout_editor_absoluteX="70dp"
+                        tools:layout_editor_absoluteY="-2dp" />
 
                     <TextView
+                        android:id="@+id/pefDisplay"
+                        android:layout_width="111dp"
+                        android:layout_height="33dp"
+                        android:layout_marginTop="4dp"
+                        android:text="80"
+                        android:textAlignment="center"
+                        android:textSize="30sp"
+                        app:layout_constraintTop_toBottomOf="@+id/textView5"
+                        tools:layout_editor_absoluteX="83dp" />
+
+                    <TextView
+                        android:id="@+id/pefDateTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="3 scheduled"
-                        android:textSize="14sp"
+                        android:text="3:07 PM Nov 15, 2025"
                         android:textColor="#666666"
-                        android:layout_marginTop="8dp"/>
+                        android:textSize="14sp"
+                        tools:layout_editor_absoluteX="72dp"
+                        tools:layout_editor_absoluteY="65dp" />
 
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
             <!-- Status Card 2 -->

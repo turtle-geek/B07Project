@@ -1,7 +1,10 @@
 package com.example.myapplication.ui;
 
+import static java.time.LocalDateTime.parse;
+
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,6 +20,8 @@ import androidx.cardview.widget.CardView;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.auth.SignOut;
+import com.example.myapplication.models.Child;
+import com.example.myapplication.models.HealthProfile;
 import com.example.myapplication.models.PeakFlow;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +31,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,8 +45,8 @@ public class ParentHomeActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private BottomNavigationView bottomNavigationView;
     private ImageButton bellButton;
-    private TextView todayDate, selectedChildName;
-    private CardView statusCard1, statusCard2, statusCard3, graphCard;
+    private TextView todayDate, selectedChildName, pefDisplay, pefDateTime;
+    private CardView pefCard, statusCard2, statusCard3, graphCard;
     private LinearLayout childSelectorLayout;
 
     // Trend Snippet
@@ -89,6 +95,9 @@ public class ParentHomeActivity extends AppCompatActivity {
 
         // Load children list
         loadChildrenList();
+
+        // Display Peak Flow data
+        displayTodayPeakFlow();
     }
 
     private void initializeViews() {
@@ -96,12 +105,14 @@ public class ParentHomeActivity extends AppCompatActivity {
         todayDate = findViewById(R.id.todayDate);
         selectedChildName = findViewById(R.id.selectedChildName);
         childSelectorLayout = findViewById(R.id.childSelectorLayout);
-        statusCard1 = findViewById(R.id.statusCard1);
+        pefCard = findViewById(R.id.statusCard1);
         statusCard2 = findViewById(R.id.statusCard2);
         statusCard3 = findViewById(R.id.statusCard3);
         graphCard = findViewById(R.id.graphCard);
         bottomNavigationView = findViewById(R.id.menuBar);
         trendContainer = findViewById(R.id.trendContainer);
+        pefDisplay = findViewById(R.id.pefDisplay);
+        pefDateTime = findViewById(R.id.pefDateTime);
     }
 
     private void setupChildSelector() {
@@ -205,6 +216,49 @@ public class ParentHomeActivity extends AppCompatActivity {
         });
 
         builder.show();
+    }
+
+    private void displayTodayPeakFlow() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(selectedChildId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) return;
+
+                    Child child = documentSnapshot.toObject(Child.class);
+                    if (child == null) return;
+
+                    HealthProfile hp = child.getHealthProfile();
+                    if (hp == null || hp.getPEFLog() == null || hp.getPEFLog().isEmpty())
+                        return;
+
+                    // Get the LAST entry in the PEF log
+                    ArrayList<PeakFlow> log = hp.getPEFLog();
+                    PeakFlow latest = log.get(log.size() - 1);
+
+                    updatePeakFlowUI(latest);
+                })
+                .addOnFailureListener(e ->
+                        Log.e("PeakFlow", "Error loading peak flow", e));
+    }
+
+    private void updatePeakFlowUI(PeakFlow todayPeakFlow) {
+        pefDisplay.setText(String.valueOf(todayPeakFlow.getPeakFlow()));
+
+        // Convert time format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a, MMM d");
+        pefDateTime.setText(todayPeakFlow.getTime().format(formatter));
+
+        switch (todayPeakFlow.getZone()) {
+            case "green":
+                pefCard.setCardBackgroundColor(Color.parseColor("#008000"));
+                break;
+            case "yellow":
+                pefCard.setCardBackgroundColor(Color.parseColor("#FFD700"));
+                break;
+            case "red":
+                pefCard.setCardBackgroundColor(Color.parseColor("#FF0000"));
+                break;
+        }
     }
 
     private void setupTrendSnippet() {
@@ -374,9 +428,9 @@ public class ParentHomeActivity extends AppCompatActivity {
     }
 
     private void setupCardListeners() {
-        if (statusCard1 != null) {
-            statusCard1.setOnClickListener(v -> {
-                Toast.makeText(this, "Today's Status", Toast.LENGTH_SHORT).show();
+        if (pefCard != null) {
+            pefCard.setOnClickListener(v -> {
+                Toast.makeText(this, "Today's Zone", Toast.LENGTH_SHORT).show();
             });
         }
 
