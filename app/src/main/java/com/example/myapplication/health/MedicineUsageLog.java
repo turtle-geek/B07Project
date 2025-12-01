@@ -12,6 +12,8 @@ public class MedicineUsageLog {
     private TechniqueQuality techniqueQuality;
     private String rating;
 
+    public MedicineUsageLog() {}
+
     public MedicineUsageLog(InventoryItem medicine, double dosageAmount, String timestamp, TechniqueQuality techniqueQuality) {
         this.medicine = medicine;
         this.dosageAmount = dosageAmount;
@@ -29,16 +31,28 @@ public class MedicineUsageLog {
         this.rating = rating;
     }
 
-    public InventoryItem getMedicineName() {
+    public InventoryItem getMedicine() {
         return medicine;
+    }
+
+    public void setMedicine(InventoryItem medicine) {
+        this.medicine = medicine;
     }
 
     public double getDosageAmount() {
         return dosageAmount;
     }
 
+    public void setDosageAmount(double dosageAmount) {
+        this.dosageAmount = dosageAmount;
+    }
+
     public String getTimestamp() {
         return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public LocalDateTime parseTimestamp() {
@@ -49,8 +63,12 @@ public class MedicineUsageLog {
         return LocalDateTime.parse(timestamp).toLocalDate();
     }
 
-    public TechniqueQuality getControllerQuality() {
+    public TechniqueQuality getTechniqueQuality() {
         return techniqueQuality;
+    }
+
+    public void setTechniqueQuality(TechniqueQuality techniqueQuality) {
+        this.techniqueQuality = techniqueQuality;
     }
 
     // NEW: Rating getter and setter
