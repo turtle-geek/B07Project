@@ -18,7 +18,6 @@
         android:contentDescription="@null"
         android:importantForAccessibility="no"/>
 
-    <!-- Top Bar -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -29,7 +28,6 @@
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- pf Button -->
         <ImageButton
             android:id="@+id/logo"
             android:layout_width="40dp"
@@ -52,11 +50,10 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"/>
 
-        <!-- SOS Button -->
         <ImageButton
             android:id="@+id/sosButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="@android:color/transparent"
             android:padding="1dp"
             android:scaleType="centerInside"
@@ -64,7 +61,6 @@
 
     </LinearLayout>
 
-    <!-- Today Header -->
     <LinearLayout
         android:id="@+id/todayHeader"
         android:layout_width="match_parent"
@@ -93,13 +89,11 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/quicksand"
             android:textStyle="bold"
-            android:text="Nov 15, 2025"
-            android:textSize="16sp"
+            android:text="Dec 1, 2025" android:textSize="16sp"
             android:textColor="@color/black"/>
 
     </LinearLayout>
 
-    <!-- Horizontal Scrollable Status Containers -->
     <HorizontalScrollView
         android:id="@+id/statusScrollView"
         android:layout_width="match_parent"
@@ -118,7 +112,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <!-- Status Card 1 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard1"
                 android:layout_width="300dp"
@@ -157,7 +150,6 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Status Card 2 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard2"
                 android:layout_width="300dp"
@@ -196,7 +188,6 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Status Card 3 -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCard3"
                 android:layout_width="300dp"
@@ -237,7 +228,6 @@
         </LinearLayout>
     </HorizontalScrollView>
 
-    <!-- Scrollable Details View -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -252,7 +242,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Graph Cards Container -->
             <LinearLayout
                 android:id="@+id/graphContainer"
                 android:layout_width="match_parent"
@@ -261,7 +250,6 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp">
 
-                <!-- Graph Card 1: Daily Check-in -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/graphCard1"
                     android:layout_width="0dp"
@@ -304,7 +292,6 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Graph Card 2: Peak Flow Log -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/graphCard2"
                     android:layout_width="0dp"
@@ -354,7 +341,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <!-- TrendSnippet will be added programmatically here -->
             </LinearLayout>
 
         </LinearLayout>

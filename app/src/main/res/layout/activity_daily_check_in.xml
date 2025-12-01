@@ -28,14 +28,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/pfp_logo"
+            android:id="@+id/btnBack"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/pfp_logo"
-            android:background="@drawable/circle_background"
-            android:scaleType="centerCrop"
-            app:tint="@color/gray"
-            android:contentDescription="@string/profile_picture_button"/>
+            android:src="@android:drawable/ic_menu_revert"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:padding="5dp"
+            app:tint="@color/white"
+            android:contentDescription="Back"/>
 
         <TextView
             android:layout_width="0dp"

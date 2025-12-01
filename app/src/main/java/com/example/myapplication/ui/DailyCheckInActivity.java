@@ -8,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 // Java Utility Imports
@@ -41,6 +42,9 @@ public class DailyCheckInActivity extends AppCompatActivity {
         // Call the function to set the date
         setDynamicDate();
 
+        // Setup Back Button Listener
+        setupBackButton();
+
         // Runs handleSubmitCheckIn() when the button is clicked
         Button submitButton = findViewById(R.id.btnSubmitCheckIn);
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -49,6 +53,19 @@ public class DailyCheckInActivity extends AppCompatActivity {
                 handleSubmitCheckIn();
             }
         });
+    }
+
+    /**
+     * Finds the back button and sets an OnClickListener to close the activity.
+     */
+    private void setupBackButton() {
+        ImageButton backButton = findViewById(R.id.btnBack);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                // Closes the current activity and returns to the previous activity (ChildHomeActivity)
+                finish();
+            });
+        }
     }
 
     /**

@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- FIX: Required for setExactAndAllowWhileIdle() on modern Android versions -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <application
         android:allowBackup="true"
@@ -34,17 +36,17 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-        </activity>
-
-        <activity
-            android:name=".auth.LoginPage"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <activity
+            android:name=".auth.LoginPage"
+            android:exported="true" />
 
         <activity
             android:name=".auth.Register"
@@ -79,10 +81,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.HistoryFilterActivity"  android:exported="true">
-        </activity>
-
-        <activity
             android:name=".ui.ParentChildDetails"
             android:exported="false" />
 
@@ -100,14 +98,12 @@
 
         <activity
             android:name=".ui.HistoryFilterActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true" />
+
+        <activity
+            android:name=".ui.DailyCheckInActivity"
+            android:exported="true" />
 
     </application>
-
 
 </manifest>
