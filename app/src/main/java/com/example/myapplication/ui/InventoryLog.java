@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import com.example.myapplication.health.*;
 import com.example.myapplication.models.*;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class InventoryLog extends AppCompatActivity {
 
@@ -19,6 +20,19 @@ public class InventoryLog extends AppCompatActivity {
     private MaterialSwitch switchLogFilter;
     private MedicineLabel currentLabel = MedicineLabel.CONTROLLER;
     private Child child;
+    private FirebaseFirestore db;
+    private String childId;
+
+    private void loadChild() {
+        db.collection("children").document(childId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        child = snapshot.toObject(Child.class);
+                        updateLogs();
+                    }
+                });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +42,10 @@ public class InventoryLog extends AppCompatActivity {
         containerLogs = findViewById(R.id.containerLogs);
         switchLogFilter = findViewById(R.id.switchLogFilter);
 
-        // TODO: Load child from firebase
+        // Load child from firebase
+        db = FirebaseFirestore.getInstance();
+        childId = getIntent().getStringExtra("childId");
+        loadChild();
 
         // Back button
         ImageButton btnBack = findViewById(R.id.btnBack);
@@ -45,6 +62,7 @@ public class InventoryLog extends AppCompatActivity {
     }
 
     private void updateLogs() {
+        loadChild();
         containerLogs.removeAllViews();
         ArrayList<MedicineUsageLog> logs = (currentLabel == MedicineLabel.CONTROLLER)
                 ? child.getInventory().getControllerLog()
