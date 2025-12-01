@@ -54,7 +54,7 @@ dependencies {
     // Utility libraries
     implementation("jp.wasabeef:blurry:4.0.1")
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
-    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material:1.13.0")
 
     // Testing dependencies
     testImplementation(libs.junit)
