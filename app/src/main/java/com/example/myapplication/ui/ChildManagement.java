@@ -16,23 +16,18 @@ import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.auth.SignOut;
+import com.example.myapplication.auth.SignOut_child;
 import com.example.myapplication.models.Child;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * Child Management Activity
- * Uses the SAME layout template as ParentManagement
- * BUT:
- * - NO "Add Child" button (removed from layout)
- * - NO "Set Personal Best" card (removed from layout)
- * - Shows ONLY child's own profile (read-only)
- * - Uses SAME card layout as parent (activity_parent_childcard.xml)
+ * - Shows ONLY child's own profile
+ * - Card IS CLICKABLE to view details
+ * - NO edit permission (read-only)
  */
 public class ChildManagement extends AppCompatActivity {
 
@@ -51,7 +46,6 @@ public class ChildManagement extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // ✅ Uses child management layout (based on parent template)
         setContentView(R.layout.activity_child_management);
 
         // Initialize Firebase
@@ -66,11 +60,6 @@ public class ChildManagement extends AppCompatActivity {
             setupBottomNavigation();
         }
 
-        // ✅ NO "Add Child" button - removed from layout
-        // ✅ NO "Set Personal Best" card - removed from layout
-        // ✅ NO "Share by Provider" filter - removed from layout
-        // ✅ NO Doctor tags - removed from layout
-
         // Load current child's profile
         loadCurrentChildProfile();
     }
@@ -79,9 +68,6 @@ public class ChildManagement extends AppCompatActivity {
         tvEmptyState = findViewById(R.id.tvEmptyState);
         childrenCardsContainer = findViewById(R.id.childrenCardsContainer);
         bottomNavigationView = findViewById(R.id.menuBar);
-
-        // ❌ NO doctorFilterSwitch - removed from layout
-        // ❌ NO doctorChipGroup - removed from layout
     }
 
     @Override
@@ -93,7 +79,6 @@ public class ChildManagement extends AppCompatActivity {
 
     private void setupBottomNavigation() {
         try {
-            // Set the current item as selected
             bottomNavigationView.setSelectedItemId(R.id.fileButton);
 
             bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
@@ -102,26 +87,23 @@ public class ChildManagement extends AppCompatActivity {
                     int id = item.getItemId();
 
                     if (id == R.id.homeButton) {
-                        // Navigate to Child Home
                         startActivity(new Intent(ChildManagement.this, ChildHomeActivity.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
 
                     } else if (id == R.id.fileButton) {
-                        // Already on Child Management - do nothing
                         return true;
 
                     } else if (id == R.id.nav_profile) {
-                        // Navigate to Child Tutorial
                         startActivity(new Intent(ChildManagement.this, HomeStepsRecovery.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
 
                     } else if (id == R.id.moreButton) {
-                        // Navigate to Sign Out Page
-                        startActivity(new Intent(ChildManagement.this, SignOut.class));
+                        // ✅ Navigate to SignOut_child (not SignOut!)
+                        startActivity(new Intent(ChildManagement.this, SignOut_child.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
@@ -136,8 +118,7 @@ public class ChildManagement extends AppCompatActivity {
     }
 
     /**
-     * ✅ Load current child's own profile
-     * Shows only ONE card - the child's own profile
+     * Load current child's own profile
      */
     private void loadCurrentChildProfile() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -154,7 +135,6 @@ public class ChildManagement extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        // Child profile exists - created by parent
                         String childId = documentSnapshot.getId();
                         String childName = documentSnapshot.getString("name");
                         String parentId = documentSnapshot.getString("parentID");
@@ -175,7 +155,6 @@ public class ChildManagement extends AppCompatActivity {
 
                         Log.d(TAG, "Loaded child profile: " + childName);
                     } else {
-                        // Profile doesn't exist
                         Log.e(TAG, "Child profile not found in database");
                         updateUI(false);
                     }
@@ -202,9 +181,7 @@ public class ChildManagement extends AppCompatActivity {
     }
 
     /**
-     * ✅ Display child's profile using SAME card layout as parent
-     * Uses: activity_parent_childcard.xml
-     * BUT: Card is READ-ONLY (no click action)
+     * Display child's profile card - CLICKABLE to view details
      */
     private void displayChildProfile() {
         if (childrenCardsContainer == null || currentChild == null) return;
@@ -212,9 +189,9 @@ public class ChildManagement extends AppCompatActivity {
         childrenCardsContainer.removeAllViews();
 
         try {
-            // ✅ Use the SAME card layout as parent
+            // Use the same card layout as parent
             View cardView = LayoutInflater.from(this).inflate(
-                    R.layout.activity_parent_childcard,  // ← Same card as parent!
+                    R.layout.activity_parent_childcard,
                     childrenCardsContainer,
                     false);
 
@@ -246,13 +223,23 @@ public class ChildManagement extends AppCompatActivity {
                 }
             }
 
-            // Parent can click to edit, child cannot
+            // ✅ Child CAN click to VIEW details (but not edit)
             if (childCard != null) {
-                childCard.setClickable(false);
-                childCard.setFocusable(false);
-                // Optional: Make card look less clickable
-                childCard.setCardElevation(2);
-                cardView.setAlpha(0.9f);
+                childCard.setOnClickListener(v -> {
+                    // Navigate to ChildChildDetails to view profile
+                    Intent intent = new Intent(ChildManagement.this, ChildChildDetails.class);
+
+                    // Pass child data
+                    intent.putExtra("childId", currentChild.getId());
+                    intent.putExtra("childName", currentChild.getName());
+                    intent.putExtra("childUserId", currentChild.getId());
+                    intent.putExtra("childEmail", currentChild.getEmailUsername());
+                    intent.putExtra("childBirthday", currentChild.getDateOfBirth());
+                    intent.putExtra("childNote", currentChild.getNotes());
+                    // Don't pass password for security
+
+                    startActivity(intent);
+                });
             }
 
             // Add the card to container
@@ -269,7 +256,6 @@ public class ChildManagement extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
-            // User not logged in, redirect to MainActivity
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();

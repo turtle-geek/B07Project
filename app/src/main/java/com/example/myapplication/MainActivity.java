@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.auth.LoginPage;
 import com.example.myapplication.callbacks.RoleCallback;
 import com.example.myapplication.ui.ChildHomeActivity;
+import com.example.myapplication.ui.Onboarding;
 import com.example.myapplication.ui.ParentHomeActivity;
 import com.example.myapplication.ui.ProviderHomeActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,13 +55,24 @@ public class MainActivity extends AppCompatActivity {
         String userId = user.getUid();
 
         // use users' id to find their own documents
-        // if document exists, find users' role on it, then depending on users' role land them on specific home page
+        // if document exists, check if onboarding is completed, then find users' role
         //If system cannot operate, show failure messages
         DocumentReference userDoc = fStore.collection("users").document(userId);
-                userDoc.get().addOnSuccessListener(documentInfo -> {
+        userDoc.get().addOnSuccessListener(documentInfo -> {
                     if(documentInfo.exists()){
-                        String role = documentInfo.getString("role");
-                        landonSpecificPage(role);
+                        // Check if onboarding is completed
+                        Boolean onboardingCompleted = documentInfo.getBoolean("onboardingCompleted");
+
+                        if (onboardingCompleted == null || !onboardingCompleted) {
+                            // Onboarding not completed, redirect to onboarding
+                            Intent intent = new Intent(this, Onboarding.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // Onboarding completed, proceed to appropriate home page
+                            String role = documentInfo.getString("role");
+                            landonSpecificPage(role);
+                        }
                     }
                     else{
                         Toast.makeText(this, "Cannot find user information", Toast.LENGTH_SHORT).show();
@@ -69,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(exception -> {
                     Toast.makeText(this, "Cannot process: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-        }
+    }
 
     // fetches the user role
     private void fetchUserRole(RoleCallback callback) {
@@ -107,23 +119,23 @@ public class MainActivity extends AppCompatActivity {
                     callback.onFailure("Firestore operation failed: " + exception.getMessage());
                 });
     }
-        //helper function: depends on users' role, land user on their specific page
-        private void landonSpecificPage(String role){
-            Intent intent;
-            if(role.equals("child")){
-                intent = new Intent(this, ChildHomeActivity.class);
-            }
-            else if(role.equals("parent")){
-                intent = new Intent(this, ParentHomeActivity.class);
-            }
-            else if(role.equals("provider")){
-                intent = new Intent(this, ProviderHomeActivity.class);
-            }
-            else{
-                Toast.makeText(this, "Unknown Character", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            startActivity(intent);
-            finish();
+    //helper function: depends on users' role, land user on their specific page
+    private void landonSpecificPage(String role){
+        Intent intent;
+        if(role.equals("child")){
+            intent = new Intent(this, ChildHomeActivity.class);
         }
+        else if(role.equals("parent")){
+            intent = new Intent(this, ParentHomeActivity.class);
+        }
+        else if(role.equals("provider")){
+            intent = new Intent(this, ProviderHomeActivity.class);
+        }
+        else{
+            Toast.makeText(this, "Unknown Character", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        startActivity(intent);
+        finish();
+    }
 }

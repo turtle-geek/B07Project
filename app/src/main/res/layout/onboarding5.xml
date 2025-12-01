@@ -139,7 +139,7 @@
 
 
             <Button
-                android:id="@+id/loginButton"
+                android:id="@+id/nextButton"
                 android:layout_width="280dp"
                 android:layout_height="52dp"
                 android:text="@string/next"

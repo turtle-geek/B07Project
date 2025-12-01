@@ -14,7 +14,7 @@ import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.auth.SignOut;
+import com.example.myapplication.auth.SignOut_child;
 import com.example.myapplication.models.PeakFlow;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -273,22 +273,27 @@ public class ChildHomeActivity extends AppCompatActivity {
 
                     if (id == R.id.homeButton) {
                         return true;
+
                     } else if (id == R.id.fileButton) {
                         startActivity(new Intent(ChildHomeActivity.this, ChildManagement.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
+
                     } else if (id == R.id.nav_profile) {
                         startActivity(new Intent(ChildHomeActivity.this, HomeStepsRecovery.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
+
                     } else if (id == R.id.moreButton) {
-                        startActivity(new Intent(ChildHomeActivity.this, SignOut.class));
+                        // ✅ FIXED: Added curly braces
+                        startActivity(new Intent(ChildHomeActivity.this, SignOut_child.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
                     }
+
                     return false;
                 }
             });

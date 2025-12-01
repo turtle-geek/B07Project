@@ -22,10 +22,10 @@ import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.ui.ChildHomeActivity;
+import com.example.myapplication.ui.ChildManagement;
 import com.example.myapplication.ui.HomeStepsRecovery;
-import com.example.myapplication.ui.ParentHomeActivity;
-import com.example.myapplication.ui.ParentManagement;
-import com.example.myapplication.ui.ParentTutorial;
+import com.example.myapplication.ui.InventoryLog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,15 +36,15 @@ import com.google.firebase.storage.StorageReference;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class SignOut extends AppCompatActivity {
+public class SignOut_child extends AppCompatActivity {
 
-    private static final String TAG = "SignOut";
+    private static final String TAG = "SignOut_child";
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
 
-    private CardView inviteCard, reportCard;
+    private CardView medicationHistoryCard, inviteCard, reportCard;
     private Button logoutButton;
     private ImageButton profilePicture;
     private TextView userNameText, userEmailText;
@@ -56,7 +56,7 @@ public class SignOut extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.signout_page);
+        setContentView(R.layout.signout_page_child);
 
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -64,6 +64,7 @@ public class SignOut extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
 
         // Initialize views
+        medicationHistoryCard = findViewById(R.id.medicationHistoryCard);
         inviteCard = findViewById(R.id.inviteCard);
         reportCard = findViewById(R.id.reportCard);
         logoutButton = findViewById(R.id.LogoutButton);
@@ -93,6 +94,13 @@ public class SignOut extends AppCompatActivity {
             profilePicture.setOnClickListener(v -> openImagePicker());
         }
 
+        // Set click listeners for cards
+        if (medicationHistoryCard != null) {
+            medicationHistoryCard.setOnClickListener(v -> {
+                Intent intent = new Intent(SignOut_child.this, InventoryLog.class);
+                startActivity(intent);
+            });
+        }
 
         if (inviteCard != null) {
             inviteCard.setOnClickListener(v -> {
@@ -261,24 +269,25 @@ public class SignOut extends AppCompatActivity {
                     int id = item.getItemId();
 
                     if (id == R.id.homeButton) {
-                        startActivity(new Intent(SignOut.this, ParentHomeActivity.class));
+                        startActivity(new Intent(SignOut_child.this, ChildHomeActivity.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
 
                     } else if (id == R.id.fileButton) {
-                        startActivity(new Intent(SignOut.this, ParentManagement.class));
+                        startActivity(new Intent(SignOut_child.this, ChildManagement.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
 
                     } else if (id == R.id.nav_profile) {
-                        startActivity(new Intent(SignOut.this, HomeStepsRecovery.class));
+                        startActivity(new Intent(SignOut_child.this, HomeStepsRecovery.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
 
                     } else if (id == R.id.moreButton) {
+                        // Already on SignOut page
                         return true;
                     }
 

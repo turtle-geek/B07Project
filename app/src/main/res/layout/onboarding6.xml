@@ -8,12 +8,6 @@
     android:background="@drawable/testbg3"
     tools:context=".auth.LoginPage">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Get Started! 🚀&#xA;Your role will determine what you see and can do in the app.&#xA;" />
-
     <ImageView
         android:id="@+id/backgroundImageLogin"
         android:layout_width="match_parent"
@@ -107,7 +101,7 @@
             </TextView>
 
             <TextView
-                android:id="@+id/subtitle"
+                android:id="@+id/subtitle2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -171,7 +165,7 @@
 
 
             <Button
-                android:id="@+id/loginButton"
+                android:id="@+id/nextButton"
                 android:layout_width="280dp"
                 android:layout_height="52dp"
                 android:text="@string/next"
