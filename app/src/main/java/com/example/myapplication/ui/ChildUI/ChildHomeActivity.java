@@ -1,6 +1,9 @@
 package com.example.myapplication.ui.ChildUI;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -8,7 +11,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -23,21 +25,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.widget.Button;
-import android.widget.ImageButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.myapplication.CheckupNotificationReceiver;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.auth.SignOut_child;
 import com.example.myapplication.models.Child;
 import com.example.myapplication.models.HealthProfile;
 import com.example.myapplication.models.PeakFlow;
-import com.example.myapplication.auth.SignOut_child;
 import com.example.myapplication.sosButtonResponse;
 import com.example.myapplication.ui.ChildUI.TriageAndResponse.HomeStepsRecovery;
+import com.example.myapplication.ui.Inventory.InventoryManagement;
 import com.example.myapplication.ui.TrendSnippet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,9 +50,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -61,7 +59,6 @@ import java.util.Locale;
  */
 public class ChildHomeActivity extends AppCompatActivity {
     private static final String TAG = "ChildHomeActivity";
-
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private BottomNavigationView bottomNavigationView;
@@ -89,7 +86,7 @@ public class ChildHomeActivity extends AppCompatActivity {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.homePage), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            return insets;
+            return insets; // TODO insets or systemBars?
         });
 
         try {
@@ -177,9 +174,7 @@ public class ChildHomeActivity extends AppCompatActivity {
                             currentChild = documentSnapshot.toObject(Child.class);
                             if (currentChild != null) {
                                 hp = currentChild.getHealthProfile();
-                                if (hp != null && hp.getPEFLog() != null && !hp.getPEFLog().isEmpty()) {
                                     displayTodayPeakFlow();
-                                }
                             }
                         }
                     })
@@ -197,31 +192,9 @@ public class ChildHomeActivity extends AppCompatActivity {
         if (currentChild != null && hp != null && hp.getPEFLog() != null && !hp.getPEFLog().isEmpty()) {
             displayTodayPeakFlow();
         }
-    }
-
-
-    private void updatePeakFlowUI(PeakFlow todayPeakFlow) {
-        pefDisplay.setText(String.valueOf(todayPeakFlow.getPeakFlow()));
-
-        // Convert time format
-        DateTimeFormatter formatter = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            formatter = DateTimeFormatter.ofPattern("h:mm a, MMM d");
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            pefDateTime.setText(todayPeakFlow.getTime().format(formatter));
-        }
-
-        switch (todayPeakFlow.getZone()) {
-            case "green":
-                pefCard.setCardBackgroundColor(Color.parseColor("#008000"));
-                break;
-            case "yellow":
-                pefCard.setCardBackgroundColor(Color.parseColor("#FFD700"));
-                break;
-            case "red":
-                pefCard.setCardBackgroundColor(Color.parseColor("#FF0000"));
-                break;
+        else {
+            pefDisplay.setText("N/A");
+            pefDateTime.setText("No peak flow data to display");
         }
     }
 
@@ -235,26 +208,10 @@ public class ChildHomeActivity extends AppCompatActivity {
 
         pefButton.setOnClickListener(v -> {
             editPEF.setVisibility(View.VISIBLE);
-            TextView editTextNumber = findViewById(R.id.editTextNumber);
+            EditText editTextNumber = findViewById(R.id.editTextNumber);
             editTextNumber.setOnFocusChangeListener((view, hasFocus) -> {
-                if (editTextNumber.hasFocus()) {
-                    // Uh;
-                } else {
-                    String text = editTextNumber.getText().toString();
-                    int peakFlowValue;
-                    if (!text.isEmpty()) {
-                        peakFlowValue = Integer.parseInt(text);
-                        LocalDateTime submitTime = null;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            submitTime = LocalDateTime.now();
-                        }
-
-                        if (submitTime != null) {
-                            PeakFlow pef = new PeakFlow(peakFlowValue, submitTime);
-                            pef.computeZone(currentChild);
-                            hp.addPEFToLog(pef);
-                        }
-                    }
+                if (!editTextNumber.hasFocus()) {
+                    savePeakFlowEntry(editTextNumber);
                 }
             });
         });
@@ -363,35 +320,7 @@ public class ChildHomeActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("ScheduleExactAlarm")
-    private void setListeners() {
-        sosButton.setOnClickListener(v -> {
-            // FIX: Add null check
-            if (currentChild == null) {
-                Toast.makeText(this, "Please wait while data loads", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            Intent intent = new Intent(this, TriageActivity.class);
-            intent.putExtra("id", currentChild.getId());
-            startActivity(intent);
-            scheduleCheckupNotification();
-        });
-
-        pefButton.setOnClickListener(v -> {
-            editPEF.setVisibility(View.VISIBLE);
-            pefButton.setVisibility(View.GONE);
-            TextView editTextNumber = findViewById(R.id.editTextNumber);
-            editTextNumber.requestFocus();
-
-            editTextNumber.setOnFocusChangeListener((view, hasFocus) -> {
-                if (!editTextNumber.hasFocus()) {
-                    savePeakFlowEntry(editTextNumber);
-                }
-            });
-        });
-    }
-
-    private void savePeakFlowEntry(TextView editTextNumber) {
+    private void savePeakFlowEntry(EditText editTextNumber) {
         String text = editTextNumber.getText().toString();
 
         if (text.isEmpty()) {

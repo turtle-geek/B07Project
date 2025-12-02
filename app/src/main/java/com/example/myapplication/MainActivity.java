@@ -5,7 +5,7 @@ import android.widget.Toast;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myapplication.auth.LoginPage;
+import com.example.myapplication.auth.LogInModule.LoginPage;
 import com.example.myapplication.callbacks.RoleCallback;
 import com.example.myapplication.ui.ChildUI.ChildHomeActivity;
 import com.example.myapplication.ui.Onboarding;

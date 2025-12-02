@@ -54,7 +54,7 @@
         </activity>
 
         <activity
-            android:name=".auth.LoginPage"
+            android:name=".auth.LogInModule.LoginPage"
             android:exported="true" />
 
         <activity

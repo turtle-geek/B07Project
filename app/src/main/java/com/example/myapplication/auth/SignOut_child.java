@@ -22,6 +22,8 @@ import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.auth.LogInModule.LoginPage;
+import com.example.myapplication.sosButtonResponse;
 import com.example.myapplication.ui.ChildUI.ChildHomeActivity;
 import com.example.myapplication.ui.ChildUI.ChildManagement;
 import com.example.myapplication.ui.ChildUI.TriageAndResponse.HomeStepsRecovery;
@@ -46,7 +48,7 @@ public class SignOut_child extends AppCompatActivity {
 
     private CardView medicationHistoryCard, inviteCard, reportCard;
     private Button logoutButton;
-    private ImageButton profilePicture;
+    private ImageButton profilePicture, sosButton;
     private TextView userNameText, userEmailText;
     private BottomNavigationView bottomNavigationView;
 
@@ -72,6 +74,7 @@ public class SignOut_child extends AppCompatActivity {
         userNameText = findViewById(R.id.userNameText);
         userEmailText = findViewById(R.id.userEmailText);
         bottomNavigationView = findViewById(R.id.menuBar);
+        sosButton = findViewById(R.id.sosButton);
 
         // Get current user
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -102,6 +105,13 @@ public class SignOut_child extends AppCompatActivity {
                 startActivity(intent);
             });
         }
+
+        // SOS Button
+        sosButton.setOnClickListener(v -> {
+            sosButtonResponse action = new sosButtonResponse();
+            action.response(currentUserId, this);
+        });
+
 
         if (inviteCard != null) {
             inviteCard.setOnClickListener(v -> {
