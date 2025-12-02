@@ -1,14 +1,18 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.Inventory;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.text.TextWatcher;
 import android.text.Editable;
+
+import com.example.myapplication.sosButtonResponse;
+import com.example.myapplication.ui.ParentUI.ParentTutorial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.example.myapplication.R;
 import android.app.DatePickerDialog;
@@ -22,6 +26,9 @@ import java.util.Calendar;
 import com.example.myapplication.health.*;
 import com.example.myapplication.models.*;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.myapplication.models.*;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import android.util.Log;
 
 public class InventoryUsage extends AppCompatActivity {
@@ -29,7 +36,7 @@ public class InventoryUsage extends AppCompatActivity {
     private static final String TAG = "InventoryUsage";
     private TextInputEditText etDate, etTime, etDosage;
     private Button btnSaveMedicine;
-    private ImageButton btnBack;
+    private ImageButton btnBack, sosButton;
     private MedicineLabel label;
     private Child child;
     private FirebaseFirestore db;
@@ -69,6 +76,7 @@ public class InventoryUsage extends AppCompatActivity {
         etDosage = findViewById(R.id.etDosage);
         btnSaveMedicine = findViewById(R.id.btnSaveMedicine);
         btnBack = findViewById(R.id.btnBack);
+        sosButton = findViewById(R.id.sosButton);
 
         // Get label with null check
         String labelString = getIntent().getStringExtra("label");
@@ -116,11 +124,11 @@ public class InventoryUsage extends AppCompatActivity {
             finish();
         });
 
-        // --- Date/time pickers ---
+        // date time check
         etDate.setOnClickListener(v -> showDatePicker());
         etTime.setOnClickListener(v -> showTimePicker());
 
-        // --- Save button ---
+        // save button
         btnSaveMedicine.setOnClickListener(v -> {
             Log.d(TAG, "Save button clicked");
 
@@ -194,6 +202,29 @@ public class InventoryUsage extends AppCompatActivity {
                         "Error: " + e.getMessage(),
                         android.widget.Toast.LENGTH_LONG).show();
             }
+        });
+
+        // SOS Button
+        String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(id)
+                .get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String role = documentSnapshot.getString("role");
+                        if ("parents".equals(role)) {
+                            sosButton.setVisibility(View.GONE);
+                            return;
+                        } else if ("child".equals(role)) {
+                            sosButton.setVisibility(View.VISIBLE);
+                            return;
+                        }
+                    }
+                });
+        sosButton.setOnClickListener(v -> {
+            sosButtonResponse action = new sosButtonResponse();
+            action.response(id, this);
         });
 
         Log.d(TAG, "onCreate completed");
@@ -288,8 +319,6 @@ public class InventoryUsage extends AppCompatActivity {
             return false;
         }
     }
-
-    // --- Date and Time Pickers ---
 
     private void showDatePicker() {
         Calendar cal = Calendar.getInstance();

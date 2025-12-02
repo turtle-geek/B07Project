@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ParentUI;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
+import com.example.myapplication.ui.ChildUI.StreakManagement;
+import com.example.myapplication.ui.Inventory.InventoryLog;
+import com.example.myapplication.ui.Inventory.InventoryManagement;
+import com.example.myapplication.ui.ShareHealthProfileActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ParentChildDetails extends AppCompatActivity {

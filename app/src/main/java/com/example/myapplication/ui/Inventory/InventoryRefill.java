@@ -1,12 +1,15 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.Inventory;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.text.TextWatcher;
 import android.text.Editable;
+
+import com.example.myapplication.sosButtonResponse;
 import com.google.android.material.textfield.TextInputEditText;
 import com.example.myapplication.R;
 import android.app.DatePickerDialog;
@@ -18,13 +21,15 @@ import java.util.Calendar;
 
 import com.example.myapplication.health.*;
 import com.example.myapplication.models.*;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class InventoryRefill extends AppCompatActivity {
 
     private TextInputEditText etPurchaseDate, etExpiryDate, etCapacity, etRemainingAmount;
     private Button btnSave;
-    private ImageButton btnBack;
+    private ImageButton btnBack, sosButton;
     private MedicineLabel label;
     private Child child;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -53,6 +58,7 @@ public class InventoryRefill extends AppCompatActivity {
         etRemainingAmount = findViewById(R.id.etRemainingAmount);
         btnSave = findViewById(R.id.btnSave);
         btnBack = findViewById(R.id.btnBack);
+        sosButton = findViewById(R.id.sosButton);
 
         label = MedicineLabel.valueOf(getIntent().getStringExtra("label"));
 
@@ -105,6 +111,29 @@ public class InventoryRefill extends AppCompatActivity {
                     .addOnFailureListener(e -> {
                         Toast.makeText(this, "Failed to save changes", Toast.LENGTH_SHORT).show();
                     });
+        });
+
+        // SOS Button
+        String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(id)
+                .get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String role = documentSnapshot.getString("role");
+                        if ("parents".equals(role)) {
+                            sosButton.setVisibility(View.GONE);
+                            return;
+                        } else if ("child".equals(role)) {
+                            sosButton.setVisibility(View.VISIBLE);
+                            return;
+                        }
+                    }
+                });
+        sosButton.setOnClickListener(v -> {
+            sosButtonResponse action = new sosButtonResponse();
+            action.response(id, this);
         });
     }
 

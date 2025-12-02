@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/testbg2"
-    tools:context=".ui.HomeStepsRecovery">
+    tools:context=".ui.ChildUI.TriageAndResponse.HomeStepsRecovery">
 
     <ImageView
         android:id="@+id/backgroundImage"
@@ -40,6 +40,16 @@
             android:gravity="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"/>
+
+        <!-- SOS Button -->
+        <ImageButton
+            android:id="@+id/sosButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:padding="1dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/sos_button" />
 
     </LinearLayout>
 

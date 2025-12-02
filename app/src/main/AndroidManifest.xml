@@ -16,23 +16,23 @@
         android:theme="@style/Theme.MyApplication"
         tools:replace="android:label,android:icon">
         <activity
-            android:name=".ui.FullScreenEscalationNotification"
+            android:name=".ui.ChildUI.TriageAndResponse.FullScreenEscalationNotification"
             android:exported="false" />
         <activity
-            android:name=".ui.CheckupResponseActivity"
+            android:name=".ui.ChildUI.CheckupResponseActivity"
             android:exported="false" />
 
         <receiver
             android:name=".CheckupNotificationReceiver"
             android:exported="false" />
         <activity
-            android:name=".ui.HomeStepsRecovery"
+            android:name=".ui.ChildUI.TriageAndResponse.HomeStepsRecovery"
             android:exported="false" />
         <activity
-            android:name=".ui.TriageDecisionCard"
+            android:name=".ui.ChildUI.TriageAndResponse.TriageDecisionCard"
             android:exported="false" />
         <activity
-            android:name=".ui.TriageActivity"
+            android:name=".ui.ChildUI.TriageAndResponse.TriageActivity"
             android:exported="false" />
         <activity
             android:name=".ui.PeakFlowInput"
@@ -48,7 +48,7 @@
         </activity>
 
         <activity
-            android:name=".auth.LoginPage"
+            android:name=".auth.LogInModule.LogInViewActivity"
             android:exported="true" />
 
         <activity
@@ -72,15 +72,15 @@
             android:exported="true" />
 
         <activity
-            android:name=".ui.ChildHomeActivity"
+            android:name=".ui.ChildUI.ChildHomeActivity"
             android:exported="true" />
 
         <activity
-            android:name=".ui.ParentHomeActivity"
+            android:name=".ui.ParentUI.ParentHomeActivity"
             android:exported="true" />
 
         <activity
-            android:name=".ui.ProviderHomeActivity"
+            android:name=".ui.ProviderUI.ProviderHomeActivity"
             android:exported="true" />
         <activity
             android:name=".ui.DailyCheckInActivity"
@@ -93,35 +93,35 @@
         </activity>
 
         <activity
-            android:name=".ui.ParentManagement"
+            android:name=".ui.ParentUI.ParentManagement"
             android:exported="false" />
 
         <activity
-            android:name=".ui.ParentChildDetails"
+            android:name=".ui.ParentUI.ParentChildDetails"
             android:exported="false" />
 
         <activity
-            android:name=".ui.ParentChildEdit"
+            android:name=".ui.ParentUI.ParentChildEdit"
             android:exported="false" />
 
         <activity
-            android:name=".ui.ParentRegisterChild"
+            android:name=".ui.ParentUI.ParentRegisterChild"
             android:exported="true" />
 
         <activity
-            android:name=".ui.ParentRegisterLogin"
+            android:name=".ui.ParentUI.ParentRegisterLogin"
             android:exported="true" />
 
         <activity
-            android:name=".ui.ChildManagement"
+            android:name=".ui.ChildUI.ChildManagement"
             android:exported="false" />
 
         <activity
-            android:name=".ui.ChildChildDetails"
+            android:name=".ui.ChildUI.ChildChildDetails"
             android:exported="false" />
 
         <activity
-            android:name=".ui.InventoryLog"
+            android:name=".ui.Inventory.InventoryLog"
             android:exported="false" />
 
         <activity
@@ -129,19 +129,19 @@
             android:exported="true" />
 
         <activity
-            android:name=".ui.InventoryManagement"
+            android:name=".ui.Inventory.InventoryManagement"
             android:exported="false" />
 
         <activity
-            android:name=".ui.InventoryRefill"
+            android:name=".ui.Inventory.InventoryRefill"
             android:exported="false" />
 
         <activity
-            android:name=".ui.InventoryUsage"
+            android:name=".ui.Inventory.InventoryUsage"
             android:exported="false" />
 
         <activity
-            android:name=".ui.StreakManagement"
+            android:name=".ui.ChildUI.StreakManagement"
             android:exported="false" />
 
 

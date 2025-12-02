@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ParentUI;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,7 +27,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
