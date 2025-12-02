@@ -49,15 +49,15 @@ public class ParentHomeActivity extends AppCompatActivity {
     private CardView pefCard, statusCard2, statusCard3, graphCard;
     private LinearLayout childSelectorLayout;
 
-    // Trend Snippet
     private LinearLayout trendContainer;
     private TrendSnippet trendSnippet;
 
-    // Child data
     private List<ChildInfo> childrenList;
     private String selectedChildId = null;
     private String selectedChildNameStr = "Select a child";
     private int selectedChildPersonalBest = 400;
+
+    private String parentUserId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,36 +68,32 @@ public class ParentHomeActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         childrenList = new ArrayList<>();
 
-        // Initialize views
+        parentUserId = getIntent().getStringExtra("id");
+        if (parentUserId == null) {
+            Log.e(TAG, "Parent User ID is missing from Intent. Redirecting to router.");
+            Toast.makeText(this, "Session error, please sign in.", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         initializeViews();
 
-        // Set up bottom navigation
         if (bottomNavigationView != null) {
             setupBottomNavigation();
         }
 
-        // Set current date
         if (todayDate != null) {
             setCurrentDate();
         }
 
-        // Set up button listeners
         setupButtonListeners();
-
-        // Set up card listeners
         setupCardListeners();
-
-        // Setup child selector
         setupChildSelector();
-
-        // Setup trend snippet
         setupTrendSnippet();
 
-        // Load children list
         loadChildrenList();
-
-        // Display Peak Flow data
-        displayTodayPeakFlow();
     }
 
     private void initializeViews() {
@@ -123,17 +119,14 @@ public class ParentHomeActivity extends AppCompatActivity {
 
     private void loadChildrenList() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            Log.w(TAG, "No user logged in");
+        if (currentUser == null || parentUserId == null) {
+            Log.w(TAG, "Cannot load children: parentUserId is null.");
             return;
         }
 
-        String parentId = currentUser.getUid();
-
-        // Query all children of this parent
         db.collection("users")
                 .whereEqualTo("role", "child")
-                .whereEqualTo("parentID", parentId)
+                .whereEqualTo("parentID", parentUserId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     childrenList.clear();
@@ -149,7 +142,6 @@ public class ParentHomeActivity extends AppCompatActivity {
 
                     Log.d(TAG, "Loaded " + childrenList.size() + " children");
 
-                    // If only one child, auto-select them
                     if (childrenList.size() == 1) {
                         ChildInfo child = childrenList.get(0);
                         selectedChildId = child.id;
@@ -161,14 +153,13 @@ public class ParentHomeActivity extends AppCompatActivity {
                         }
 
                         loadPeakFlowData();
+                        displayTodayPeakFlow();
                     } else if (childrenList.isEmpty()) {
-                        // No children - show empty state
                         if (selectedChildName != null) {
                             selectedChildName.setText("No children registered");
                         }
                         loadTestData();
                     } else {
-                        // Multiple children - show prompt to select
                         if (selectedChildName != null) {
                             selectedChildName.setText("Select a child");
                         }
@@ -187,7 +178,6 @@ public class ParentHomeActivity extends AppCompatActivity {
             return;
         }
 
-        // Create array of child names
         List<String> names = new ArrayList<>();
         for (ChildInfo child : childrenList) {
             names.add(child.name);
@@ -198,19 +188,17 @@ public class ParentHomeActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Child");
         builder.setItems(nameArray, (dialog, which) -> {
-            // Specific child selected
             ChildInfo selectedChild = childrenList.get(which);
             selectedChildId = selectedChild.id;
             selectedChildNameStr = selectedChild.name;
             selectedChildPersonalBest = selectedChild.personalBest;
 
-            // Update UI
             if (selectedChildName != null) {
                 selectedChildName.setText(selectedChildNameStr);
             }
 
-            // Reload data for selected child
             loadPeakFlowData();
+            displayTodayPeakFlow();
 
             Toast.makeText(this, "Showing data for: " + selectedChildNameStr, Toast.LENGTH_SHORT).show();
         });
@@ -219,6 +207,13 @@ public class ParentHomeActivity extends AppCompatActivity {
     }
 
     private void displayTodayPeakFlow() {
+        if (selectedChildId == null || selectedChildId.isEmpty()) {
+            Log.w(TAG, "Cannot display peak flow: selectedChildId is null or empty.");
+            pefDisplay.setText("---");
+            pefDateTime.setText("No child selected");
+            return;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").document(selectedChildId).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -228,23 +223,24 @@ public class ParentHomeActivity extends AppCompatActivity {
                     if (child == null) return;
 
                     HealthProfile hp = child.getHealthProfile();
-                    if (hp == null || hp.getPEFLog() == null || hp.getPEFLog().isEmpty())
+                    if (hp == null || hp.getPEFLog() == null || hp.getPEFLog().isEmpty()) {
+                        pefDisplay.setText("N/A");
+                        pefDateTime.setText("No PEF data");
                         return;
+                    }
 
-                    // Get the LAST entry in the PEF log
                     ArrayList<PeakFlow> log = hp.getPEFLog();
                     PeakFlow latest = log.get(log.size() - 1);
 
                     updatePeakFlowUI(latest);
                 })
                 .addOnFailureListener(e ->
-                        Log.e("PeakFlow", "Error loading peak flow", e));
+                        Log.e(TAG, "Error loading peak flow for " + selectedChildId, e));
     }
 
     private void updatePeakFlowUI(PeakFlow todayPeakFlow) {
         pefDisplay.setText(String.valueOf(todayPeakFlow.getPeakFlow()));
 
-        // Convert time format
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a, MMM d");
         pefDateTime.setText(todayPeakFlow.getTime().format(formatter));
 
@@ -262,10 +258,8 @@ public class ParentHomeActivity extends AppCompatActivity {
     }
 
     private void setupTrendSnippet() {
-        // Create trend snippet
         trendSnippet = new TrendSnippet(this);
 
-        // Add to container
         if (trendContainer != null) {
             trendContainer.removeAllViews();
             trendContainer.addView(trendSnippet);
@@ -274,19 +268,17 @@ public class ParentHomeActivity extends AppCompatActivity {
 
     private void loadPeakFlowData() {
         if (selectedChildId == null) {
-            Log.w(TAG, "No child selected");
+            Log.w(TAG, "No child selected for trend data load");
             if (trendSnippet != null) {
                 trendSnippet.showLoading();
             }
             return;
         }
 
-        // Show loading
         if (trendSnippet != null) {
             trendSnippet.showLoading();
         }
 
-        // Load data for the selected child
         List<PeakFlow> peakFlows = new ArrayList<>();
         loadChildPeakFlowData(selectedChildId, selectedChildPersonalBest, peakFlows, () -> {
             updateTrendSnippet(peakFlows);
@@ -315,7 +307,6 @@ public class ParentHomeActivity extends AppCompatActivity {
 
                                 PeakFlow pf = new PeakFlow(peakFlowValue, localDateTime);
 
-                                // Compute zone based on personal best
                                 if (peakFlowValue >= 0.8 * personalBest) {
                                     pf.setZone("green");
                                 } else if (peakFlowValue >= 0.5 * personalBest) {
@@ -341,7 +332,6 @@ public class ParentHomeActivity extends AppCompatActivity {
     private void updateTrendSnippet(List<PeakFlow> peakFlows) {
         if (trendSnippet != null) {
             if (peakFlows.isEmpty()) {
-                // Show test data if no real data
                 loadTestData();
             } else {
                 trendSnippet.setData(peakFlows);
@@ -463,12 +453,16 @@ public class ParentHomeActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
+
+            if (parentUserId != null && childrenList.isEmpty()) {
+                loadChildrenList();
+            }
+
         } catch (Exception e) {
             Log.e(TAG, "Error in onStart", e);
         }
     }
 
-    // Inner class to hold child information
     private static class ChildInfo {
         String id;
         String name;
