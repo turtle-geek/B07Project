@@ -24,7 +24,7 @@ public class TriageDecisionCard extends AppCompatActivity {
     ImageView yellow_card, red_card;
     Button cancel_button, yes_button, sos_button;
     ProgressBar progressBar;
-    ConstraintLayout NonSos, SOS;
+    ConstraintLayout NonSos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,6 @@ public class TriageDecisionCard extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
 
         NonSos = findViewById(R.id.NonSOS);
-        SOS = findViewById(R.id.SOS);
     }
 
     void setListeners(){
@@ -91,7 +90,7 @@ public class TriageDecisionCard extends AppCompatActivity {
     }
 
     void SOSDecision(){
-        SOS.setVisibility(View.VISIBLE);
+        red_card.setVisibility(View.VISIBLE);
         NonSos.setVisibility(View.GONE);
         progressBar.setMax(100);
         new CountDownTimer(10000, 100) {
@@ -118,7 +117,7 @@ public class TriageDecisionCard extends AppCompatActivity {
     }
 
     void nonSOSDecision(){
-        SOS.setVisibility(View.GONE);
+        red_card.setVisibility(View.GONE);
         NonSos.setVisibility(View.VISIBLE);
         startActivity(new Intent(this, HomeStepsRecovery.class));
     }

@@ -5,7 +5,7 @@ import android.widget.Toast;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myapplication.auth.LogInModule.LoginPage;
+import com.example.myapplication.auth.LogInModule.LogInViewActivity;
 import com.example.myapplication.callbacks.RoleCallback;
 import com.example.myapplication.ui.ChildUI.ChildHomeActivity;
 import com.example.myapplication.ui.Onboarding;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (currentUser == null) {
             // No user logged in, redirect to LoginPage
-            Intent intent = new Intent(this, LoginPage.class);
+            Intent intent = new Intent(this, LogInViewActivity.class);
             startActivity(intent);
             finish();
         } else {

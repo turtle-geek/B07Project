@@ -22,7 +22,7 @@ import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.auth.LogInModule.LoginPage;
+import com.example.myapplication.auth.LogInModule.LogInViewActivity;
 import com.example.myapplication.sosButtonResponse;
 import com.example.myapplication.ui.ChildUI.ChildHomeActivity;
 import com.example.myapplication.ui.ChildUI.ChildManagement;
@@ -324,7 +324,7 @@ public class SignOut_child extends AppCompatActivity {
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
 
             // Navigate to Login page
-            Intent intent = new Intent(this, LoginPage.class);
+            Intent intent = new Intent(this, LogInViewActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
