@@ -276,10 +276,16 @@ public class ChildHomeActivity extends AppCompatActivity {
     private void setListeners() {
         sosButton = findViewById(R.id.sosButton);
         sosButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, TriageActivity.class);
-            intent.putExtra("id", currentChild.getId());
-            startActivity(intent);
-            scheduleCheckupNotification();
+            // Use selectedChildId instead of currentChild to avoid null pointer
+            if (selectedChildId != null) {
+                Intent intent = new Intent(this, TriageActivity.class);
+                intent.putExtra("id", selectedChildId);
+                startActivity(intent);
+                scheduleCheckupNotification();
+            } else {
+                Toast.makeText(this, "Unable to load child data. Please try again.", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "SOS button clicked but selectedChildId is null");
+            }
         });
 
         pefButton.setOnClickListener(v -> {
