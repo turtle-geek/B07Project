@@ -1,149 +1,142 @@
 package com.example.myapplication;
 
 import android.content.Intent;
-import android.widget.Toast;
 import android.os.Bundle;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.auth.AuthManager;
+import com.example.myapplication.auth.SessionManager;
 import com.example.myapplication.auth.LoginPage;
-import com.example.myapplication.callbacks.RoleCallback;
 import com.example.myapplication.ui.ChildHomeActivity;
 import com.example.myapplication.ui.Onboarding;
 import com.example.myapplication.ui.ParentHomeActivity;
 import com.example.myapplication.ui.ProviderHomeActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import androidx.activity.EdgeToEdge;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.MemoryCacheSettings;
 
+public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
 
-public class MainActivity extends AppCompatActivity {
     private FirebaseAuth fAuth;
-    private FirebaseFirestore fStore;
-    private FirebaseUser currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        AuthManager.signOut();
+
+        // Remove firebase data persistence
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setLocalCacheSettings(
+                        MemoryCacheSettings.newBuilder().build()
+                )
+                .build();
+
+        db.setFirestoreSettings(settings);
 
         fAuth = FirebaseAuth.getInstance();
-        fStore = FirebaseFirestore.getInstance();
 
-        // Check if user is logged in
-        currentUser = fAuth.getCurrentUser();
+        checkAndRouteUser();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        AuthManager.attachAuthStateListener(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AuthManager.detachAuthStateListener(this);
+    }
+
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        checkAndRouteUser();
+    }
+
+    private void checkAndRouteUser() {
+        FirebaseUser currentUser = fAuth.getCurrentUser();
 
         if (currentUser == null) {
-            // No user logged in, redirect to LoginPage
-            Intent intent = new Intent(this, LoginPage.class);
-            startActivity(intent);
-            finish();
-        } else {
-            // User is logged in, check their role and redirect to appropriate page
-            checkRole();
-        }
-    }
-    private void checkRole(){
-        //if user does not exist
-        if(currentUser == null){
-            Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show();
+            if (!isFinishing()) {
+                Intent intent = new Intent(this, LoginPage.class);
+                startActivity(intent);
+                finish();
+            }
             return;
         }
 
-        String userId = currentUser.getUid();
+        if (SessionManager.getInstance().hasUser()) {
+            checkRoleAndOnboarding(currentUser.getUid());
+        } else {
+            checkRoleAndOnboarding(currentUser.getUid());
+        }
+    }
 
-        // use users' id to find their own documents
-        // if document exists, check if onboarding is completed, then find users' role
-        //If system cannot operate, show failure messages
-        DocumentReference userDoc = fStore.collection("users").document(userId);
-        userDoc.get().addOnSuccessListener(documentInfo -> {
+    private void checkRoleAndOnboarding(String userId) {
+        FirebaseFirestore.getInstance().collection("users").document(userId).get()
+                .addOnSuccessListener(documentInfo -> {
                     if(documentInfo.exists()){
-                        // Check if onboarding is completed
                         Boolean onboardingCompleted = documentInfo.getBoolean("onboardingCompleted");
 
                         if (onboardingCompleted == null || !onboardingCompleted) {
-                            // Onboarding not completed, redirect to onboarding
                             Intent intent = new Intent(this, Onboarding.class);
                             startActivity(intent);
                             finish();
                         } else {
-                            // Onboarding completed, proceed to appropriate home page
                             String role = documentInfo.getString("role");
-                            landonSpecificPage(role);
-                        }
-                        String role = documentInfo.getString("role");
-                        if (role != null)
-                            landonSpecificPage(role);
-                        else{
-                            Toast.makeText(this, "Cannot find user role", Toast.LENGTH_SHORT).show();
-                            // Handle error internally:
+                            if (role != null) {
+                                landonSpecificPage(role);
+                            } else {
+                                Toast.makeText(this, "Cannot find user role", Toast.LENGTH_SHORT).show();
+                                AuthManager.signOut();
+                            }
                         }
                     }
                     else{
-                        Toast.makeText(this, "Cannot find user information", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Cannot find user information, starting onboarding.", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(this, Onboarding.class);
+                        startActivity(intent);
+                        finish();
                     }
                 })
                 .addOnFailureListener(exception -> {
-                    Toast.makeText(this, "Cannot process: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Cannot process Firestore data: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                    AuthManager.signOut();
                 });
     }
 
-    // fetches the user role
-    private void fetchUserRole(RoleCallback callback) {
-        // These two lines are often already initialized in onCreate, but it's safer to ensure they are available here if not passed in.
-        FirebaseAuth fAuth = FirebaseAuth.getInstance();
-        FirebaseFirestore fStore = FirebaseFirestore.getInstance();
-
-        FirebaseUser user = fAuth.getCurrentUser();
-        if (user == null) {
-            callback.onFailure("User is not logged in.");
-            return;
-        }
-        String userId = user.getUid();
-
-        // Reference the user document in Firestore
-        DocumentReference userDoc = fStore.collection("users").document(userId);
-
-        // Fetch the document and extract the role asynchronously
-        userDoc.get().addOnSuccessListener(documentInfo -> {
-                    if (documentInfo.exists()) {
-                        String role = documentInfo.getString("role");
-                        if (role != null) {
-                            // SUCCESS: Pass the role to the onRoleFetched method of the callback
-                            callback.onRoleFetched(role);
-                        } else {
-                            callback.onFailure("User document found, but 'role' field is missing.");
-                        }
-                    } else {
-                        callback.onFailure("Cannot find user information in Firestore.");
-                    }
-                })
-                .addOnFailureListener(exception -> {
-                    // FAILURE: Pass the error message to the onFailure method of the callback
-                    callback.onFailure("Firestore operation failed: " + exception.getMessage());
-                });
-    }
-
-    //helper function: depends on users' role, land user on their specific page
     private void landonSpecificPage(String role) {
         Intent intent;
+        String userId = fAuth.getCurrentUser().getUid();
+
         switch (role) {
+            case "Child":
             case "child":
                 intent = new Intent(this, ChildHomeActivity.class);
-                intent.putExtra("id", currentUser.getUid());
+                intent.putExtra("id", userId);
                 break;
+            case "Parent":
             case "parent":
                 intent = new Intent(this, ParentHomeActivity.class);
-                intent.putExtra("id", currentUser.getUid());
+                intent.putExtra("id", userId);
                 break;
+            case "Provider":
             case "provider":
                 intent = new Intent(this, ProviderHomeActivity.class);
-                intent.putExtra("id", currentUser.getUid());
+                intent.putExtra("id", userId);
                 break;
             default:
-                Toast.makeText(this, "Unknown Character", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Unknown Character Role: " + role, Toast.LENGTH_SHORT).show();
+                AuthManager.signOut();
                 return;
         }
         startActivity(intent);

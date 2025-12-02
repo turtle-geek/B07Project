@@ -42,9 +42,8 @@ public class Onboarding extends AppCompatActivity {
         // Set the content view to the current onboarding screen
         setContentView(onboardingLayouts[screenIndex]);
 
-        // Find the next button in the current layout (assuming each layout has a button)
-        // You may need to adjust the button ID based on your actual layouts
-        Button nextButton = findViewById(R.id.nextButton);
+        Button nextButton = findViewById(R.id.nextButton); // Find the button in the current layout
+
         if (nextButton != null) {
             nextButton.setOnClickListener(v -> {
                 if (currentScreen < onboardingLayouts.length - 1) {
@@ -57,31 +56,28 @@ public class Onboarding extends AppCompatActivity {
                 }
             });
         }
-
-        // Optional: Add skip button functionality if your layouts have one
-        Button skipButton = findViewById(R.id.nextButton);
-        if (skipButton != null) {
-            skipButton.setOnClickListener(v -> finishOnboarding());
-        }
     }
 
     private void finishOnboarding() {
-        // Mark onboarding as completed in Firestore
-        String userId = fAuth.getCurrentUser().getUid();
-        fStore.collection("users").document(userId)
-                .update("onboardingCompleted", true)
-                .addOnSuccessListener(aVoid -> {
-                    // Navigate to MainActivity (which will redirect to appropriate home)
-                    Intent intent = new Intent(Onboarding.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    // Even if update fails, proceed to MainActivity
-                    Intent intent = new Intent(Onboarding.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                });
+        // Check for authenticated user before trying to access UID
+        if (fAuth.getCurrentUser() != null) {
+            // Mark onboarding as completed in Firestore
+            String userId = fAuth.getCurrentUser().getUid();
+            fStore.collection("users").document(userId)
+                    .update("onboardingCompleted", true)
+                    .addOnSuccessListener(aVoid -> navigateToMain())
+                    .addOnFailureListener(e -> navigateToMain()); // Proceed even if update fails
+        } else {
+            // Handle case where user is not logged in yet
+            navigateToMain();
+        }
+    }
+
+    private void navigateToMain() {
+        // Navigate to MainActivity
+        Intent intent = new Intent(Onboarding.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
