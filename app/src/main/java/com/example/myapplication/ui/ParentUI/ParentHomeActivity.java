@@ -59,10 +59,11 @@ public class ParentHomeActivity extends AppCompatActivity {
     // NOTE: TrendSnippet must exist in your project
     private TrendSnippet trendSnippet;
 
-    private List<ChildInfo> childrenList;
+    // Child data
+    private List<Child> childrenList;
     private String selectedChildId = null;
     private String selectedChildNameStr = "Select a child";
-    private int selectedChildPersonalBest = 400;
+    private int selectedChildPersonalBest;
 
     private String parentUserId = null;
 
@@ -146,26 +147,29 @@ public class ParentHomeActivity extends AppCompatActivity {
                     childrenList.clear();
 
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String childId = doc.getId();
-                        String childName = doc.getString("name");
-                        Integer personalBest = doc.getLong("PEF_PB") != null ?
-                                doc.getLong("PEF_PB").intValue() : 400;
-
-                        childrenList.add(new ChildInfo(childId, childName, personalBest));
+                        Child currentChild = doc.toObject(Child.class);
+                        childrenList.add(currentChild);
                     }
 
                     Log.d(TAG, "Loaded " + childrenList.size() + " children");
 
+                    // If only one child, auto-select them
                     if (childrenList.size() >= 1) {
                         // FIX: Automatically select the first child if none is selected
-                        ChildInfo childToSelect = childrenList.get(0);
-                        selectedChildId = childToSelect.id;
-                        selectedChildNameStr = childToSelect.name;
-                        selectedChildPersonalBest = childToSelect.personalBest;
+                        Child child = childrenList.get(0);
+                        selectedChildId = child.getId();
+                        selectedChildNameStr = child.getName();
+
+                        HealthProfile hp = child.getHealthProfile();
+                        if (hp!= null)
+                            selectedChildPersonalBest = hp.getPEF_PB();
+                        else
+                            selectedChildPersonalBest = 400;
 
                         if (selectedChildName != null) {
                             selectedChildName.setText(selectedChildNameStr);
                         }
+
 
                         // Load data for the selected child
                         loadChildDataAndDisplayUI();
@@ -191,8 +195,8 @@ public class ParentHomeActivity extends AppCompatActivity {
         }
 
         List<String> names = new ArrayList<>();
-        for (ChildInfo child : childrenList) {
-            names.add(child.name);
+        for (Child child : childrenList) {
+            names.add(child.getName());
         }
 
         String[] nameArray = names.toArray(new String[0]);
@@ -200,10 +204,9 @@ public class ParentHomeActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Child");
         builder.setItems(nameArray, (dialog, which) -> {
-            ChildInfo selectedChild = childrenList.get(which);
-            selectedChildId = selectedChild.id;
-            selectedChildNameStr = selectedChild.name;
-            selectedChildPersonalBest = selectedChild.personalBest;
+            // Specific child selected
+            Child selectedChild = childrenList.get(which);
+            selectedChildNameStr = selectedChild.getName();
 
             if (selectedChildName != null) {
                 selectedChildName.setText(selectedChildNameStr);
@@ -212,7 +215,8 @@ public class ParentHomeActivity extends AppCompatActivity {
             // Load data for the newly selected child
             loadChildDataAndDisplayUI();
 
-            Toast.makeText(this, "Showing data for: " + selectedChildNameStr, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Showing data for: " + selectedChildNameStr,
+                    Toast.LENGTH_SHORT).show();
         });
 
         builder.show();

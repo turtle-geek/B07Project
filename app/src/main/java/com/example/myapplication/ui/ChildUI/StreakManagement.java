@@ -21,8 +21,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class StreakManagement extends AppCompatActivity {
 
     private TextView tvControllerStreak, tvTechniqueStreak, tvRescueMonthly;
-    private Button btnThresholdConfig;
     private ImageButton btnBack, sosbButton;
+    private Button btnThresholdConfig;
 
     private ImageView badgeController, badgeTechnique, badgeRescue;
 
