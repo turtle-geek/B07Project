@@ -56,13 +56,9 @@ public class InventoryLog extends AppCompatActivity {
             currentLabel = isChecked ? MedicineLabel.RESCUE : MedicineLabel.CONTROLLER;
             updateLogs();
         });
-
-        // Initial logs update
-        updateLogs();
     }
 
     private void updateLogs() {
-        loadChild();
         containerLogs.removeAllViews();
         ArrayList<MedicineUsageLog> logs = (currentLabel == MedicineLabel.CONTROLLER)
                 ? child.getInventory().getControllerLog()
