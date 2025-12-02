@@ -85,8 +85,11 @@ public class MedicineUsageLog {
         String ratingText = (rating != null) ? ", Rating: " + rating : "";
 
         if (techniqueQuality != TechniqueQuality.NA)
-            return "Medicine: " + medicine.toString() + ", Dosage: " + dosageAmount + ratingText + ", Timestamp: " + timestamp;
+            return "Dosage: " + dosageAmount + ratingText + ", Timestamp: " + timestamp;
         else
-            return "Medicine: " + medicine.toString() + ", Dosage: " + dosageAmount + ratingText + ", Timestamp: " + timestamp + ", Controller Quality: " + techniqueQuality;
+            return "Dosage: " + dosageAmount + ratingText + ", Timestamp: " + timestamp + ", Controller Quality: " + techniqueQuality;
     }
+
+    // The original code had error in medicine.toString() (name of medicine)
+    // Directly removed that in the log since controller and rescue are separated
 }
