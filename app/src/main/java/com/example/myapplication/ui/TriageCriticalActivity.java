@@ -18,7 +18,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.myapplication.R;
 
-public class TriageDecisionCard extends AppCompatActivity {
+// Renamed class for clarity, using the general function
+public class TriageDecisionCritical extends AppCompatActivity {
 
     TextView liabilityWarning, liabilityWarning2, textView, textView2, textView3, textView4;
     ImageView yellow_card, red_card;
@@ -26,11 +27,14 @@ public class TriageDecisionCard extends AppCompatActivity {
     ProgressBar progressBar;
     ConstraintLayout NonSos, SOS;
 
+    private CountDownTimer call911Timer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_triage_decision_card);
+        // Assuming your layout file is named activity_triage_decision_card.xml
+        setContentView(R.layout.activity_triage_critical);
 
         bindViews();
 
@@ -53,22 +57,15 @@ public class TriageDecisionCard extends AppCompatActivity {
         });
     }
 
-
     void bindViews(){
         liabilityWarning = findViewById(R.id.liabilityWarning);
-        liabilityWarning2 = findViewById(R.id.liabilityWarning2);
 
         textView = findViewById(R.id.textView);
         textView2 = findViewById(R.id.textView2);
-        textView3 = findViewById(R.id.textView3);
-        textView4 = findViewById(R.id.textView4);
 
         red_card = findViewById(R.id.red_card);
-        yellow_card = findViewById(R.id.yellow_card);
 
         cancel_button = findViewById(R.id.cancel_button);
-        yes_button = findViewById(R.id.yes_button);
-        sos_button = findViewById(R.id.sos_button);
 
         progressBar = findViewById(R.id.progressBar);
 
@@ -78,39 +75,51 @@ public class TriageDecisionCard extends AppCompatActivity {
 
     void setListeners(){
         sos_button.setOnClickListener(v -> {
-            // TODO: CALL 911
-        });
-        cancel_button.setOnClickListener(v -> {
-            // 911 IS NOT CALLED
-            nonSOSDecision();
-        });
-        yes_button.setOnClickListener(v -> {
-            startActivity(new Intent(this, HomeStepsRecovery.class)); // code redundancy
+            // IMMEDIATE CALL 911 (If your layout has an explicit SOS Call Button)
+            // TODO: Implement actual phone call function here
+            if (call911Timer != null) {
+                call911Timer.cancel();
+            }
         });
 
+        cancel_button.setOnClickListener(v -> {
+            if (call911Timer != null) {
+                call911Timer.cancel();
+            }
+
+            nonSOSDecision();
+        });
+
+        yes_button.setOnClickListener(v -> {
+            startActivity(new Intent(this, HomeStepsRecovery.class));
+            finish();
+        });
     }
 
     void SOSDecision(){
         SOS.setVisibility(View.VISIBLE);
         NonSos.setVisibility(View.GONE);
         progressBar.setMax(100);
-        new CountDownTimer(10000, 100) {
-            /**
-             * Callback fired when the time is up.
-             */
+
+        call911Timer = new CountDownTimer(10000, 100) {
+
             @Override
             public void onFinish() {
                 progressBar.setProgress(100);
                 progressBar.setVisibility(View.GONE);
                 cancel_button.setVisibility(View.GONE);
-                // TODO: CALL 911
+                textView2.setText("CALLING 911...");
+                // TODO: Implement actual phone call function here
             }
 
             @Override
             public void onTick(long millisUntilFinished) {
-                int progressPercentage = (int) ((10000 - millisUntilFinished) / 100);
-                int secondsLeft = (int) (millisUntilFinished / 1000);
+                int totalDuration = 10000;
+                int progressPercentage = (int) (100 * (totalDuration - millisUntilFinished) / totalDuration);
+                int secondsLeft = (int) Math.ceil(millisUntilFinished / 1000.0);
+
                 progressBar.setProgress(progressPercentage);
+
                 String text = "CALLING 911 IN " + secondsLeft + " SECONDS";
                 textView2.setText(text);
             }
@@ -120,7 +129,13 @@ public class TriageDecisionCard extends AppCompatActivity {
     void nonSOSDecision(){
         SOS.setVisibility(View.GONE);
         NonSos.setVisibility(View.VISIBLE);
-        startActivity(new Intent(this, HomeStepsRecovery.class));
     }
 
+    @Override
+    protected void onDestroy() {
+        if (call911Timer != null) {
+            call911Timer.cancel();
+        }
+        super.onDestroy();
+    }
 }

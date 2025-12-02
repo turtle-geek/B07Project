@@ -78,7 +78,10 @@
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/warningBannerContainer"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -93,7 +96,7 @@
                 android:textColor="#000000"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="8dp"/>
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroup"
@@ -102,7 +105,8 @@
                 android:layout_marginBottom="8dp"
                 app:chipSpacing="8dp"
                 app:chipBackgroundColor="@color/chip_background_selector"
-                app:singleLine="false">
+                app:singleLine="false"
+                app:chipStrokeWidth="0dp">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip1"
@@ -113,7 +117,6 @@
                     android:text="Short breaths"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip2"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -123,7 +126,6 @@
                     android:text="Chest pain or tightness"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip3"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -133,7 +135,6 @@
                     android:text="Wheezing"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip4"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -143,7 +144,6 @@
                     android:text="Gasping for air"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip8"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -153,7 +153,6 @@
                     android:text="Nausea"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip5"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -163,7 +162,6 @@
                     android:text="Difficulty speaking"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip7"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -173,7 +171,6 @@
                     android:text="Severe sweating"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip6"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -183,7 +180,6 @@
                     android:text="Symptoms worsen when lying on back"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip9"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -193,7 +189,6 @@
                     android:text="I don't have an inhaler"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip10"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -206,6 +201,40 @@
 
             </com.google.android.material.chip.ChipGroup>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Any recent rescue attempts?"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <RadioGroup
+                android:id="@+id/rescueAttemptGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <RadioButton
+                    android:id="@+id/radioRescueYes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Yes"
+                    android:textSize="18sp"
+                    android:minHeight="48dp"
+                    android:layout_marginEnd="32dp"/>
+
+                <RadioButton
+                    android:id="@+id/radioRescueNo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No"
+                    android:textSize="18sp"
+                    android:minHeight="48dp"/>
+            </RadioGroup>
+
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/peakFlowToggleSwitch"
                 android:layout_width="match_parent"
@@ -214,7 +243,6 @@
                 android:textColor="#000000"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 app:thumbTint="#064200"
                 app:trackTint="#757575"/>
@@ -227,25 +255,15 @@
                 android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/tvPeakFlowLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Peak Flow Reading (L/min)"
-                    android:textColor="#000000"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="24dp"/>
-
-                <TextView
                     android:id="@+id/tvPeakFlowValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Value: 74"
+                    android:text="74 L/min"
                     android:textColor="#064200"
                     android:textSize="22sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginBottom="4dp" android:layout_marginTop="16dp"/>
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/TriagePEFSlider"
@@ -258,8 +276,7 @@
                     app:labelBehavior="gone"
                     app:thumbTint="#064200"
                     app:tickVisible="true"
-                    android:layout_marginBottom="32dp"/>
-            </LinearLayout>
+                    android:layout_marginBottom="8dp"/> </LinearLayout>
 
             <Button
                 android:id="@+id/nextButton"
@@ -268,7 +285,8 @@
                 android:text="Next"
                 android:backgroundTint="#064200"
                 android:textColor="@android:color/white"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"/>
 
         </LinearLayout>
 

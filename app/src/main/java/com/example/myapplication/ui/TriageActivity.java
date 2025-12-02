@@ -40,8 +40,8 @@ public class TriageActivity extends BaseChildActivity {
     private static final int COLOR_CHIP_WHITE = 0xFFFFFFFF;
 
     // Slider Colors
-    private static final int COLOR_SLIDER_GREEN = 0xFF064200; // Active track/thumb
-    private static final int COLOR_SLIDER_WHITE = 0xFFFFFFFF; // Inactive track
+    private static final int COLOR_SLIDER_GREEN = 0xFF064200;
+    private static final int COLOR_SLIDER_LIGHT_GRAY = 0xFFE0E0E0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +50,8 @@ public class TriageActivity extends BaseChildActivity {
         setContentView(R.layout.activity_triage);
 
         bindViews();
-        setupSlider();
-        setupSliderColors(); // Applying colors immediately after binding
+        setupSlider(); // FIX APPLIED HERE
+        setupSliderColors();
         setupChipListeners();
         nextButton.setOnClickListener(v -> redFlagCheck());
     }
@@ -66,56 +66,47 @@ public class TriageActivity extends BaseChildActivity {
         peakFlowInputContainer = findViewById(R.id.peakFlowInputContainer);
     }
 
-    /**
-     * Applies custom Green/White colors to the slider track and thumb via Java code.
-     * This is the fix for the persistent resource linking errors in XML.
-     */
     void setupSliderColors() {
-        // Define states for ColorStateList: enabled/active (green) vs default (white/gray)
         int[][] states = new int[][] {
-                { android.R.attr.state_enabled}, // Enabled/Active State
-                {-android.R.attr.state_enabled}  // Disabled/Inactive State
+                { android.R.attr.state_enabled},
+                {-android.R.attr.state_enabled}
         };
 
-        // Green color for active states (thumb and slid track)
         int[] activeColors = new int[] {
                 COLOR_SLIDER_GREEN,
                 COLOR_SLIDER_GREEN
         };
 
-        // White color for inactive track (right of thumb)
         int[] inactiveColors = new int[] {
-                COLOR_SLIDER_WHITE,
-                COLOR_SLIDER_WHITE
+                COLOR_SLIDER_LIGHT_GRAY,
+                COLOR_SLIDER_LIGHT_GRAY
         };
+
+        ColorStateList activeTintList = new ColorStateList(states, activeColors);
+        ColorStateList inactiveTintList = new ColorStateList(states, inactiveColors);
 
         // 1. Set Thumb (Handle) Color: Green
         triagePEFSlider.setThumbTintList(ColorStateList.valueOf(COLOR_SLIDER_GREEN));
 
         // 2. Set Active Track (Slid Portion): Green
-        triagePEFSlider.setTrackActiveTintList(new ColorStateList(states, activeColors));
+        triagePEFSlider.setTrackActiveTintList(activeTintList);
 
-        // 3. Set Inactive Track (Unslid Portion): White/Light Gray
-        // Using a slightly transparent gray for contrast, or pure white:
-        triagePEFSlider.setTrackInactiveTintList(ColorStateList.valueOf(0xFFE0E0E0)); // Light Gray/White
+        // 3. Set Inactive Track (Unslid Portion): Light Gray/White
+        triagePEFSlider.setTrackInactiveTintList(inactiveTintList);
 
-        // You can also simplify by using your colors directly for the track:
-        // triagePEFSlider.setTrackActiveTintList(ColorStateList.valueOf(COLOR_SLIDER_GREEN));
-        // triagePEFSlider.setTrackInactiveTintList(ColorStateList.valueOf(0xFFE0E0E0));
+        // 4. Tick Marks: Set to match track colors
+        triagePEFSlider.setTickActiveTintList(activeTintList);
+        triagePEFSlider.setTickInactiveTintList(inactiveTintList);
     }
 
-
-    /**
-     * Sets up the slider's value update and the toggle switch visibility.
-     */
     void setupSlider() {
         triagePEFSlider.addOnChangeListener((slider, value, fromUser) -> {
             peakFlowValue = (int) value;
-            tvPeakFlowValue.setText("Value: " + peakFlowValue);
+            tvPeakFlowValue.setText("Value: " + peakFlowValue + " L/min");
         });
 
         triagePEFSlider.setValue(peakFlowValue);
-        tvPeakFlowValue.setText("Value: " + peakFlowValue);
+        tvPeakFlowValue.setText("Value: " + peakFlowValue + " L/min");
 
         peakFlowToggleSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -127,15 +118,40 @@ public class TriageActivity extends BaseChildActivity {
     }
 
     void setupChipListeners() {
+        // 1. ATTEMPT to get the default color selector applied in XML
+        ColorStateList defaultSelector = null;
+        if (chipGroup.getChildCount() > 0) {
+            View firstChild = chipGroup.getChildAt(0);
+            if (firstChild instanceof Chip) {
+                defaultSelector = ((Chip) firstChild).getChipBackgroundColor();
+            }
+        }
+
+        // Fallback to a neutral white/gray selector if XML inheritance fails completely
+        if (defaultSelector == null) {
+            defaultSelector = ColorStateList.valueOf(0xFFE0E0E0);
+        }
+
+        // 2. APPLY listeners to all chips
         for (int i = 0; i < chipGroup.getChildCount(); i++) {
             View child = chipGroup.getChildAt(i);
             if (child instanceof Chip) {
                 Chip chip = (Chip) child;
+
+                // Ensure initial state uses the default selector
+                chip.setChipBackgroundColor(defaultSelector);
+                chip.setChipStrokeColor(null);
+
+                ColorStateList finalDefaultSelector = defaultSelector;
                 chip.setOnClickListener(v -> {
                     if (chip.isChecked()) {
+                        // Apply RED fill and stroke when selected
                         chip.setChipBackgroundColor(ColorStateList.valueOf(COLOR_CHIP_RED));
+                        chip.setChipStrokeColor(ColorStateList.valueOf(COLOR_CHIP_RED));
                     } else {
-                        chip.setChipBackgroundColor(ColorStateList.valueOf(COLOR_CHIP_WHITE));
+                        // Revert to the default gray selector when deselected
+                        chip.setChipBackgroundColor(finalDefaultSelector);
+                        chip.setChipStrokeColor(null);
                     }
                 });
             }
@@ -157,6 +173,9 @@ public class TriageActivity extends BaseChildActivity {
         Intent intent = new Intent(this, TriageDecisionCard.class);
         String pefZone = processPEF();
 
+        // You will also need to add logic here to check the RadioButton state for rescue attempts
+        // if (radioRescueYes.isChecked()) { ... }
+
         if (selected.contains(R.id.chip10) || selected.contains(R.id.chip9) ||
                 selected.contains(R.id.chip8) || selected.contains(R.id.chip6) ||
                 selected.contains(R.id.chip7) || pefZone.equals("red")) {
@@ -168,9 +187,6 @@ public class TriageActivity extends BaseChildActivity {
         }
     }
 
-    /**
-     * Processes PEF. If the toggle is OFF, returns "normal" (skips PEF assessment).
-     */
     String processPEF(){
         if (!peakFlowToggleSwitch.isChecked()) {
             return "normal";
