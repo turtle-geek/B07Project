@@ -59,7 +59,7 @@ public class SignOutProvider extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.signout_page);
+        setContentView(R.layout.signout_page_provider);
 
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -266,13 +266,13 @@ public class SignOutProvider extends AppCompatActivity {
                     int id = item.getItemId();
 
                     if (id == R.id.homeButton) {
-                        startActivity(new Intent(SignOutProvider.this, ParentHomeActivity.class));
+                        startActivity(new Intent(SignOutProvider.this, ProviderHomeActivity.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
 
                     } else if (id == R.id.fileButton) {
-                        startActivity(new Intent(SignOutProvider.this, ParentManagement.class));
+                        startActivity(new Intent(SignOutProvider.this, ProviderManagement.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
@@ -284,6 +284,9 @@ public class SignOutProvider extends AppCompatActivity {
                         return true;
 
                     } else if (id == R.id.moreButton) {
+                        startActivity(new Intent(SignOutProvider.this, SignOutProvider.class));
+                        overridePendingTransition(0, 0);
+                        finish();
                         return true;
                     }
 
