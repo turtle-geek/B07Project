@@ -13,6 +13,8 @@ import com.example.myapplication.sosButtonResponse;
 import com.google.android.material.textfield.TextInputEditText;
 import com.example.myapplication.R;
 import android.app.DatePickerDialog;
+import android.widget.Toast;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -21,18 +23,28 @@ import com.example.myapplication.health.*;
 import com.example.myapplication.models.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class InventoryRefill extends AppCompatActivity {
 
     private TextInputEditText etPurchaseDate, etExpiryDate, etCapacity, etRemainingAmount;
     private Button btnSave;
     private ImageButton btnBack, sosButton;
-
     private MedicineLabel label;
-    private boolean isEdit;
     private Child child;
-
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private FirebaseFirestore db;
+    private String childId;
+
+    private void loadChild() {
+        db.collection("users").document(childId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        child = snapshot.toObject(Child.class);
+                    }
+                });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +61,11 @@ public class InventoryRefill extends AppCompatActivity {
         sosButton = findViewById(R.id.sosButton);
 
         label = MedicineLabel.valueOf(getIntent().getStringExtra("label"));
-        isEdit = getIntent().getBooleanExtra("isEdit", false);
 
-        // TODO: Load child from Firebase here
+        // Load child from firebase
+        db = FirebaseFirestore.getInstance();
+        childId = getIntent().getStringExtra("childId");
+        loadChild();
 
         // --- Disable save button initially ---
         btnSave.setEnabled(false);
@@ -75,30 +89,28 @@ public class InventoryRefill extends AppCompatActivity {
         etPurchaseDate.setOnClickListener(v -> showDatePicker(etPurchaseDate));
         etExpiryDate.setOnClickListener(v -> showDatePicker(etExpiryDate));
 
-        // --- Pre-fill when editing ---
-        if (isEdit) {
-            InventoryItem item = child.getInventory().getMedicine(label);
-            etPurchaseDate.setText(item.getPurchaseDate().format(dateFormatter));
-            etExpiryDate.setText(item.getExpiryDate().format(dateFormatter));
-            etCapacity.setText(String.valueOf(item.getCapacity()));
-            etRemainingAmount.setText(String.valueOf(item.getAmount()));
-        }
-
         // --- Back button ---
         btnBack.setOnClickListener(v -> finish());
 
         // --- Save button ---
         btnSave.setOnClickListener(v -> {
-            LocalDate purchase = LocalDate.parse(etPurchaseDate.getText(), dateFormatter);
-            LocalDate expiry = LocalDate.parse(etExpiryDate.getText(), dateFormatter);
+            String purchase = LocalDate.parse(etPurchaseDate.getText(), dateFormatter).toString();
+            String expiry = LocalDate.parse(etExpiryDate.getText(), dateFormatter).toString();
             double capacity = Double.parseDouble(etCapacity.getText().toString());
             double amount = Double.parseDouble(etRemainingAmount.getText().toString());
 
             InventoryItem newItem = new InventoryItem(amount, capacity, purchase, expiry);
             child.getInventory().setMedicine(label, newItem);
 
-            setResult(RESULT_OK);
-            finish();
+            db.collection("users").document(childId)
+                    .set(child)
+                    .addOnSuccessListener(aVoid -> {
+                        setResult(RESULT_OK);
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Failed to save changes", Toast.LENGTH_SHORT).show();
+                    });
         });
 
         // SOS Button

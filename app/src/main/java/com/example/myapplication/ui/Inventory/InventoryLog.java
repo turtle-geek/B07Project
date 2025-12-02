@@ -17,6 +17,7 @@ import com.example.myapplication.health.*;
 import com.example.myapplication.models.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class InventoryLog extends AppCompatActivity {
 
@@ -25,6 +26,19 @@ public class InventoryLog extends AppCompatActivity {
     private MedicineLabel currentLabel = MedicineLabel.CONTROLLER;
     private Child child;
     private ImageButton sosButton;
+    private FirebaseFirestore db;
+    private String childId;
+
+    private void loadChild() {
+        db.collection("users").document(childId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        child = snapshot.toObject(Child.class);
+                        updateLogs();
+                    }
+                });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +48,10 @@ public class InventoryLog extends AppCompatActivity {
         containerLogs = findViewById(R.id.containerLogs);
         switchLogFilter = findViewById(R.id.switchLogFilter);
 
-        // TODO: Load child from firebase
+        // Load child from firebase
+        db = FirebaseFirestore.getInstance();
+        childId = getIntent().getStringExtra("childId");
+        loadChild();
 
         // Back button
         ImageButton btnBack = findViewById(R.id.btnBack);
@@ -69,9 +86,6 @@ public class InventoryLog extends AppCompatActivity {
             currentLabel = isChecked ? MedicineLabel.RESCUE : MedicineLabel.CONTROLLER;
             updateLogs();
         });
-
-        // Initial logs update
-        updateLogs();
     }
 
     private void updateLogs() {

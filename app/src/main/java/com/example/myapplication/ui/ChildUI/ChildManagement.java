@@ -232,7 +232,6 @@ public class ChildManagement extends AppCompatActivity {
                 }
             }
 
-            // ✅ Child CAN click to VIEW details (but not edit)
             if (childCard != null) {
                 childCard.setOnClickListener(v -> {
                     // Navigate to ChildChildDetails to view profile

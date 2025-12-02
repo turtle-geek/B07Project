@@ -24,6 +24,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 import com.example.myapplication.health.*;
+import com.example.myapplication.models.*;
+import com.google.firebase.firestore.FirebaseFirestore;
         import com.example.myapplication.models.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,9 +35,20 @@ public class InventoryUsage extends AppCompatActivity {
     private TextInputEditText etDate, etTime, etDosage;
     private Button btnSaveMedicine;
     private ImageButton btnBack, sosButton;
-
     private MedicineLabel label;
     private Child child;
+    private FirebaseFirestore db;
+    private String childId;
+
+    private void loadChild() {
+        db.collection("users").document(childId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        child = snapshot.toObject(Child.class);
+                    }
+                });
+    }
 
     private final DateTimeFormatter dateFormatter =
             DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -55,7 +68,10 @@ public class InventoryUsage extends AppCompatActivity {
 
         label = MedicineLabel.valueOf(getIntent().getStringExtra("label"));
 
-        // TODO: Load child from Firebase here
+        // Load child from firebase
+        db = FirebaseFirestore.getInstance();
+        childId = getIntent().getStringExtra("childId");
+        loadChild();
 
         // --- Disable save button initially ---
         btnSaveMedicine.setEnabled(false);
@@ -92,10 +108,20 @@ public class InventoryUsage extends AppCompatActivity {
             TechniqueQuality quality =
                     (label == MedicineLabel.CONTROLLER) ? TechniqueQuality.HIGH : TechniqueQuality.NA;
 
-            boolean success = child.getInventory().useMedicine(label, amount, timestamp);
+            boolean success = child.getInventory().useMedicine(label, amount, timestamp.toString());
 
             if (success) {
                 child.getStreakCount().countStreaks();
+                db.collection("users").document(childId)
+                        .set(child)
+                        .addOnSuccessListener(aVoid -> {
+                            setResult(RESULT_OK);
+                            finish();
+                        })
+                        .addOnFailureListener(e -> {
+                            // Handle error
+                            android.widget.Toast.makeText(this, "Failed to save usage", android.widget.Toast.LENGTH_SHORT).show();
+                        });
 
                 // Get the medicine item and dosage for passing to next activities
                 InventoryItem medicineItem = child.getInventory().getMedicine(label);
