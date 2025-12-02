@@ -140,7 +140,8 @@ public class ChildHomeActivity extends AppCompatActivity {
         pefCard = findViewById(R.id.pefCard);
         statusCard2 = findViewById(R.id.statusCard2);
         statusCard3 = findViewById(R.id.statusCard3);
-        graphCard = findViewById(R.id.graphCard1);
+        graphCard1 = findViewById(R.id.graphCard1);
+        graphCard2 = findViewById(R.id.graphCard2);
         bottomNavigationView = findViewById(R.id.menuBar);
         trendContainer = findViewById(R.id.trendContainer);
         editPEF = findViewById(R.id.editPEF);

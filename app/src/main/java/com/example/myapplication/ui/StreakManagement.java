@@ -31,8 +31,23 @@ public class StreakManagement extends AppCompatActivity {
                 .addOnSuccessListener(snapshot -> {
                     if (snapshot.exists()) {
                         child = snapshot.toObject(Child.class);
+                        initializeData();
                     }
                 });
+    }
+
+    private void initializeData() {
+        if (child == null) return;
+
+        child.getStreakCount().setInventory(child.getInventory());
+        child.getBadges().setStreakCount(child.getStreakCount());
+
+        child.getStreakCount().countStreaks();
+        child.getBadges().updateControllerBadge();
+        child.getBadges().updateTechniqueBadge();
+        child.getBadges().updateRescueBadge();
+
+        updateUI();
     }
 
     @Override
@@ -53,16 +68,6 @@ public class StreakManagement extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         childId = getIntent().getStringExtra("childId");
         loadChild();
-
-        child.getStreakCount().setInventory(child.getInventory());
-        child.getBadges().setStreakCount(child.getStreakCount());
-
-        child.getStreakCount().countStreaks();
-        child.getBadges().updateControllerBadge();
-        child.getBadges().updateTechniqueBadge();
-        child.getBadges().updateRescueBadge();
-
-        updateUI();
 
         btnBack.setOnClickListener(v -> finish());
     }
