@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ParentUI;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.auth.AuthManager;
 import com.example.myapplication.models.Child;
+import com.example.myapplication.ui.ParentUI.ParentRegisterLogin;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -126,7 +127,9 @@ public class ParentRegisterChild extends AppCompatActivity {
                         }
 
                         // All validation passed, proceed to health info page
-                        Intent intent = new Intent(ParentRegisterChild.this, ParentRegisterLogin.class);
+                        Intent intent = new Intent(
+                                ParentRegisterChild.this,
+                                ParentRegisterLogin.class);
                         intent.putExtra("childName", name);
                         intent.putExtra("childUsername", username);
                         intent.putExtra("childPassword", password);

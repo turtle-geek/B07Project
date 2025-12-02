@@ -1,14 +1,13 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ChildUI;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
+import com.example.myapplication.sosButtonResponse;
 
 /**
  * Child Child Details Activity
@@ -26,7 +25,8 @@ public class ChildChildDetails extends AppCompatActivity {
     private TextView tvChildPassword;
     private TextView tvDetailBirthday;
     private TextView tvDetailSpecialNote;
-    private ImageButton btnBack;
+    private ImageButton btnBack, sosButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,7 @@ public class ChildChildDetails extends AppCompatActivity {
         tvUserID = findViewById(R.id.tvUsername);
         tvChildPassword = findViewById(R.id.tvChildPassword);
         btnBack = findViewById(R.id.btnBack);
+        sosButton = findViewById(R.id.sosButton);
     }
 
     private void displayChildData(String childName, String childUserId, String childEmail,
@@ -101,6 +102,11 @@ public class ChildChildDetails extends AppCompatActivity {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> finish());
         }
+        sosButton.setOnClickListener(v -> {
+            sosButtonResponse action = new sosButtonResponse();
+            String childId = getIntent().getStringExtra("childId");
+            action.response(childId, this);
+        });
 
 
     }

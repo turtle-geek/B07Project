@@ -1,9 +1,6 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ChildUI;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,8 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -32,7 +26,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.myapplication.CheckupNotificationReceiver;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.auth.SignOut_child;
@@ -43,6 +36,9 @@ import com.example.myapplication.models.Child;
 import com.example.myapplication.models.HealthProfile;
 import com.example.myapplication.models.PeakFlow;
 import com.example.myapplication.models.TechniqueQuality;
+import com.example.myapplication.ui.ChildUI.TriageAndResponse.*;
+import com.example.myapplication.ui.Inventory.*;
+import com.example.myapplication.ui.TrendSnippet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -93,8 +89,6 @@ public class ChildHomeActivity extends AppCompatActivity {
     private HealthProfile hp;
     private String selectedChildId;
     private int selectedChildPersonalBest = 400;
-
-    // FIX: Removing statusCard1, statusCard2, statusCard3 as they do not exist in the XML
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,10 +204,9 @@ public class ChildHomeActivity extends AppCompatActivity {
     private void initializeViews() {
         Log.d(TAG, "initializeViews started");
 
-        // Initialize ONLY views that exist in XML
+        // Only get views that ACTUALLY EXIST in XML
         todayDate = findViewById(R.id.todayDate);
         pefCard = findViewById(R.id.pefCard);
-        // FIX: Removed statusCard1, statusCard2, statusCard3 as they are not in the provided XML
         graphCard1 = findViewById(R.id.graphCard1);
         graphCard2 = findViewById(R.id.graphCard2);
         bottomNavigationView = findViewById(R.id.menuBar);
@@ -232,7 +225,6 @@ public class ChildHomeActivity extends AppCompatActivity {
             prepostCheckPopup.setVisibility(View.GONE);
         }
 
-        // Log statements for debugging
         Log.d(TAG, "todayDate: " + (todayDate != null ? "found" : "NULL"));
         Log.d(TAG, "bottomNavigationView: " + (bottomNavigationView != null ? "found" : "NULL"));
         Log.d(TAG, "trendContainer: " + (trendContainer != null ? "found" : "NULL"));
@@ -314,6 +306,12 @@ public class ChildHomeActivity extends AppCompatActivity {
     private void loadPeakFlowData() {
         if (currentChild != null && hp != null && hp.getPEFLog() != null && !hp.getPEFLog().isEmpty()) {
             displayTodayPeakFlow();
+        }
+
+        // TODO Hard code default values?
+        else {
+            pefDisplay.setText("N/A");
+            pefDateTime.setText("No peak flow data to display");
         }
     }
 
@@ -449,15 +447,14 @@ public class ChildHomeActivity extends AppCompatActivity {
         EditText peakFlowInput = findViewById(R.id.editTextNumber);
         if (peakFlowInput != null) {
             peakFlowInput.setOnEditorActionListener((textView, actionId, keyEvent) -> {
-                savePeakFlowEntry();
+                savePeakFlowEntry(peakFlowInput);
                 return true;
             });
         }
     }
-
-    private void savePeakFlowEntry() {
-        EditText editTextNumber = findViewById(R.id.editTextNumber);
-        String text = editTextNumber.getText().toString().trim();
+    // TODO If bugs persist, check class hierarchy of TextView-EditText or pass a primitive variable
+    private void savePeakFlowEntry(EditText editTextNumber) {
+        String text = editTextNumber.getText().toString();
 
         if (!isDataLoaded || currentChild == null || hp == null) {
             Toast.makeText(this, "Please wait while data loads", Toast.LENGTH_SHORT).show();
@@ -480,6 +477,7 @@ public class ChildHomeActivity extends AppCompatActivity {
 
                 savePeakFlowToFirebase();
 
+                // Clear the edit text field
                 editTextNumber.setText("");
             }
 
@@ -564,7 +562,7 @@ public class ChildHomeActivity extends AppCompatActivity {
             MedicineUsageLog newLog = new MedicineUsageLog(
                     medicineItem,
                     dosage,
-                    timestamp,
+                    timestamp.toString(),
                     quality,
                     rating
             );
@@ -617,20 +615,6 @@ public class ChildHomeActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to save peak flow", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Failed to save peak flow", e);
                 });
-    }
-
-    @SuppressLint("ScheduleExactAlarm")
-    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
-    private void scheduleCheckupNotification() {
-        long triggerTime = System.currentTimeMillis() + 10 * 60 * 1000; // 10 minutes
-        Intent intent = new Intent(this, CheckupNotificationReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        if (alarmManager != null) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
-        }
     }
 
     private void setCurrentDate() {

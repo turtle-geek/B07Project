@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.Inventory;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.myapplication.sosButtonResponse;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.example.myapplication.R;
 import android.content.Intent;
@@ -15,6 +17,8 @@ import java.time.format.DateTimeFormatter;
 import com.example.myapplication.health.*;
 import com.example.myapplication.models.*;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class InventoryManagement extends AppCompatActivity {
@@ -22,7 +26,7 @@ public class InventoryManagement extends AppCompatActivity {
     private TextView tvDetailMedicineName, tvDetailPurchaseDate, tvDetailExpiryDate, tvDetailAmount, tvLowCapacity, tvExpired;
     private ImageView iconLowCapacity, iconExpired;
     private Button btnConsume, btnRefill;
-    private ImageButton btnBack;
+    private ImageButton btnBack, sosButton;
     private MaterialSwitch switchLogFilter;
     private MedicineLabel currentLabel = MedicineLabel.CONTROLLER;
     private Child child;
@@ -58,6 +62,7 @@ public class InventoryManagement extends AppCompatActivity {
         btnRefill = findViewById(R.id.btnRefill);
         btnBack = findViewById(R.id.btnBack);
         switchLogFilter = findViewById(R.id.switchLogFilter);
+        sosButton = findViewById(R.id.sosButton);
 
         // Load child from firebase
         db = FirebaseFirestore.getInstance();
@@ -88,6 +93,32 @@ public class InventoryManagement extends AppCompatActivity {
             intent.putExtra("childId", childId);
             startActivityForResult(intent, 2);
         });
+
+        // SOS Button viewable only in child view, and launches SOS response
+        String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(id)
+                .get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String role = documentSnapshot.getString("role");
+                        if ("parents".equals(role)) {
+                            sosButton.setVisibility(View.GONE);
+                            return;
+                        } else if ("child".equals(role)) {
+                            sosButton.setVisibility(View.VISIBLE);
+                            return;
+                        }
+                    }
+                });
+        sosButton.setOnClickListener(v -> {
+                    sosButtonResponse action = new sosButtonResponse();
+                    action.response(id, this);
+                });
+
+        // Initial UI update
+        updateUI();
     }
 
     private void updateUI() {
@@ -102,7 +133,7 @@ public class InventoryManagement extends AppCompatActivity {
         // Update alert icons
         tvLowCapacity.setVisibility(item.lowVolumeAlert() ? View.VISIBLE : View.INVISIBLE);
         iconLowCapacity.setVisibility(item.lowVolumeAlert() ? View.VISIBLE : View.INVISIBLE);
-        tvExpired.setVisibility(item.lowVolumeAlert() ? View.VISIBLE : View.INVISIBLE);
+        tvExpired.setVisibility(item.expiryAlert() ? View.VISIBLE : View.INVISIBLE);
         iconExpired.setVisibility(item.expiryAlert() ? View.VISIBLE : View.INVISIBLE);
     }
 

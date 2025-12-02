@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ChildUI;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +19,8 @@ import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.auth.SignOut_child;
 import com.example.myapplication.models.Child;
+import com.example.myapplication.sosButtonResponse;
+import com.example.myapplication.ui.ChildUI.TriageAndResponse.HomeStepsRecovery;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,10 +40,10 @@ public class ChildManagement extends AppCompatActivity {
     private LinearLayout childrenCardsContainer;
     private Child currentChild;
     private BottomNavigationView bottomNavigationView;
-
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private String currentChildId;
+    private ImageButton sosButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +71,12 @@ public class ChildManagement extends AppCompatActivity {
         tvEmptyState = findViewById(R.id.tvEmptyState);
         childrenCardsContainer = findViewById(R.id.childrenCardsContainer);
         bottomNavigationView = findViewById(R.id.menuBar);
+        sosButton = findViewById(R.id.sosButton);
+        sosButton.setOnClickListener(v -> {
+            sosButtonResponse action = new sosButtonResponse();
+            action.response(currentChildId, this);
+        });
+
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,8 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.DailyCheckIn;
 
 // Firebase/Firestore Imports
+import com.example.myapplication.sosButtonResponse;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,6 +43,31 @@ public class DailyCheckInActivity extends AppCompatActivity {
 
         // Call the function to set the date
         setDynamicDate();
+
+        // Set up SOS Button
+        ImageButton sosButton = findViewById(R.id.sosButton);
+        String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(id)
+                .get().addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String role = documentSnapshot.getString("role");
+                                if ("parents".equals(role)) {
+                                    sosButton.setVisibility(View.GONE);
+                                    return;
+                                } else if ("child".equals(role)) {
+                                    sosButton.setVisibility(View.VISIBLE);
+                                    return;
+                                }
+                            }
+                        });
+        sosButton.setOnClickListener(v -> {
+            sosButtonResponse action = new sosButtonResponse();
+            action.response(id, this);
+
+        });
 
         // Runs handleSubmitCheckIn() when the button is clicked
         Button submitButton = findViewById(R.id.btnSubmitCheckIn);
