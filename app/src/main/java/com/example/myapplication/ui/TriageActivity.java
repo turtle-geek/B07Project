@@ -11,21 +11,34 @@ import android.content.res.ColorStateList;
 import android.widget.RadioGroup;
 import android.widget.RadioButton;
 import android.widget.Toast;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.PeakFlow;
+import com.example.myapplication.models.IncidentLogEntry;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TriageActivity extends BaseChildActivity {
+
+    private String username;
 
     ChipGroup chipGroup;
     Button nextButton;
@@ -53,6 +66,62 @@ public class TriageActivity extends BaseChildActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
+        checkAndSetupUser();
+    }
+
+    private void checkAndSetupUser() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Error: User must be logged in.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        String uid = user.getUid();
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String fullEmailUsername = documentSnapshot.getString("emailUsername");
+
+                        if (fullEmailUsername != null && !fullEmailUsername.isEmpty()) {
+                            String cleanUsername;
+                            int atIndex = fullEmailUsername.indexOf('@');
+
+                            if (atIndex > 0) {
+                                cleanUsername = fullEmailUsername.substring(0, atIndex);
+                            } else {
+                                cleanUsername = fullEmailUsername;
+                            }
+
+                            if (!cleanUsername.isEmpty()) {
+                                this.username = cleanUsername;
+                                setupViews();
+                            } else {
+                                Toast.makeText(this, "Error: Username part not found in profile.", Toast.LENGTH_LONG).show();
+                                finish();
+                            }
+                        } else {
+                            Toast.makeText(this, "Error: User data is incomplete.", Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                    } else {
+                        Toast.makeText(this, "Error: User profile not found.", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("TriageActivity", "Failed to fetch user data: ", e);
+                    Toast.makeText(this, "Error fetching user data.", Toast.LENGTH_LONG).show();
+                    finish();
+                });
+    }
+
+    private void setupViews() {
         setContentView(R.layout.activity_triage);
 
         bindViews();
@@ -135,7 +204,7 @@ public class TriageActivity extends BaseChildActivity {
 
                 chip.setOnClickListener(v -> {
                     if (chip.isChecked()) {
-                        // Chips turn RED when selected
+
                         chip.setChipBackgroundColor(ColorStateList.valueOf(COLOR_CHIP_RED));
                         chip.setChipStrokeColor(ColorStateList.valueOf(COLOR_CHIP_RED));
                     } else {
@@ -196,22 +265,29 @@ public class TriageActivity extends BaseChildActivity {
             return;
         }
 
+        boolean rescueAttemptMade = rescueAttemptGroup.getCheckedRadioButtonId() == R.id.radioRescueYes;
+        boolean peakFlowWasEntered = peakFlowToggleSwitch.isChecked();
+        LocalDateTime timestamp = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            timestamp = LocalDateTime.now();
+        }
 
+        String finalDecision;
         String pefZone = processPEF();
 
         if (selected.contains(R.id.chip11) || selected.contains(R.id.chip12) ||
                 selected.contains(R.id.chip5) || selected.contains(R.id.chip4) ||
                 pefZone.equals("red")) {
 
-            Intent intent = new Intent(this, TriageCriticalActivity.class);
-            intent.putExtra("DECISION", "SOS");
-            startActivity(intent);
+            finalDecision = "SOS";
+
+            logIncidentAndNavigate(timestamp, selected, finalDecision, rescueAttemptMade, peakFlowWasEntered, peakFlowValue, TriageCriticalActivity.class);
             return;
         }
 
-        Intent intent = new Intent(this, TriageNonCriticalActivity.class);
-        intent.putExtra("DECISION", "NOT SOS");
-        startActivity(intent);
+        finalDecision = "NOT SOS";
+
+        logIncidentAndNavigate(timestamp, selected, finalDecision, rescueAttemptMade, peakFlowWasEntered, peakFlowValue, TriageNonCriticalActivity.class);
     }
 
     String processPEF(){
@@ -230,5 +306,69 @@ public class TriageActivity extends BaseChildActivity {
         }
 
         return "normal";
+    }
+
+    private void logIncidentAndNavigate(
+            LocalDateTime timestamp,
+            List<Integer> selectedSymptomIds,
+            String finalDecision,
+            boolean rescueAttemptMade,
+            boolean peakFlowEntered,
+            int peakFlowValue,
+            Class<?> destinationActivity) {
+
+        if (username == null || username.isEmpty()) {
+            Toast.makeText(this, "Error: User data missing, cannot log incident.", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, destinationActivity));
+            return;
+        }
+
+        if (timestamp == null) {
+            Log.e("TriageActivity", "Timestamp is null, cannot create log.");
+            Toast.makeText(this, "Error: Cannot log incident without timestamp.", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, destinationActivity));
+            return;
+        }
+
+        IncidentLogEntry newEntry = new IncidentLogEntry(
+                username,
+                timestamp,
+                selectedSymptomIds,
+                finalDecision,
+                rescueAttemptMade,
+                peakFlowEntered,
+                peakFlowValue
+        );
+
+        saveIncidentToFirestore(newEntry, destinationActivity, finalDecision);
+    }
+
+    private void saveIncidentToFirestore(IncidentLogEntry entry, Class<?> destinationActivity, String decision) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("triage_incidents")
+                .add(entry)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.i("TriageActivity", "Incident Logged: " + documentReference.getId());
+                        Toast.makeText(TriageActivity.this, "Triage Logged (" + decision + ")", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(TriageActivity.this, destinationActivity);
+                        intent.putExtra("DECISION", decision);
+                        startActivity(intent);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("TriageActivity", "Error saving incident to Firestore", e);
+                        Toast.makeText(TriageActivity.this, "Error: Could not save log. Navigating anyway.", Toast.LENGTH_LONG).show();
+
+                        Intent intent = new Intent(TriageActivity.this, destinationActivity);
+                        intent.putExtra("DECISION", decision);
+                        startActivity(intent);
+                    }
+                });
     }
 }
