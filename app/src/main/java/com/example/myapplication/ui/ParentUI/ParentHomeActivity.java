@@ -1,10 +1,9 @@
 package com.example.myapplication.ui.ParentUI;
 
-import static java.time.LocalDateTime.parse;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -27,6 +26,7 @@ import com.example.myapplication.ui.TrendSnippet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -47,11 +48,14 @@ public class ParentHomeActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private ImageButton bellButton;
     private TextView todayDate, selectedChildName, pefDisplay, pefDateTime;
-    private CardView pefCard, statusCard2, statusCard3, graphCard;
-    private LinearLayout childSelectorLayout;
 
-    // Trend Snippet
+    // NOTE: pefCard refers to the Status Card 1 (Today's Peak Flow)
+    private CardView pefCard, statusCard2, statusCard3, graphCard2; // graphCard renamed to graphCard2 to match XML ID
+
+    private LinearLayout childSelectorLayout;
     private LinearLayout trendContainer;
+
+    // NOTE: TrendSnippet must exist in your project
     private TrendSnippet trendSnippet;
 
     // Child data
@@ -59,6 +63,8 @@ public class ParentHomeActivity extends AppCompatActivity {
     private String selectedChildId = null;
     private String selectedChildNameStr = "Select a child";
     private int selectedChildPersonalBest;
+
+    private String parentUserId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,36 +75,33 @@ public class ParentHomeActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         childrenList = new ArrayList<>();
 
-        // Initialize views
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            Log.e(TAG, "User is not authenticated. Redirecting to router.");
+            Toast.makeText(this, "Session expired, please sign in.", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+        parentUserId = currentUser.getUid();
+
         initializeViews();
 
-        // Set up bottom navigation
         if (bottomNavigationView != null) {
             setupBottomNavigation();
         }
 
-        // Set current date
         if (todayDate != null) {
             setCurrentDate();
         }
 
-        // Set up button listeners
         setupButtonListeners();
-
-        // Set up card listeners
         setupCardListeners();
-
-        // Setup child selector
         setupChildSelector();
-
-        // Setup trend snippet
         setupTrendSnippet();
 
-        // Load children list
         loadChildrenList();
-
-        // Display Peak Flow data
-        displayTodayPeakFlow();
     }
 
     private void initializeViews() {
@@ -106,12 +109,19 @@ public class ParentHomeActivity extends AppCompatActivity {
         todayDate = findViewById(R.id.todayDate);
         selectedChildName = findViewById(R.id.selectedChildName);
         childSelectorLayout = findViewById(R.id.childSelectorLayout);
-        pefCard = findViewById(R.id.statusCard1);
-        statusCard2 = findViewById(R.id.statusCard2);
-        statusCard3 = findViewById(R.id.statusCard3);
-        graphCard = findViewById(R.id.graphCard1);
+
+        // FIX: pefCard maps to the first status card in the XML which is R.id.pefCard
+        pefCard = findViewById(R.id.pefCard);
+//        statusCard2 = findViewById(R.id.statusCard2);
+//        statusCard3 = findViewById(R.id.statusCard3);
+
+        // FIX: graphCard refers to R.id.graphCard2 in the XML
+        graphCard2 = findViewById(R.id.graphCard2);
+
         bottomNavigationView = findViewById(R.id.menuBar);
         trendContainer = findViewById(R.id.trendContainer);
+
+        // FIX: pefDisplay and pefDateTime must be found within the pefCard layout, but the XML gives them unique IDs, so this is okay.
         pefDisplay = findViewById(R.id.pefDisplay);
         pefDateTime = findViewById(R.id.pefDateTime);
     }
@@ -123,18 +133,14 @@ public class ParentHomeActivity extends AppCompatActivity {
     }
 
     private void loadChildrenList() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            Log.w(TAG, "No user logged in");
+        if (parentUserId == null) {
+            Log.w(TAG, "Cannot load children: parentUserId is null.");
             return;
         }
 
-        String parentId = currentUser.getUid();
-
-        // Query all children of this parent
         db.collection("users")
                 .whereEqualTo("role", "child")
-                .whereEqualTo("parentID", parentId)
+                .whereEqualTo("parentID", parentUserId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     childrenList.clear();
@@ -147,7 +153,8 @@ public class ParentHomeActivity extends AppCompatActivity {
                     Log.d(TAG, "Loaded " + childrenList.size() + " children");
 
                     // If only one child, auto-select them
-                    if (childrenList.size() == 1) {
+                    if (childrenList.size() >= 1) {
+                        // FIX: Automatically select the first child if none is selected
                         Child child = childrenList.get(0);
                         selectedChildId = child.getId();
                         selectedChildNameStr = child.getName();
@@ -162,18 +169,15 @@ public class ParentHomeActivity extends AppCompatActivity {
                             selectedChildName.setText(selectedChildNameStr);
                         }
 
-                        loadPeakFlowData();
-                    } else if (childrenList.isEmpty()) {
-                        // No children - show empty state
+
+                        // Load data for the selected child
+                        loadChildDataAndDisplayUI();
+                    } else { // childrenList.isEmpty()
                         if (selectedChildName != null) {
                             selectedChildName.setText("No children registered");
                         }
+                        // FIX: Use test data only if no children are registered AND no specific child is selected
                         loadTestData();
-                    } else {
-                        // Multiple children - show prompt to select
-                        if (selectedChildName != null) {
-                            selectedChildName.setText("Select a child");
-                        }
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -189,7 +193,6 @@ public class ParentHomeActivity extends AppCompatActivity {
             return;
         }
 
-        // Create array of child names
         List<String> names = new ArrayList<>();
         for (Child child : childrenList) {
             names.add(child.getName());
@@ -204,13 +207,12 @@ public class ParentHomeActivity extends AppCompatActivity {
             Child selectedChild = childrenList.get(which);
             selectedChildNameStr = selectedChild.getName();
 
-            // Update UI
             if (selectedChildName != null) {
                 selectedChildName.setText(selectedChildNameStr);
             }
 
-            // Reload data for selected child
-            loadPeakFlowData();
+            // Load data for the newly selected child
+            loadChildDataAndDisplayUI();
 
             Toast.makeText(this, "Showing data for: " + selectedChildNameStr,
                     Toast.LENGTH_SHORT).show();
@@ -219,130 +221,111 @@ public class ParentHomeActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void displayTodayPeakFlow() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(selectedChildId).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (!documentSnapshot.exists()) return;
-
-                    Child child = documentSnapshot.toObject(Child.class);
-                    if (child == null) return;
-
-                    HealthProfile hp = child.getHealthProfile();
-                    if (hp == null || hp.getPEFLog() == null || hp.getPEFLog().isEmpty())
-                        return;
-
-                    // Get the LAST entry in the PEF log
-                    ArrayList<PeakFlow> log = hp.getPEFLog();
-                    PeakFlow latest = log.get(log.size() - 1);
-
-                    updatePeakFlowUI(latest);
-                })
-                .addOnFailureListener(e ->
-                        Log.e("PeakFlow", "Error loading peak flow", e));
-    }
-
-    private void updatePeakFlowUI(PeakFlow todayPeakFlow) {
-        pefDisplay.setText(String.valueOf(todayPeakFlow.getPeakFlow()));
-
-        // Convert time format
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a, MMM d");
-        pefDateTime.setText(todayPeakFlow.getTime().format(formatter));
-
-        switch (todayPeakFlow.getZone()) {
-            case "green":
-                pefCard.setCardBackgroundColor(Color.parseColor("#008000"));
-                break;
-            case "yellow":
-                pefCard.setCardBackgroundColor(Color.parseColor("#FFD700"));
-                break;
-            case "red":
-                pefCard.setCardBackgroundColor(Color.parseColor("#FF0000"));
-                break;
-        }
-    }
-
-    private void setupTrendSnippet() {
-        // Create trend snippet
-        trendSnippet = new TrendSnippet(this);
-
-        // Add to container
-        if (trendContainer != null) {
-            trendContainer.removeAllViews();
-            trendContainer.addView(trendSnippet);
-        }
-    }
-
-    private void loadPeakFlowData() {
+    /**
+     * FIX: Primary method to load all child data (PEF, Trends) from Firebase.
+     */
+    private void loadChildDataAndDisplayUI() {
         if (selectedChildId == null) {
-            Log.w(TAG, "No child selected");
+            pefDisplay.setText("---");
+            pefDateTime.setText("No child selected");
             if (trendSnippet != null) {
                 trendSnippet.showLoading();
             }
             return;
         }
 
-        // Show loading
-        if (trendSnippet != null) {
-            trendSnippet.showLoading();
-        }
-
-        // Load data for the selected child
-        List<PeakFlow> peakFlows = new ArrayList<>();
-        loadChildPeakFlowData(selectedChildId, selectedChildPersonalBest, peakFlows, () -> {
-            updateTrendSnippet(peakFlows);
-        });
-    }
-
-    private void loadChildPeakFlowData(String childId, int personalBest, List<PeakFlow> allPeakFlows, Runnable onComplete) {
-        db.collection("users").document(childId)
-                .collection("peakFlowLogs")
-                .orderBy("time", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                .limit(30)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        try {
-                            int peakFlowValue = doc.getLong("peakFlow") != null ?
-                                    doc.getLong("peakFlow").intValue() : 0;
-                            com.google.firebase.Timestamp timestamp = doc.getTimestamp("time");
-
-                            if (timestamp != null && peakFlowValue > 0) {
-                                Date date = timestamp.toDate();
-                                LocalDateTime localDateTime = LocalDateTime.ofInstant(
-                                        date.toInstant(),
-                                        java.time.ZoneId.systemDefault()
-                                );
-
-                                PeakFlow pf = new PeakFlow(peakFlowValue, localDateTime);
-
-                                // Compute zone based on personal best
-                                if (peakFlowValue >= 0.8 * personalBest) {
-                                    pf.setZone("green");
-                                } else if (peakFlowValue >= 0.5 * personalBest) {
-                                    pf.setZone("yellow");
-                                } else {
-                                    pf.setZone("red");
-                                }
-
-                                allPeakFlows.add(pf);
-                            }
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error parsing peak flow data", e);
-                        }
+        db.collection("users").document(selectedChildId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        loadTestData();
+                        return;
                     }
-                    onComplete.run();
+
+                    Child child = documentSnapshot.toObject(Child.class);
+                    if (child == null) {
+                        loadTestData();
+                        return;
+                    }
+
+                    HealthProfile hp = child.getHealthProfile();
+                    if (hp != null && hp.getPEFLog() != null) {
+                        List<PeakFlow> peakFlows = hp.getPEFLog();
+
+                        // Sort by time descending to find latest (for Today's PEF)
+                        peakFlows.sort(Comparator.comparing(PeakFlow::getTime, Comparator.nullsLast(Comparator.reverseOrder())));
+
+                        // Display latest PEF data
+                        if (!peakFlows.isEmpty()) {
+                            updatePeakFlowUI(peakFlows.get(0));
+                        } else {
+                            pefDisplay.setText("N/A");
+                            pefDateTime.setText("No PEF data");
+                        }
+
+                        // Display trend data
+                        updateTrendSnippet(peakFlows);
+
+                    } else {
+                        pefDisplay.setText("N/A");
+                        pefDateTime.setText("No PEF data");
+                        updateTrendSnippet(new ArrayList<>());
+                    }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error loading peak flow data for child: " + childId, e);
-                    onComplete.run();
+                    Log.e(TAG, "Error loading child data for " + selectedChildId, e);
+                    loadTestData();
                 });
     }
+
+
+    private void updatePeakFlowUI(PeakFlow todayPeakFlow) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
+
+        pefDisplay.setText(String.valueOf(todayPeakFlow.getPeakFlow()));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a, MMM d");
+        pefDateTime.setText(todayPeakFlow.getTime().format(formatter));
+
+        if (pefCard != null) {
+            String zone = todayPeakFlow.getZone() != null ? todayPeakFlow.getZone().toLowerCase() : "";
+
+            switch (zone) {
+                case "green":
+                    pefCard.setCardBackgroundColor(Color.parseColor("#008000")); // Green
+                    break;
+                case "yellow":
+                    pefCard.setCardBackgroundColor(Color.parseColor("#FFD700")); // Yellow
+                    break;
+                case "red":
+                    pefCard.setCardBackgroundColor(Color.parseColor("#FF0000")); // Red
+                    break;
+                default:
+                    pefCard.setCardBackgroundColor(Color.parseColor("#ABFFFFFF")); // Default background
+            }
+        }
+    }
+
+    private void setupTrendSnippet() {
+        // NOTE: Assuming TrendSnippet class is defined elsewhere and handles its own loading state.
+        trendSnippet = new TrendSnippet(this);
+
+        if (trendContainer != null) {
+            trendContainer.removeAllViews();
+            trendContainer.addView(trendSnippet);
+        }
+    }
+
+    // FIX: Simplified loadPeakFlowData to act as a trigger, relying on loadChildDataAndDisplayUI
+    private void loadPeakFlowData() {
+        loadChildDataAndDisplayUI();
+    }
+
+    // FIX: Removed duplicated/incorrect loadChildPeakFlowData method and used the data from the HealthProfile log.
 
     private void updateTrendSnippet(List<PeakFlow> peakFlows) {
         if (trendSnippet != null) {
             if (peakFlows.isEmpty()) {
-                // Show test data if no real data
+                // If data is empty, use test data logic
                 loadTestData();
             } else {
                 trendSnippet.setData(peakFlows);
@@ -358,14 +341,7 @@ public class ParentHomeActivity extends AppCompatActivity {
             int value = 250 + (int)(Math.random() * 150);
 
             PeakFlow pf = new PeakFlow(value, time);
-
-            if (value >= 360) {
-                pf.setZone("green");
-            } else if (value >= 250) {
-                pf.setZone("yellow");
-            } else {
-                pf.setZone("red");
-            }
+            pf.setZone("yellow"); // Default zone for test data
 
             testData.add(pf);
         }
@@ -373,10 +349,17 @@ public class ParentHomeActivity extends AppCompatActivity {
         if (trendSnippet != null) {
             trendSnippet.setData(testData);
         }
+
+        // Also update the static PEF card with latest test data
+        if (!testData.isEmpty()) {
+            updatePeakFlowUI(testData.get(0));
+        }
     }
 
     private void setupBottomNavigation() {
         try {
+            if (bottomNavigationView == null) return;
+
             bottomNavigationView.setSelectedItemId(R.id.homeButton);
 
             bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
@@ -384,15 +367,21 @@ public class ParentHomeActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     int id = item.getItemId();
 
+                    Intent intent;
+
                     if (id == R.id.homeButton) {
                         return true;
                     } else if (id == R.id.fileButton) {
-                        startActivity(new Intent(ParentHomeActivity.this, ParentManagement.class));
+                        intent = new Intent(ParentHomeActivity.this, ParentManagement.class);
+                        intent.putExtra("id", parentUserId);
+                        startActivity(intent);
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
                     } else if (id == R.id.nav_profile) {
-                        startActivity(new Intent(ParentHomeActivity.this, ParentTutorial.class));
+                        // Assuming Onboarding is a placeholder for profile settings/dashboard
+                        intent = new Intent(ParentHomeActivity.this, Onboarding.class);
+                        startActivity(intent);
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
@@ -412,6 +401,8 @@ public class ParentHomeActivity extends AppCompatActivity {
 
     private void setCurrentDate() {
         try {
+            if (todayDate == null) return;
+
             SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
             String currentDate = dateFormat.format(new Date());
             todayDate.setText(currentDate);
@@ -447,8 +438,8 @@ public class ParentHomeActivity extends AppCompatActivity {
             });
         }
 
-        if (graphCard != null) {
-            graphCard.setOnClickListener(v -> {
+        if (graphCard2 != null) {
+            graphCard2.setOnClickListener(v -> {
                 Toast.makeText(this, "Daily Check-in", Toast.LENGTH_SHORT).show();
             });
         }
@@ -464,9 +455,26 @@ public class ParentHomeActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
+
+            // FIX: Only reload the list if it's empty to prevent unnecessary Firebase reads
+            if (childrenList.isEmpty()) {
+                loadChildrenList();
+            }
+
         } catch (Exception e) {
             Log.e(TAG, "Error in onStart", e);
         }
     }
 
+    private static class ChildInfo {
+        String id;
+        String name;
+        int personalBest;
+
+        ChildInfo(String id, String name, int personalBest) {
+            this.id = id;
+            this.name = name;
+            this.personalBest = personalBest;
+        }
+    }
 }

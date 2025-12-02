@@ -182,7 +182,7 @@
                         android:id="@+id/badgeController"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@android:drawable/ic_menu_gallery"
+                        android:src="@android:drawable/ic_dialog_map"
                         android:tint="#064200"/>
 
                     <TextView
@@ -206,7 +206,7 @@
                         android:id="@+id/badgeTechnique"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@android:drawable/ic_menu_gallery"
+                        android:src="@android:drawable/ic_dialog_map"
                         android:tint="#064200"/>
 
                     <TextView
@@ -230,7 +230,7 @@
                         android:id="@+id/badgeRescue"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@android:drawable/ic_menu_gallery"
+                        android:src="@android:drawable/ic_dialog_map"
                         android:tint="#064200"/>
 
                     <TextView
@@ -243,6 +243,19 @@
                 </LinearLayout>
 
             </LinearLayout>
+
+            <!-- Logout Button -->
+            <Button
+                android:id="@+id/btnThresholdConfig"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="16dp"
+                android:text="Change Achievements Threshold"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/quicksand"
+                android:textStyle="bold"
+                android:backgroundTint="#064200"/>
 
         </LinearLayout>
 

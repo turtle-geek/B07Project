@@ -22,10 +22,12 @@ import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.auth.LogInModule.LogInViewActivity;
-import com.example.myapplication.ui.ChildUI.TriageAndResponse.HomeStepsRecovery;
-import com.example.myapplication.ui.ParentUI.ParentHomeActivity;
-import com.example.myapplication.ui.ParentUI.ParentManagement;
+import com.example.myapplication.ui.HistoryFilterActivity;
+import com.example.myapplication.ui.HomeStepsRecovery;
+import com.example.myapplication.ui.InventoryUsage;
+import com.example.myapplication.ui.ParentHomeActivity;
+import com.example.myapplication.ui.ParentManagement;
+import com.example.myapplication.ui.RedeemInviteActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,7 +38,7 @@ import com.google.firebase.storage.StorageReference;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class SignOut extends AppCompatActivity {
+public class SignOutProvider extends AppCompatActivity {
 
     private static final String TAG = "SignOut";
 
@@ -97,14 +99,16 @@ public class SignOut extends AppCompatActivity {
         if (inviteCard != null) {
             inviteCard.setOnClickListener(v -> {
                 Toast.makeText(this, "Opening Invite", Toast.LENGTH_SHORT).show();
-                // TODO: Implement invite feature
+                Intent intent = new Intent(this, RedeemInviteActivity.class);
+                startActivityForResult(intent, 2);
             });
         }
 
         if (reportCard != null) {
             reportCard.setOnClickListener(v -> {
-                Toast.makeText(this, "Opening Report", Toast.LENGTH_SHORT).show();
-                // TODO: Implement report feature
+                Toast.makeText(this, "Opening Report Printing", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, HistoryFilterActivity.class);
+                startActivityForResult(intent, 2);
             });
         }
 
@@ -197,42 +201,24 @@ public class SignOut extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String name = documentSnapshot.getString("name");
-                        // **FIXED:** Fetching the email using the custom 'emailUsername' key
-                        String email = documentSnapshot.getString("emailUsername");
+                        String email = documentSnapshot.getString("email");
 
-                        // Update userNameText
-                        if (name != null && !name.isEmpty() && userNameText != null) {
+                        // Update UI
+                        if (name != null && userNameText != null) {
                             userNameText.setText(name);
-                        } else if (userNameText != null) {
-                            userNameText.setText("Name not set");
                         }
 
-                        // Update userEmailText
-                        if (email != null && !email.isEmpty() && userEmailText != null) {
+                        if (email != null && userEmailText != null) {
                             userEmailText.setText(email);
-                        } else if (userEmailText != null) {
-                            userEmailText.setText("Email not available (Field: emailUsername missing)");
                         }
 
                         Log.d(TAG, "User info loaded: " + name);
-                    } else {
-                        // Handle case where user document doesn't exist
-                        if (userEmailText != null) {
-                            userEmailText.setText("User data missing");
-                        }
-                        if (userNameText != null) {
-                            userNameText.setText("User data missing");
-                        }
                     }
                 })
                 .addOnFailureListener(e -> {
-                    // Handle Firestore connection/read failure
                     Log.e(TAG, "Error loading user info", e);
                     if (userNameText != null) {
                         userNameText.setText("Error loading name");
-                    }
-                    if (userEmailText != null) {
-                        userEmailText.setText("Connection failed");
                     }
                 });
     }
@@ -279,19 +265,19 @@ public class SignOut extends AppCompatActivity {
                     int id = item.getItemId();
 
                     if (id == R.id.homeButton) {
-                        startActivity(new Intent(SignOut.this, ParentHomeActivity.class));
+                        startActivity(new Intent(SignOutProvider.this, ParentHomeActivity.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
 
                     } else if (id == R.id.fileButton) {
-                        startActivity(new Intent(SignOut.this, ParentManagement.class));
+                        startActivity(new Intent(SignOutProvider.this, ParentManagement.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
 
                     } else if (id == R.id.nav_profile) {
-                        startActivity(new Intent(SignOut.this, HomeStepsRecovery.class));
+                        startActivity(new Intent(SignOutProvider.this, HomeStepsRecovery.class));
                         overridePendingTransition(0, 0);
                         finish();
                         return true;
@@ -322,7 +308,7 @@ public class SignOut extends AppCompatActivity {
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
 
             // Navigate to Login page
-            Intent intent = new Intent(this, LogInViewActivity.class);
+            Intent intent = new Intent(this, LoginPage.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();

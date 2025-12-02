@@ -1,7 +1,10 @@
 package com.example.myapplication.ui.ChildUI;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +21,7 @@ public class StreakManagement extends AppCompatActivity {
 
     private TextView tvControllerStreak, tvTechniqueStreak, tvRescueMonthly;
     private ImageButton btnBack, sosbButton;
+    private Button btnThresholdConfig;
 
     private ImageView badgeController, badgeTechnique, badgeRescue;
 
@@ -66,6 +70,7 @@ public class StreakManagement extends AppCompatActivity {
         badgeController = findViewById(R.id.badgeController);
         badgeTechnique = findViewById(R.id.badgeTechnique);
         badgeRescue = findViewById(R.id.badgeRescue);
+        btnThresholdConfig = findViewById(R.id.btnThresholdConfig);
 
         // Load child from Firebase here
         db = FirebaseFirestore.getInstance();
@@ -73,6 +78,11 @@ public class StreakManagement extends AppCompatActivity {
         loadChild();
 
         btnBack.setOnClickListener(v -> finish());
+        btnThresholdConfig.setOnClickListener(v -> {
+            Intent intent = new Intent(this, StreakThresholdConfig.class);
+            intent.putExtra("childId", childId);
+            startActivityForResult(intent, 1);
+        });
         sosbButton.setOnClickListener(v -> {
             sosButtonResponse action = new sosButtonResponse();
             String id = FirebaseAuth.getInstance().getCurrentUser().getUid();

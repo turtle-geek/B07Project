@@ -31,13 +31,8 @@
         <activity
             android:name=".ui.ChildUI.TriageAndResponse.TriageDecisionCard"
             android:exported="false" />
-            android:exported="false" />
-        <activity
-            android:name=".ui.BaseChildActivity"
-            android:exported="false" />
         <activity
             android:name=".ui.ChildUI.TriageAndResponse.TriageActivity"
-            android:exported="false" />
             android:exported="false" />
         <activity
             android:name=".ui.PeakFlowInput"
@@ -48,13 +43,12 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
-            android:name=".auth.LogInModule.LoginPage"
+            android:name=".auth.LogInModule.LogInViewActivity"
             android:exported="true" />
 
         <activity
