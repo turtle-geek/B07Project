@@ -321,25 +321,6 @@ public class ChildHomeActivity extends AppCompatActivity {
         }
     }
 
-//    @SuppressLint("ScheduleExactAlarm")
-//    private void setListeners() {
-//        sosButton = findViewById(R.id.sosButton);
-//        sosButton.setOnClickListener(v -> {
-//            sosButtonResponse action = new sosButtonResponse();
-//            action.response(currentChild.getId(), this);
-//        });
-//
-//        pefButton.setOnClickListener(v -> {
-//            editPEF.setVisibility(View.VISIBLE);
-//            EditText editTextNumber = findViewById(R.id.editTextNumber);
-//            editTextNumber.setOnFocusChangeListener((view, hasFocus) -> {
-//                if (!editTextNumber.hasFocus()) {
-//                    savePeakFlowEntry(editTextNumber);
-//                }
-//            });
-//        });
-//    }
-
     private void setupTrendSnippet() {
         try {
             if (trendContainer != null) {
@@ -472,23 +453,10 @@ public class ChildHomeActivity extends AppCompatActivity {
         EditText peakFlowInput = findViewById(R.id.editTextNumber);
         if (peakFlowInput != null) {
             peakFlowInput.setOnEditorActionListener((textView, actionId, keyEvent) -> {
-                /**
-                 * Debug later
-                 */
-                savePeakFlowEntry(peakFlowInput);
+                savePeakFlowEntry(peakFlowInput);;
                 return true;
             });
         }
-
-//        pefButton.setOnClickListener(v -> {
-//            editPEF.setVisibility(View.VISIBLE);
-//            EditText editTextNumber = findViewById(R.id.editTextNumber);
-//            editTextNumber.setOnFocusChangeListener((view, hasFocus) -> {
-//                if (!editTextNumber.hasFocus()) {
-//                    savePeakFlowEntry(editTextNumber);
-//                }
-//            });
-//        });
     }
 
     private void savePeakFlowEntry(EditText editTextNumber) {
@@ -515,6 +483,7 @@ public class ChildHomeActivity extends AppCompatActivity {
 
                 savePeakFlowToFirebase();
 
+                // Clear the edit text field
                 editTextNumber.setText("");
             }
 
