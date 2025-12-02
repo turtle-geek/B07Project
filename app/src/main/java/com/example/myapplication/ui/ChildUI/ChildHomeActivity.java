@@ -1,47 +1,35 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ChildUI;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.RequiresPermission;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.cardview.widget.CardView;
 
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
-import com.example.myapplication.CheckupNotificationReceiver;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Child;
 import com.example.myapplication.models.HealthProfile;
 import com.example.myapplication.models.PeakFlow;
 import com.example.myapplication.auth.SignOut_child;
-import com.example.myapplication.models.PeakFlow;
+import com.example.myapplication.sosButtonResponse;
+import com.example.myapplication.ui.ChildUI.TriageAndResponse.HomeStepsRecovery;
+import com.example.myapplication.ui.TrendSnippet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,12 +38,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import com.google.firebase.firestore.FirebaseFirestore;
+
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -245,10 +231,8 @@ public class ChildHomeActivity extends AppCompatActivity {
     private void setListeners() {
         sosButton = findViewById(R.id.sosButton);
         sosButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, TriageActivity.class);
-            intent.putExtra("id", currentChild.getId());
-            startActivity(intent);
-            scheduleCheckupNotification();
+            sosButtonResponse action = new sosButtonResponse();
+            action.response(currentChild.getId(), this);
         });
 
         pefButton.setOnClickListener(v -> {
@@ -276,18 +260,6 @@ public class ChildHomeActivity extends AppCompatActivity {
                 }
             });
         });
-    }
-
-    @SuppressLint("ScheduleExactAlarm")
-    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
-    private void scheduleCheckupNotification() {
-        long triggerTime = System.currentTimeMillis() + 10 * 60 * 1000; // 10 minutes
-        Intent intent = new Intent(this, CheckupNotificationReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
     }
 
     private void setupTrendSnippet() {
@@ -481,11 +453,6 @@ public class ChildHomeActivity extends AppCompatActivity {
 
     private void setupCardListeners() {
         try {
-            if (statusCard1 != null) {
-                statusCard1.setOnClickListener(v ->
-                        Toast.makeText(this, "Today's Status", Toast.LENGTH_SHORT).show());
-            }
-
             if (statusCard2 != null) {
                 statusCard2.setOnClickListener(v ->
                         Toast.makeText(this, "Last Rescue Time", Toast.LENGTH_SHORT).show());

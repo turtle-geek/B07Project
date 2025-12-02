@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ParentUI;
 
 import static java.time.LocalDateTime.parse;
 
@@ -23,6 +23,7 @@ import com.example.myapplication.auth.SignOut;
 import com.example.myapplication.models.Child;
 import com.example.myapplication.models.HealthProfile;
 import com.example.myapplication.models.PeakFlow;
+import com.example.myapplication.ui.TrendSnippet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

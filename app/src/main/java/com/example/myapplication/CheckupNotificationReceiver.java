@@ -13,7 +13,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresPermission;
 import androidx.core.app.NotificationCompat;
-import com.example.myapplication.ui.CheckupResponseActivity;
+import com.example.myapplication.ui.ChildUI.CheckupResponseActivity;
 
 public class CheckupNotificationReceiver extends BroadcastReceiver {
 

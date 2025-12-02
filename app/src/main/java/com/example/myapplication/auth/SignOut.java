@@ -22,10 +22,9 @@ import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.ui.HomeStepsRecovery;
-import com.example.myapplication.ui.ParentHomeActivity;
-import com.example.myapplication.ui.ParentManagement;
-import com.example.myapplication.ui.ParentTutorial;
+import com.example.myapplication.ui.ChildUI.TriageAndResponse.HomeStepsRecovery;
+import com.example.myapplication.ui.ParentUI.ParentHomeActivity;
+import com.example.myapplication.ui.ParentUI.ParentManagement;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

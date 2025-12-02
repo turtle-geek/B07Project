@@ -11,7 +11,7 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.myapplication.ui.FullScreenEscalationNotification;
+import com.example.myapplication.ui.ChildUI.TriageAndResponse.FullScreenEscalationNotification;
 
 public class EmergencyNotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {

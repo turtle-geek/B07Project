@@ -5,6 +5,158 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.CheckupResponseActivity">
+    tools:context=".ui.ChildUI.CheckupResponseActivity">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- Add green background -->
+
+        <LinearLayout
+            android:id="@+id/loginContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="32dp"
+            android:background="@drawable/blur_bg"
+            android:elevation="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/prepost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="@font/quicksand"
+                    android:text="How are you feeling?"
+                    android:textColor="#000000"
+                    android:textSize="26sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/prepost2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/quicksand"
+                    android:text="Tell us how your breathing is"
+                    android:textColor="#000000"
+                    android:textSize="14sp">
+
+                </TextView>
+
+                <!-- 3 Image Buttons Horizontally with Text Labels -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <!-- Better Button with Label -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/better"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_margin="8dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/better"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/logo" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/quicksand"
+                            android:text="@string/better"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </LinearLayout>
+
+                    <!-- Same Button with Label -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/same"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_margin="8dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/same"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/logo2" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/quicksand"
+                            android:text="@string/same"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </LinearLayout>
+
+                    <!-- Worse Button with Label -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/Worse"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_margin="8dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/worse"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/logo3" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/quicksand"
+                            android:text="@string/worse"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

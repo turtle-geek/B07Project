@@ -1,11 +1,7 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ProviderUI;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.view.ViewGroup;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,8 +13,6 @@ import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import jp.wasabeef.blurry.Blurry;
 
 public class ProviderHomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;

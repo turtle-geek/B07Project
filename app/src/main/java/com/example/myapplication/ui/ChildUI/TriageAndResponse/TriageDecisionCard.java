@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ChildUI.TriageAndResponse;
 
 import android.os.Bundle;
 import android.view.View;

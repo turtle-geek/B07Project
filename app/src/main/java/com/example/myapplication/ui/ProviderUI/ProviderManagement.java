@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ProviderUI;
 
 import android.content.Intent;
 import android.os.Bundle;

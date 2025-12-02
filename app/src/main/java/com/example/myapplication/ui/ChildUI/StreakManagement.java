@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ChildUI;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,13 +9,14 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import com.example.myapplication.R;
 
-import com.example.myapplication.health.*;
 import com.example.myapplication.models.*;
+import com.example.myapplication.sosButtonResponse;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class StreakManagement extends AppCompatActivity {
 
     private TextView tvControllerStreak, tvTechniqueStreak, tvRescueMonthly;
-    private ImageButton btnBack;
+    private ImageButton btnBack, sosbButton;
 
     private ImageView badgeController, badgeTechnique, badgeRescue;
 
@@ -27,6 +28,8 @@ public class StreakManagement extends AppCompatActivity {
         setContentView(R.layout.activity_streak_badges);
 
         btnBack = findViewById(R.id.btnBack);
+        sosbButton = findViewById(R.id.sosButton);
+
         tvControllerStreak = findViewById(R.id.tvControllerStreak);
         tvTechniqueStreak = findViewById(R.id.tvTechniqueStreak);
         tvRescueMonthly = findViewById(R.id.tvRescueMonthly);
@@ -47,6 +50,11 @@ public class StreakManagement extends AppCompatActivity {
         updateUI();
 
         btnBack.setOnClickListener(v -> finish());
+        sosbButton.setOnClickListener(v -> {
+            sosButtonResponse action = new sosButtonResponse();
+            String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            action.response(id, this);
+        });
     }
 
     private void updateUI() {

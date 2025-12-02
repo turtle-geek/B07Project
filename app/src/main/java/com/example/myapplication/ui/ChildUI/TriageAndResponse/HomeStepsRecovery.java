@@ -1,10 +1,11 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.ChildUI.TriageAndResponse;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.auth.SignOut;
 import com.example.myapplication.auth.SignOut_child;
+import com.example.myapplication.sosButtonResponse;
+import com.example.myapplication.ui.ChildUI.ChildManagement;
+import com.example.myapplication.ui.ChildUI.ChildHomeActivity;
+import com.example.myapplication.ui.ParentUI.ParentHomeActivity;
+import com.example.myapplication.ui.ParentUI.ParentManagement;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,6 +38,7 @@ public class HomeStepsRecovery extends AppCompatActivity {
 
     private CheckBox step1, step2, step3, step4;
     private BottomNavigationView bottomNavigationView;
+    private ImageButton sosButton;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -45,6 +52,9 @@ public class HomeStepsRecovery extends AppCompatActivity {
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        // Set up SOS button
+        sosButtonSetUp();
 
         // Initialize checkboxes
         initializeBoxes();
@@ -60,6 +70,15 @@ public class HomeStepsRecovery extends AppCompatActivity {
             if (checkBoxes()) {
                 finish();
             }
+        });
+    }
+
+    private void sosButtonSetUp() {
+        sosButton = findViewById(R.id.sosButton);
+        sosButton.setOnClickListener(v->{
+            sosButtonResponse action = new sosButtonResponse();
+            String id = mAuth.getCurrentUser().getUid();
+            action.response(id, this);
         });
     }
 

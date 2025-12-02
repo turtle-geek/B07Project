@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E8F5E9"
-    tools:context=".ui.TriageActivity">
+    tools:context=".ui.ChildUI.TriageAndResponse.TriageActivity">
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroup"
@@ -81,6 +81,16 @@
 
     </com.google.android.material.chip.ChipGroup>
 
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#064200"
+        android:text="Next"
+        android:textColor="@color/white"
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="603dp" />
+
     <EditText
         android:id="@+id/TriagePEF"
         android:layout_width="301dp"
@@ -89,17 +99,7 @@
         android:hint="(Optional) Enter current peak flow"
         android:inputType="number"
         tools:layout_editor_absoluteX="55dp"
-        tools:layout_editor_absoluteY="610dp" />
-
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Next"
-        android:backgroundTint="#064200"
-        android:textColor="@color/white"
-        tools:layout_editor_absoluteX="161dp"
-        tools:layout_editor_absoluteY="678dp" />
+        tools:layout_editor_absoluteY="535dp" />
 
     <TextView
         android:id="@+id/RedFlagCheck"
@@ -108,8 +108,8 @@
         android:text="@string/select_all_that_applies"
         android:textColor="#000000"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="28dp"
-        tools:layout_editor_absoluteY="204dp" />
+        tools:layout_editor_absoluteX="27dp"
+        tools:layout_editor_absoluteY="134dp" />
 
     <TextView
         android:id="@+id/liabilityWarning"
@@ -129,8 +129,9 @@
         android:layout_marginBottom="147dp"
         app:layout_constraintBottom_toTopOf="@+id/RedFlagCheck"
         app:layout_constraintEnd_toStartOf="@+id/liabilityWarning"
-        app:layout_constraintHorizontal_bias="0.93"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.23"
         app:srcCompat="@drawable/warning" />
 </androidx.constraintlayout.widget.ConstraintLayout>

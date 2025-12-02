@@ -1,10 +1,13 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.Inventory;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.myapplication.sosButtonResponse;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.example.myapplication.R;
 import android.graphics.Color;
@@ -12,6 +15,8 @@ import java.util.ArrayList;
 
 import com.example.myapplication.health.*;
 import com.example.myapplication.models.*;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class InventoryLog extends AppCompatActivity {
 
@@ -19,6 +24,7 @@ public class InventoryLog extends AppCompatActivity {
     private MaterialSwitch switchLogFilter;
     private MedicineLabel currentLabel = MedicineLabel.CONTROLLER;
     private Child child;
+    private ImageButton sosButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +39,30 @@ public class InventoryLog extends AppCompatActivity {
         // Back button
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
+
+        // sosButton
+        sosButton = findViewById(R.id.sosButton);
+        String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(id)
+                .get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String role = documentSnapshot.getString("role");
+                        if ("parents".equals(role)) {
+                            sosButton.setVisibility(View.GONE);
+                            return;
+                        } else if ("child".equals(role)) {
+                            sosButton.setVisibility(View.VISIBLE);
+                            return;
+                        }
+                    }
+                });
+        sosButton.setOnClickListener(v -> {
+                    sosButtonResponse action = new sosButtonResponse();
+                    action.response(id, this);
+                });
 
         // Switch listener
         switchLogFilter.setOnCheckedChangeListener((buttonView, isChecked) -> {

@@ -7,18 +7,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.auth.LoginPage;
 import com.example.myapplication.callbacks.RoleCallback;
-import com.example.myapplication.ui.ChildHomeActivity;
+import com.example.myapplication.ui.ChildUI.ChildHomeActivity;
 import com.example.myapplication.ui.Onboarding;
-import com.example.myapplication.ui.ParentHomeActivity;
-import com.example.myapplication.ui.ProviderHomeActivity;
+import com.example.myapplication.ui.ParentUI.ParentHomeActivity;
+import com.example.myapplication.ui.ProviderUI.ProviderHomeActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import androidx.activity.EdgeToEdge;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 
 public class MainActivity extends AppCompatActivity {
