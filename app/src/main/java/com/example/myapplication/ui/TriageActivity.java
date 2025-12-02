@@ -50,7 +50,7 @@ public class TriageActivity extends BaseChildActivity {
         setContentView(R.layout.activity_triage);
 
         bindViews();
-        setupSlider(); // FIX APPLIED HERE
+        setupSlider();
         setupSliderColors();
         setupChipListeners();
         nextButton.setOnClickListener(v -> redFlagCheck());
@@ -170,21 +170,45 @@ public class TriageActivity extends BaseChildActivity {
             }
         }
 
-        Intent intent = new Intent(this, TriageDecisionCard.class);
+        Intent intent = new Intent(this, TriageCriticalActivity.class);
         String pefZone = processPEF();
 
-        // You will also need to add logic here to check the RadioButton state for rescue attempts
-        // if (radioRescueYes.isChecked()) { ... }
+        // 1. CRITICAL RED FLAG CHECK (Triggers 911/SOS immediately)
+        // These are the four most severe symptoms indicating immediate danger:
+        // - chip11: Blue/gray lips or nails
+        // - chip12: Chest pulling in (retractions)
+        // - chip5: Difficulty speaking
+        // - chip4: Gasping for air
 
-        if (selected.contains(R.id.chip10) || selected.contains(R.id.chip9) ||
-                selected.contains(R.id.chip8) || selected.contains(R.id.chip6) ||
-                selected.contains(R.id.chip7) || pefZone.equals("red")) {
+        if (selected.contains(R.id.chip11) || selected.contains(R.id.chip12) ||
+                selected.contains(R.id.chip5) || selected.contains(R.id.chip4) ||
+                pefZone.equals("red")) {
+
             intent.putExtra("DECISION", "SOS");
             startActivity(intent);
-        } else {
+            return; // Stop further checks if an emergency is detected
+        }
+
+        // 2. URGENT/SECONDARY CHECK
+        // If no critical red flags, check for other severe symptoms that warrant urgency
+        // (but might not require auto-dial 911 if not combined with critical signs).
+        // This includes:
+        // - chip6: Symptoms worsen when lying on back
+        // - chip7: Severe sweating
+        // - chip2: Chest pain or tightness
+
+        if (selected.contains(R.id.chip6) || selected.contains(R.id.chip7) ||
+                selected.contains(R.id.chip2) || pefZone.equals("yellow")) {
+
+            // Assuming "NOT SOS" leads to a less severe triage outcome (e.g., call doctor/ER visit)
             intent.putExtra("DECISION", "NOT SOS");
             startActivity(intent);
+            return;
         }
+
+        // 3. DEFAULT (If none of the above are selected, or only minor symptoms like chip1 'Short breaths' exist)
+        intent.putExtra("DECISION", "NORMAL"); // You might want to define a "NORMAL" or "GREEN" decision
+        startActivity(intent);
     }
 
     String processPEF(){
@@ -200,8 +224,9 @@ public class TriageActivity extends BaseChildActivity {
         if (submitTime != null) {
             PeakFlow pef = new PeakFlow(peakFlowValue, submitTime);
             // hp.addPEFToLog(pef);
-            // return pef.computeZone(currentChild);
+            // return pef.computeZone(currentChild); // Assuming this returns "red", "yellow", or "green/normal"
 
+            // Placeholder return for now, replace with actual PEF zone computation
             return "normal";
         }
 

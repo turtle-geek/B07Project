@@ -92,7 +92,7 @@
                 android:id="@+id/RedFlagCheck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select all that apply:"
+                android:text="Select all physical red flags:"
                 android:textColor="#000000"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -102,11 +102,50 @@
                 android:id="@+id/chipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="16dp"
                 app:chipSpacing="8dp"
                 app:chipBackgroundColor="@color/chip_background_selector"
                 app:singleLine="false"
                 app:chipStrokeWidth="0dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip11"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:text="Blue/gray lips or nails"
+                    android:minHeight="56dp"
+                    android:textSize="18sp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip12"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:text="Chest pulling in (retractions)"
+                    android:minHeight="56dp"
+                    android:textSize="18sp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip5"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:text="Difficulty speaking"
+                    android:minHeight="56dp"
+                    android:textSize="18sp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip4"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:text="Gasping for air"
+                    android:minHeight="56dp"
+                    android:textSize="18sp" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip1"
@@ -136,33 +175,6 @@
                     android:minHeight="56dp"
                     android:textSize="18sp" />
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/chip4"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="Gasping for air"
-                    android:minHeight="56dp"
-                    android:textSize="18sp" />
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip8"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="Nausea"
-                    android:minHeight="56dp"
-                    android:textSize="18sp" />
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip5"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="Difficulty speaking"
-                    android:minHeight="56dp"
-                    android:textSize="18sp" />
-                <com.google.android.material.chip.Chip
                     android:id="@+id/chip7"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
@@ -178,24 +190,6 @@
                     android:layout_height="wrap_content"
                     android:checkable="true"
                     android:text="Symptoms worsen when lying on back"
-                    android:minHeight="56dp"
-                    android:textSize="18sp" />
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip9"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="I don't have an inhaler"
-                    android:minHeight="56dp"
-                    android:textSize="18sp" />
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip10"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="I used my inhaler within the past two hours"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
 

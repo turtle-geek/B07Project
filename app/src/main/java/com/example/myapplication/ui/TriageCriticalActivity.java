@@ -1,134 +1,152 @@
 package com.example.myapplication.ui;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.content.Intent;
-import android.os.CountDownTimer;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.myapplication.R;
 
-// Renamed class for clarity, using the general function
-public class TriageDecisionCritical extends AppCompatActivity {
+public class TriageCriticalActivity extends AppCompatActivity {
 
-    TextView liabilityWarning, liabilityWarning2, textView, textView2, textView3, textView4;
-    ImageView yellow_card, red_card;
-    Button cancel_button, yes_button, sos_button;
+    private static final int CALL_PERMISSION_REQUEST_CODE = 101;
+    private static final long TOTAL_COUNTDOWN_MS = 10000;
+    private static final long COUNTDOWN_INTERVAL_MS = 100;
+
+    TextView countdownTextView;
+    Button cancelButton;
     ProgressBar progressBar;
-    ConstraintLayout NonSos, SOS;
+    CardView SOSCard;
+    ImageButton backButton;
 
     private CountDownTimer call911Timer;
+    private boolean isTimerRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        // Assuming your layout file is named activity_triage_decision_card.xml
         setContentView(R.layout.activity_triage_critical);
 
         bindViews();
-
-        String decision = getIntent().getStringExtra("DECISION");
-
-        if ("SOS".equals(decision)) {
-            SOSDecision();
-        } else if ("NOT SOS".equals(decision)) {
-            nonSOSDecision();
-        } else{
-            throw new RuntimeException("No decision made");
-        }
-
         setListeners();
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        startCountdown();
     }
 
-    void bindViews(){
-        liabilityWarning = findViewById(R.id.liabilityWarning);
-
-        textView = findViewById(R.id.textView);
-        textView2 = findViewById(R.id.textView2);
-
-        red_card = findViewById(R.id.red_card);
-
-        cancel_button = findViewById(R.id.cancel_button);
-
+    private void bindViews() {
+        countdownTextView = findViewById(R.id.textView2);
+        cancelButton = findViewById(R.id.cancel_button);
         progressBar = findViewById(R.id.progressBar);
+        SOSCard = findViewById(R.id.SOS);
+        backButton = findViewById(R.id.btnBack);
 
-        NonSos = findViewById(R.id.NonSOS);
-        SOS = findViewById(R.id.SOS);
+        SOSCard.setVisibility(View.VISIBLE);
+
+        View nonSOS = findViewById(R.id.NonSOS);
+        if (nonSOS != null) {
+            nonSOS.setVisibility(View.GONE);
+        }
     }
 
-    void setListeners(){
-        sos_button.setOnClickListener(v -> {
-            // IMMEDIATE CALL 911 (If your layout has an explicit SOS Call Button)
-            // TODO: Implement actual phone call function here
-            if (call911Timer != null) {
-                call911Timer.cancel();
-            }
-        });
-
-        cancel_button.setOnClickListener(v -> {
-            if (call911Timer != null) {
-                call911Timer.cancel();
-            }
-
-            nonSOSDecision();
-        });
-
-        yes_button.setOnClickListener(v -> {
-            startActivity(new Intent(this, HomeStepsRecovery.class));
-            finish();
-        });
+    private void setListeners() {
+        if (cancelButton != null) {
+            cancelButton.setOnClickListener(v -> cancelCall());
+        }
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> finish());
+        }
     }
 
-    void SOSDecision(){
-        SOS.setVisibility(View.VISIBLE);
-        NonSos.setVisibility(View.GONE);
-        progressBar.setMax(100);
+    private void startCountdown() {
+        if (isTimerRunning) return;
 
-        call911Timer = new CountDownTimer(10000, 100) {
+        progressBar.setMax((int) TOTAL_COUNTDOWN_MS);
 
+        call911Timer = new CountDownTimer(TOTAL_COUNTDOWN_MS, COUNTDOWN_INTERVAL_MS) {
             @Override
             public void onFinish() {
-                progressBar.setProgress(100);
-                progressBar.setVisibility(View.GONE);
-                cancel_button.setVisibility(View.GONE);
-                textView2.setText("CALLING 911...");
-                // TODO: Implement actual phone call function here
+                isTimerRunning = false;
+                progressBar.setProgress(0);
+                if (cancelButton != null) {
+                    cancelButton.setVisibility(View.GONE);
+                }
+                countdownTextView.setText("CALLING 911 NOW...");
+                makeEmergencyCall();
             }
 
             @Override
             public void onTick(long millisUntilFinished) {
-                int totalDuration = 10000;
-                int progressPercentage = (int) (100 * (totalDuration - millisUntilFinished) / totalDuration);
                 int secondsLeft = (int) Math.ceil(millisUntilFinished / 1000.0);
 
-                progressBar.setProgress(progressPercentage);
+                progressBar.setProgress((int) millisUntilFinished);
 
-                String text = "CALLING 911 IN " + secondsLeft + " SECONDS";
-                textView2.setText(text);
+                String text = "Calling 911 in " + secondsLeft + " seconds";
+                countdownTextView.setText(text);
             }
         }.start();
+        isTimerRunning = true;
     }
 
-    void nonSOSDecision(){
-        SOS.setVisibility(View.GONE);
-        NonSos.setVisibility(View.VISIBLE);
+    private void cancelCall() {
+        if (call911Timer != null) {
+            call911Timer.cancel();
+            isTimerRunning = false;
+
+            Toast.makeText(this, "Emergency call countdown canceled.", Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
+
+    private void makeEmergencyCall() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CALL_PHONE},
+                    CALL_PERMISSION_REQUEST_CODE);
+        } else {
+            initiateCall();
+        }
+    }
+
+    private void initiateCall() {
+        try {
+            String phoneNumber = "911";
+            Intent callIntent = new Intent(Intent.ACTION_DIAL);
+            callIntent.setData(Uri.parse("tel:" + phoneNumber));
+            startActivity(callIntent);
+
+            finish();
+        } catch (SecurityException e) {
+            Toast.makeText(this, "Call initiation failed: Check CALL_PHONE permission in Manifest.", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CALL_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initiateCall();
+            } else {
+                Toast.makeText(this, "Call permission denied. Call failed.", Toast.LENGTH_LONG).show();
+                countdownTextView.setText("Call Failed: Permission Denied.");
+            }
+        }
     }
 
     @Override

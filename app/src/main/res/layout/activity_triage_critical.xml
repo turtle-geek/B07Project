@@ -6,201 +6,147 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E8F5E9"
-    tools:context=".ui.TriageDecisionCard"
-    tools:visibility="visible">
+    tools:context=".ui.TriageCriticalActivity">
 
-    <TextView
-        android:id="@+id/liabilityWarning2"
-        android:layout_width="270dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="28dp"
-        android:text="Warning: This is guidance, not a diagnosis. If in doubt, call emergency"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!--Non-Emergency View -->
-
-    <!--Emergency View -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/NonSOS"
+    <LinearLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:layout_editor_absoluteX="35dp"
-        tools:layout_editor_absoluteY="-42dp"
-        tools:visibility="visible">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#064200"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/yellow_card"
-            android:layout_width="286dp"
-            android:layout_height="374dp"
-            android:layout_marginStart="68dp"
-            android:layout_marginBottom="292dp"
-            android:contentDescription="Emergency Decision Card"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/yellow" />
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            app:tint="@android:color/white" />
 
         <TextView
-            android:id="@+id/textView3"
-            android:layout_width="223dp"
-            android:layout_height="73dp"
-            android:layout_marginStart="26dp"
-            android:layout_marginTop="142dp"
-            android:layout_marginEnd="37dp"
-            android:layout_marginBottom="45dp"
-            android:text="NOT AN EMERGENCY"
-            android:textAlignment="center"
-            android:textColor="#000000"
-            android:textSize="30sp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Triage Decision"
+            android:textSize="22sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textView4"
-            app:layout_constraintEnd_toEndOf="@+id/yellow_card"
-            app:layout_constraintStart_toStartOf="@+id/yellow_card"
-            app:layout_constraintTop_toTopOf="@+id/yellow_card"
-            app:layout_constraintVertical_bias="0.461" />
+            android:textColor="@android:color/white"
+            android:gravity="center"/>
 
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="247dp"
-            android:layout_height="25dp"
-            android:layout_marginStart="26dp"
-            android:layout_marginEnd="13dp"
-            android:layout_marginBottom="130dp"
-            android:text="Start Home Recovery?"
-            android:textAlignment="center"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="@+id/yellow_card"
-            app:layout_constraintEnd_toEndOf="@+id/yellow_card"
-            app:layout_constraintStart_toStartOf="@+id/yellow_card" />
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"/>
+    </LinearLayout>
 
-        <Button
-            android:id="@+id/yes_button"
-            android:layout_width="97dp"
-            android:layout_height="60dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="53dp"
-            android:backgroundTint="#008000"
-            android:text="YES"
-            android:textColor="#000000"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="@+id/yellow_card"
-            app:layout_constraintEnd_toEndOf="@+id/yellow_card" />
-
-        <Button
-            android:id="@+id/sos_button"
-            android:layout_width="97dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="38dp"
-            android:layout_marginBottom="53dp"
-            android:backgroundTint="#FF0000"
-            android:text="CALL 911"
-            android:textColor="#000000"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="@+id/yellow_card"
-            app:layout_constraintStart_toStartOf="@+id/yellow_card" />
+    <LinearLayout
+        android:id="@+id/warningBannerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFCDD2"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
 
         <ImageView
             android:id="@+id/warningSymbol"
             android:layout_width="42dp"
-            android:layout_height="57dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             app:srcCompat="@drawable/warning"
-            tools:layout_editor_absoluteX="44dp"
-            tools:layout_editor_absoluteY="23dp" />
+            android:contentDescription="Warning icon"
+            />
 
+        <TextView
+            android:id="@+id/liabilityWarning"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Warning: This is guidance, not a diagnosis. If in doubt, call emergency"
+            android:textColor="#D32F2F"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.cardview.widget.CardView
         android:id="@+id/SOS"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible"
-        tools:visibility="visible">
+        android:layout_width="350dp"  android:layout_height="380dp" android:visibility="visible"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="12dp"
+        app:cardBackgroundColor="#FF0000"
+        app:layout_constraintTop_toBottomOf="@id/warningBannerContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="30dp"> <ImageView
             android:id="@+id/red_card"
-            android:layout_width="286dp"
-            android:layout_height="374dp"
-            android:layout_marginStart="68dp"
-            android:layout_marginBottom="292dp"
-            android:contentDescription="Emergency Decision Card"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="Red Card Placeholder"
+            android:visibility="gone"
             app:srcCompat="@drawable/solid_red_svg" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="177dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="142dp"
-            android:layout_marginBottom="45dp"
-            android:text="EMERGENCY"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toTopOf="@+id/textView2"
-            app:layout_constraintTop_toTopOf="@+id/red_card"
-            app:layout_constraintVertical_bias="0.0"
-            tools:layout_editor_absoluteX="117dp" />
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EMERGENCY"
+                android:textColor="#FFFFFF"
+                android:textSize="48sp" android:textStyle="bold"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="247dp"
-            android:layout_height="25dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="28dp"
-            android:text="CALLING 911 IN X SECONDS"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/progressBar"
-            app:layout_constraintEnd_toEndOf="@+id/red_card"
-            app:layout_constraintStart_toStartOf="@+id/red_card" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Calling 911 in X seconds"
+                android:textColor="#FFFFFF"
+                android:textSize="25sp" android:layout_marginBottom="35dp" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="187dp"
-            android:layout_height="52dp"
-            android:layout_marginStart="49dp"
-            android:layout_marginEnd="50dp"
-            android:layout_marginBottom="60dp"
-            app:layout_constraintBottom_toBottomOf="@+id/red_card"
-            app:layout_constraintEnd_toEndOf="@+id/red_card"
-            app:layout_constraintStart_toStartOf="@+id/red_card" />
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="300dp" android:layout_height="20dp" android:progressTint="#FFFFFF"
+                android:progressBackgroundTint="#88FFFFFF"
+                android:layout_marginBottom="40dp" />
 
-        <Button
-            android:id="@+id/cancel_button"
-            android:layout_width="121dp"
-            android:layout_height="23dp"
-            android:layout_marginStart="77dp"
-            android:layout_marginTop="33dp"
-            android:layout_marginEnd="88dp"
-            android:padding="0dp"
-            android:text="DO NOT CALL 911"
-            android:textColor="#000000"
-            android:textSize="8sp"
-            app:layout_constraintBottom_toBottomOf="@+id/red_card"
-            app:layout_constraintEnd_toEndOf="@+id/red_card"
-            app:layout_constraintStart_toStartOf="@+id/red_card"
-            app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="55dp"
+                android:backgroundTint="#FFFFFF"
+                android:paddingHorizontal="40dp"
+                android:text="DO NOT CALL 911"
+                android:textColor="#FF0000"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-        <ImageView
-            android:id="@+id/warningSymbol"
-            android:layout_width="42dp"
-            android:layout_height="57dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.019"
-            app:srcCompat="@drawable/warning"
-            tools:layout_editor_absoluteX="44dp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/NonSOS"
+        android:layout_width="300dp"
+        android:layout_height="320dp"
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="12dp"
+        app:cardBackgroundColor="#FFEB3B"
+        app:layout_constraintTop_toBottomOf="@id/warningBannerContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

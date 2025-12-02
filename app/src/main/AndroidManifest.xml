@@ -21,8 +21,10 @@
             android:name=".ui.HomeStepsRecovery"
             android:exported="false" />
         <activity
-            android:name=".ui.TriageDecisionCard"
-            android:exported="false" />
+            android:name=".ui.TriageCriticalActivity"
+            android:exported="true" />
+
+
         <activity
             android:name=".ui.BaseChildActivity"
             android:exported="false" />
@@ -39,6 +41,7 @@
         <activity
             android:name=".ui.PeakFlowInput"
             android:exported="false" />
+
 
         <activity
             android:name=".MainActivity"
