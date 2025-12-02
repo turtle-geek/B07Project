@@ -55,10 +55,10 @@ public class ParentHomeActivity extends AppCompatActivity {
     private TrendSnippet trendSnippet;
 
     // Child data
-    private List<ChildInfo> childrenList;
+    private List<Child> childrenList;
     private String selectedChildId = null;
     private String selectedChildNameStr = "Select a child";
-    private int selectedChildPersonalBest = 400;
+    private int selectedChildPersonalBest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,22 +140,23 @@ public class ParentHomeActivity extends AppCompatActivity {
                     childrenList.clear();
 
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String childId = doc.getId();
-                        String childName = doc.getString("name");
-                        Integer personalBest = doc.getLong("PEF_PB") != null ?
-                                doc.getLong("PEF_PB").intValue() : 400;
-
-                        childrenList.add(new ChildInfo(childId, childName, personalBest));
+                        Child currentChild = doc.toObject(Child.class);
+                        childrenList.add(currentChild);
                     }
 
                     Log.d(TAG, "Loaded " + childrenList.size() + " children");
 
                     // If only one child, auto-select them
                     if (childrenList.size() == 1) {
-                        ChildInfo child = childrenList.get(0);
-                        selectedChildId = child.id;
-                        selectedChildNameStr = child.name;
-                        selectedChildPersonalBest = child.personalBest;
+                        Child child = childrenList.get(0);
+                        selectedChildId = child.getId();
+                        selectedChildNameStr = child.getName();
+
+                        HealthProfile hp = child.getHealthProfile();
+                        if (hp!= null)
+                            selectedChildPersonalBest = hp.getPEF_PB();
+                        else
+                            selectedChildPersonalBest = 400;
 
                         if (selectedChildName != null) {
                             selectedChildName.setText(selectedChildNameStr);
@@ -190,8 +191,8 @@ public class ParentHomeActivity extends AppCompatActivity {
 
         // Create array of child names
         List<String> names = new ArrayList<>();
-        for (ChildInfo child : childrenList) {
-            names.add(child.name);
+        for (Child child : childrenList) {
+            names.add(child.getName());
         }
 
         String[] nameArray = names.toArray(new String[0]);
@@ -200,10 +201,8 @@ public class ParentHomeActivity extends AppCompatActivity {
         builder.setTitle("Select Child");
         builder.setItems(nameArray, (dialog, which) -> {
             // Specific child selected
-            ChildInfo selectedChild = childrenList.get(which);
-            selectedChildId = selectedChild.id;
-            selectedChildNameStr = selectedChild.name;
-            selectedChildPersonalBest = selectedChild.personalBest;
+            Child selectedChild = childrenList.get(which);
+            selectedChildNameStr = selectedChild.getName();
 
             // Update UI
             if (selectedChildName != null) {
@@ -213,7 +212,8 @@ public class ParentHomeActivity extends AppCompatActivity {
             // Reload data for selected child
             loadPeakFlowData();
 
-            Toast.makeText(this, "Showing data for: " + selectedChildNameStr, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Showing data for: " + selectedChildNameStr,
+                    Toast.LENGTH_SHORT).show();
         });
 
         builder.show();
@@ -303,7 +303,7 @@ public class ParentHomeActivity extends AppCompatActivity {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         try {
-                            Integer peakFlowValue = doc.getLong("peakFlow") != null ?
+                            int peakFlowValue = doc.getLong("peakFlow") != null ?
                                     doc.getLong("peakFlow").intValue() : 0;
                             com.google.firebase.Timestamp timestamp = doc.getTimestamp("time");
 
@@ -469,16 +469,4 @@ public class ParentHomeActivity extends AppCompatActivity {
         }
     }
 
-    // Inner class to hold child information
-    private static class ChildInfo {
-        String id;
-        String name;
-        int personalBest;
-
-        ChildInfo(String id, String name, int personalBest) {
-            this.id = id;
-            this.name = name;
-            this.personalBest = personalBest;
-        }
-    }
 }
