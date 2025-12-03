@@ -25,23 +25,44 @@ import java.util.List;
 
 public class TriageHistoryActivity extends AppCompatActivity {
 
-    private String username;
+    private String targetUsername; // Renamed to clarify: this is the child's username
+    private String targetUserId;   // Added: The child's UID passed via Intent
     private RecyclerView recyclerView;
     private TextView tvLoading;
     private TriageHistoryAdapter adapter;
     private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+
+    private static final String TAG = "TriageHistoryActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_triage_history);
 
+        mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         tvLoading = findViewById(R.id.tvLoading);
         recyclerView = findViewById(R.id.recyclerViewTriageHistory);
         setupBackButton();
 
-        checkAndSetupUser();
+        // 1. Get the target child's ID from the Intent
+        targetUserId = getIntent().getStringExtra("childId");
+
+        if (targetUserId == null) {
+            // Fallback: If no child ID is passed, use the logged-in user's ID
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser != null) {
+                targetUserId = currentUser.getUid();
+                Log.i(TAG, "No childId passed. Defaulting to current user's ID.");
+            } else {
+                Toast.makeText(this, "Error: User not logged in and no child selected.", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+        }
+
+        checkAndSetupTargetUser(targetUserId);
     }
 
     private void setupBackButton() {
@@ -51,21 +72,13 @@ public class TriageHistoryActivity extends AppCompatActivity {
         }
     }
 
-    private void checkAndSetupUser() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Toast.makeText(this, "Error: User must be logged in.", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-
-        String uid = user.getUid();
-
+    private void checkAndSetupTargetUser(String uid) {
         db.collection("users")
                 .document(uid)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
+                        // Fetch the target user's (child's) username
                         String fullEmailUsername = documentSnapshot.getString("emailUsername");
 
                         if (fullEmailUsername != null && !fullEmailUsername.isEmpty()) {
@@ -73,10 +86,10 @@ public class TriageHistoryActivity extends AppCompatActivity {
                             String cleanUsername = (atIndex > 0) ? fullEmailUsername.substring(0, atIndex) : fullEmailUsername;
 
                             if (!cleanUsername.isEmpty()) {
-                                this.username = cleanUsername;
-                                fetchTriageHistory();
+                                this.targetUsername = cleanUsername;
+                                fetchTriageHistory(this.targetUsername);
                             } else {
-                                Toast.makeText(this, "Error: Username not found.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(this, "Error: Target user's username not found.", Toast.LENGTH_LONG).show();
                                 finishSetup(false);
                             }
                         } else {
@@ -87,19 +100,19 @@ public class TriageHistoryActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("TriageHistoryActivity", "Failed to fetch user data: ", e);
+                    Log.e(TAG, "Failed to fetch target user data: ", e);
                     finishSetup(false);
                 });
     }
 
-    private void fetchTriageHistory() {
+    private void fetchTriageHistory(String username) {
         if (username == null) {
             finishSetup(false);
             return;
         }
 
         db.collection("triage_incidents")
-                .whereEqualTo("username", this.username)
+                .whereEqualTo("username", username) // Query using the child's username
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -111,13 +124,13 @@ public class TriageHistoryActivity extends AppCompatActivity {
                                 entries.add(entry);
 
                             } catch (Exception e) {
-                                Log.e("TriageHistoryActivity", "Error deserializing entry: " + e.getMessage());
+                                Log.e(TAG, "Error deserializing entry: " + e.getMessage());
                             }
                         }
                         setupRecyclerView(entries);
                         finishSetup(!entries.isEmpty());
                     } else {
-                        Log.e("TriageHistoryActivity", "Error getting documents: ", task.getException());
+                        Log.e(TAG, "Error getting documents: ", task.getException());
                         finishSetup(false);
                     }
                 });

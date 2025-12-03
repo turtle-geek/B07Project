@@ -28,6 +28,7 @@ import com.example.myapplication.models.PeakFlow;
 import com.example.myapplication.ui.ChildUI.TriageAndResponse.HomeStepsRecovery;
 import com.example.myapplication.ui.InventoryRescueLog;
 import com.example.myapplication.ui.TrendSnippet;
+import com.example.myapplication.ui.TriageHistoryActivity; // <-- ADDED IMPORT
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -294,7 +295,20 @@ public class ProviderHomeActivity extends AppCompatActivity {
         // Other Placeholders
         cardControllerAdherence.setOnClickListener(v -> Toast.makeText(this, "Adherence Details", Toast.LENGTH_SHORT).show());
         cardSymptoms.setOnClickListener(v -> Toast.makeText(this, "Symptom History", Toast.LENGTH_SHORT).show());
-        cardTriggers.setOnClickListener(v -> Toast.makeText(this, "Trigger History", Toast.LENGTH_SHORT).show());
+
+        // --- MODIFIED CODE BLOCK START: Redirecting Triggers card to TriageHistoryActivity ---
+        cardTriggers.setOnClickListener(v -> {
+            if (selectedChildId != null) {
+                Toast.makeText(this, "Opening Triage History", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ProviderHomeActivity.this, TriageHistoryActivity.class);
+                intent.putExtra("childId", selectedChildId);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Please select a patient first", Toast.LENGTH_SHORT).show();
+            }
+        });
+        // --- MODIFIED CODE BLOCK END ---
+
         cardPeakFlow.setOnClickListener(v -> Toast.makeText(this, "Peak Flow Logs)", Toast.LENGTH_SHORT).show());
         cardTriage.setOnClickListener(v -> Toast.makeText(this, "Triage Incidents", Toast.LENGTH_SHORT).show());
     }

@@ -28,6 +28,8 @@ import com.example.myapplication.ui.ChildUI.ChildHomeActivity;
 import com.example.myapplication.ui.ChildUI.ChildManagement;
 import com.example.myapplication.ui.ChildUI.TriageAndResponse.HomeStepsRecovery;
 import com.example.myapplication.ui.Inventory.InventoryLog;
+// FIX: Correctly import the standalone Activity from the 'ui' package
+import com.example.myapplication.ui.HistoryFilterActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,17 +57,17 @@ public class SignOut_child extends AppCompatActivity {
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private String currentUserId;
 
+    // REMOVED: class HistoryFilterActivity extends AppCompatActivity {}
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signout_page_child);
 
-        // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
 
-        // Initialize views
         medicationHistoryCard = findViewById(R.id.medicationHistoryCard);
         inviteCard = findViewById(R.id.inviteCard);
         reportCard = findViewById(R.id.reportCard);
@@ -76,7 +78,6 @@ public class SignOut_child extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.menuBar);
         sosButton = findViewById(R.id.sosButton);
 
-        // Get current user
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             currentUserId = currentUser.getUid();
@@ -84,20 +85,16 @@ public class SignOut_child extends AppCompatActivity {
             loadProfilePicture();
         }
 
-        // Set up image picker launcher
         setupImagePicker();
 
-        // Set up bottom navigation
         if (bottomNavigationView != null) {
             setupBottomNavigation();
         }
 
-        // Profile picture click - open image picker
         if (profilePicture != null) {
             profilePicture.setOnClickListener(v -> openImagePicker());
         }
 
-        // Set click listeners for cards
         if (medicationHistoryCard != null) {
             medicationHistoryCard.setOnClickListener(v -> {
                 Intent intent = new Intent(SignOut_child.this, InventoryLog.class);
@@ -106,7 +103,6 @@ public class SignOut_child extends AppCompatActivity {
             });
         }
 
-        // SOS Button
         sosButton.setOnClickListener(v -> {
             sosButtonResponse action = new sosButtonResponse();
             action.response(currentUserId, this);
@@ -116,25 +112,32 @@ public class SignOut_child extends AppCompatActivity {
         if (inviteCard != null) {
             inviteCard.setOnClickListener(v -> {
                 Toast.makeText(this, "Opening Invite", Toast.LENGTH_SHORT).show();
-                // TODO: Implement invite feature
             });
         }
 
+        // FIX: This listener now correctly references the external HistoryFilterActivity class
         if (reportCard != null) {
-            reportCard.setOnClickListener(v -> {
-                Toast.makeText(this, "Opening Report", Toast.LENGTH_SHORT).show();
-                // TODO: Implement report feature
-            });
+            reportCard.setOnClickListener(v -> navigateToHistoryFilter());
         }
 
-        // Logout button
         if (logoutButton != null) {
             logoutButton.setOnClickListener(v -> manualLogout());
         }
     }
 
+    private void navigateToHistoryFilter() {
+        Intent intent = new Intent(this, HistoryFilterActivity.class);
+
+        if (currentUserId != null) {
+            intent.putExtra("userId", currentUserId);
+        }
+
+        startActivity(intent);
+        Toast.makeText(this, "Redirecting to History Filter", Toast.LENGTH_SHORT).show();
+    }
+
+
     private void setupImagePicker() {
-        // Register activity result launcher for image picking
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -155,38 +158,30 @@ public class SignOut_child extends AppCompatActivity {
 
     private void uploadProfilePicture(Uri imageUri) {
         try {
-            // Show loading toast
             Toast.makeText(this, "Uploading profile picture...", Toast.LENGTH_SHORT).show();
 
-            // Get bitmap from URI
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
 
-            // Compress bitmap
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
             byte[] data = baos.toByteArray();
 
-            // Create storage reference
             StorageReference profilePicRef = storage.getReference()
                     .child("profile_pictures")
                     .child(currentUserId + ".jpg");
 
-            // Upload to Firebase Storage
             profilePicRef.putBytes(data)
                     .addOnSuccessListener(taskSnapshot -> {
-                        // Get download URL
                         profilePicRef.getDownloadUrl().addOnSuccessListener(uri -> {
                             String downloadUrl = uri.toString();
 
-                            // Save URL to Firestore
                             db.collection("users").document(currentUserId)
                                     .update("profilePictureUrl", downloadUrl)
                                     .addOnSuccessListener(aVoid -> {
                                         Toast.makeText(this, "Profile picture updated!", Toast.LENGTH_SHORT).show();
 
-                                        // Update the ImageButton immediately
                                         profilePicture.setImageBitmap(bitmap);
-                                        profilePicture.setBackgroundResource(0); // Remove background
+                                        profilePicture.setBackgroundResource(0);
 
                                         Log.d(TAG, "Profile picture uploaded successfully");
                                     })
@@ -210,7 +205,6 @@ public class SignOut_child extends AppCompatActivity {
     private void loadUserInfo() {
         if (currentUserId == null) return;
 
-        // Load user data from Firestore
         db.collection("users").document(currentUserId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -218,7 +212,6 @@ public class SignOut_child extends AppCompatActivity {
                         String name = documentSnapshot.getString("name");
                         String email = documentSnapshot.getString("email");
 
-                        // Update UI
                         if (name != null && userNameText != null) {
                             userNameText.setText(name);
                         }
@@ -241,7 +234,6 @@ public class SignOut_child extends AppCompatActivity {
     private void loadProfilePicture() {
         if (currentUserId == null) return;
 
-        // Load profile picture URL from Firestore
         db.collection("users").document(currentUserId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -249,14 +241,14 @@ public class SignOut_child extends AppCompatActivity {
                         String profilePicUrl = documentSnapshot.getString("profilePictureUrl");
 
                         if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
-                            // Download and display the image
+
                             StorageReference profilePicRef = storage.getReferenceFromUrl(profilePicUrl);
 
-                            profilePicRef.getBytes(1024 * 1024) // 1MB max
+                            profilePicRef.getBytes(1024 * 1024)
                                     .addOnSuccessListener(bytes -> {
                                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                                         profilePicture.setImageBitmap(bitmap);
-                                        profilePicture.setBackgroundResource(0); // Remove background
+                                        profilePicture.setBackgroundResource(0);
                                         Log.d(TAG, "Profile picture loaded");
                                     })
                                     .addOnFailureListener(e -> {
@@ -298,7 +290,6 @@ public class SignOut_child extends AppCompatActivity {
                         return true;
 
                     } else if (id == R.id.moreButton) {
-                        // Already on SignOut page
                         return true;
                     }
 
@@ -312,10 +303,8 @@ public class SignOut_child extends AppCompatActivity {
 
     private void manualLogout() {
         try {
-            // Sign out from Firebase
             mAuth.signOut();
 
-            // Clear saved credentials
             SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.clear();
@@ -323,7 +312,6 @@ public class SignOut_child extends AppCompatActivity {
 
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
 
-            // Navigate to Login page
             Intent intent = new Intent(this, LogInViewActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

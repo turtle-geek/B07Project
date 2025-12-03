@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -33,6 +34,10 @@
             android:exported="true" />
         <activity
             android:name=".ui.ChildUI.TriageAndResponse.TriageNonCriticalActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.TriageHistoryActivity"
             android:exported="false" />
 
         <activity
@@ -81,14 +86,14 @@
             android:exported="true" />
         <activity
             android:name=".ui.ProviderUI.ProviderHomeActivity"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity
             android:name=".ui.DailyCheckInActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".ui.HistoryFilterActivity"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity
             android:name=".ui.ParentUI.ParentManagement"
@@ -101,10 +106,10 @@
             android:exported="false" />
         <activity
             android:name=".ui.ParentUI.ParentRegisterChild"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".ui.ParentUI.ParentRegisterLogin"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity
             android:name=".ui.ChildUI.ChildManagement"
@@ -138,7 +143,7 @@
 
         <activity
             android:name=".ui.Onboarding"
-            android:exported="true" />
+            android:exported="false" />
 
     </application>
 

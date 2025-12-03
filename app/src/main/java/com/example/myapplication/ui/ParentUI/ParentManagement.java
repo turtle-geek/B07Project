@@ -19,6 +19,7 @@ import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.auth.SignOut;
 import com.example.myapplication.models.Child;
+import com.example.myapplication.models.IncidentLogEntry; // <-- ADDED IMPORT
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.chip.ChipGroup;
@@ -26,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query; // <-- ADDED IMPORT
+import com.google.firebase.firestore.QueryDocumentSnapshot; // <-- ADDED IMPORT
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +67,6 @@ public class ParentManagement extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.menuBar);
 
         // Initialize children list
-        // TODO what does this do?
         childrenList = new ArrayList<>();
 
         // Set up bottom navigation - ONLY if it exists
@@ -148,7 +150,10 @@ public class ParentManagement extends AppCompatActivity {
         }
     }
 
-    // TODO What does this do?
+    /**
+     * Queries Firebase for all child users associated with the current parent.
+     * Stores the results in childrenList.
+     */
     private void loadChildren() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
@@ -174,7 +179,6 @@ public class ParentManagement extends AppCompatActivity {
                         for (DocumentSnapshot document : queryDocumentSnapshots) {
                             String childId = document.getId();
                             String childName = document.getString("name");
-                            String id = document.getString("id");
                             String username = document.getString("emailUsername");
                             String dob = document.getString("dateOfBirth");
                             String notes = document.getString("notes");
@@ -188,12 +192,76 @@ public class ParentManagement extends AppCompatActivity {
 
                         // Display children cards
                         updateUI();
+
+                        // NEW STEP: Load incident logs after children list is ready
+                        loadChildrenIncidentLogs();
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error loading children", e);
                     Toast.makeText(this, "Failed to load children: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /**
+     * Fetches all triage incidents associated with the currently loaded children.
+     */
+    private void loadChildrenIncidentLogs() {
+        if (childrenList.isEmpty()) {
+            Log.d(TAG, "No children loaded, skipping incident log fetch.");
+            return;
+        }
+
+        List<String> childUsernames = new ArrayList<>();
+        for (Child child : childrenList) {
+            // Assuming emailUsername is the unique field used in the 'triage_incidents' collection
+            if (child.getEmailUsername() != null && !child.getEmailUsername().isEmpty()) {
+                // TriageActivity uses the part before the @ symbol, so we need the "clean username"
+                String fullEmailUsername = child.getEmailUsername();
+                int atIndex = fullEmailUsername.indexOf('@');
+                String cleanUsername = (atIndex > 0) ? fullEmailUsername.substring(0, atIndex) : fullEmailUsername;
+                childUsernames.add(cleanUsername);
+            }
+        }
+
+        if (childUsernames.isEmpty()) {
+            Log.d(TAG, "No usernames found for children, skipping incident log query.");
+            return;
+        }
+
+        // Firestore's 'whereIn' operator allows querying up to 10 items at once.
+        // If you have more than 10 children, this logic would need to be split into multiple queries.
+        if (childUsernames.size() > 10) {
+            Log.w(TAG, "Querying incident logs for more than 10 children. Using only the first 10.");
+            childUsernames = childUsernames.subList(0, 10);
+        }
+
+        db.collection("triage_incidents")
+                .whereIn("username", childUsernames)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<IncidentLogEntry> allIncidents = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        try {
+                            // Assuming IncidentLogEntry has a default constructor and field matching for document.toObject()
+                            IncidentLogEntry incident = document.toObject(IncidentLogEntry.class);
+                            allIncidents.add(incident);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error processing incident log document: " + document.getId(), e);
+                        }
+                    }
+
+                    Log.d(TAG, "Successfully loaded " + allIncidents.size() + " incidents for children.");
+                    // TODO: Decide what to do with 'allIncidents' (e.g., display, store for later use)
+                    // Example: store them in a class variable or display a count.
+                    // displayIncidentCount(allIncidents.size());
+
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to load incident logs for children", e);
+                    Toast.makeText(ParentManagement.this, "Error loading incidents.", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -253,8 +321,7 @@ public class ParentManagement extends AppCompatActivity {
                         Intent intent = new Intent(ParentManagement.this, ParentChildDetails.class);
                         intent.putExtra("childId", child.getId());
                         intent.putExtra("childName", child.getName());
-                        // TODO remove
-                        // intent.putExtra("childPassword", child.password);  // ✅ ADDED - Pass password
+                        // intent.putExtra("childPassword", child.password); // TODO: Remove commented line
                         intent.putExtra("childBirthday", child.getDateOfBirth());
                         intent.putExtra("childNote", child.getNotes());
                         startActivity(intent);

@@ -30,15 +30,19 @@ import com.example.myapplication.models.DailyCheckIn;
 import com.example.myapplication.models.HistoryRepository;
 import com.example.myapplication.models.MasterFilterParams;
 import com.example.myapplication.models.DailyCheckInHistory;
+import com.google.firebase.auth.FirebaseAuth; // Added for User Context
+import com.google.firebase.firestore.FirebaseFirestore; // Added for User Context
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Date;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 
 
@@ -59,12 +63,17 @@ public class HistoryFilterActivity extends AppCompatActivity {
     private Calendar startDateCalendar;
     private Calendar endDateCalendar;
 
+    // USER CONTEXT VARIABLES
+    private String currentUserId;
+    private String currentUsername = "Child User"; // Default name for PDF header
+
     // CONSTANTS FOR DATE RANGE VALIDATION (Approximate values)
     private static final long MIN_RANGE_MILLIS = 3 * 30L * 24 * 60 * 60 * 1000; // Approx 3 months
     private static final long MAX_RANGE_MILLIS = 6 * 30L * 24 * 60 * 60 * 1000; // Approx 6 months
 
     // INSTANTIATE NECESSARY SERVICES
     private final DailyCheckInHistory historyManager = new DailyCheckInHistory();
+    // Assuming HistoryRepository can accept the current user ID for filtering in its constructor or methods
     private final HistoryRepository historyRepository = new HistoryRepository(historyManager);
 
 
@@ -78,6 +87,19 @@ public class HistoryFilterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history_filter);
+
+        // 1. GET USER CONTEXT FROM INTENT
+        Intent intent = getIntent();
+        if (intent != null) {
+            currentUserId = intent.getStringExtra("userId");
+            if (currentUserId == null) {
+                Toast.makeText(this, "Error: User ID missing.", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+            // Fetch username for PDF header
+            fetchUsername(currentUserId);
+        }
 
         // Initialize Date objects
         startDateCalendar = Calendar.getInstance();
@@ -96,6 +118,7 @@ public class HistoryFilterActivity extends AppCompatActivity {
         // Setup the back button listener
         setupBackButton();
 
+        // Assuming R.id.filterNightWaking, R.id.filterActivityLimits, etc., are correct
         setupSymptomFilter("nw", R.id.filterNightWaking, R.id.nwFilterHeader, R.id.nwFilterDropdownOptions, R.id.nwBtnToggleDropdown, R.id.nwCbFilterMain);
         setupSymptomFilter("al", R.id.filterActivityLimits, R.id.alFilterHeader, R.id.alFilterDropdownOptions, R.id.alBtnToggleDropdown, R.id.alCbFilterMain);
         setupSymptomFilter("cw", R.id.filterCoughWheeze, R.id.cwFilterHeader, R.id.cwFilterDropdownOptions, R.id.cwBtnToggleDropdown, R.id.cwCbFilterMain);
@@ -105,6 +128,26 @@ public class HistoryFilterActivity extends AppCompatActivity {
         tvEndDate.setOnClickListener(v -> showDatePicker(tvEndDate, endDateCalendar, false));
 
         findViewById(R.id.btnApplyFilter).setOnClickListener(v -> applyFiltersAndSave());
+    }
+
+    /**
+     * Fetches the username from Firestore based on the current user ID.
+     */
+    private void fetchUsername(String userId) {
+        FirebaseFirestore.getInstance().collection("users").document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    String name = documentSnapshot.getString("name");
+                    if (name != null && !name.isEmpty()) {
+                        this.currentUsername = name;
+                    } else {
+                        String email = documentSnapshot.getString("emailUsername");
+                        this.currentUsername = (email != null ? email : userId);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("HistoryFilter", "Failed to fetch username for PDF.", e);
+                    // Keep default name or userId
+                });
     }
 
     /**
@@ -294,7 +337,16 @@ public class HistoryFilterActivity extends AppCompatActivity {
         // 1. Gather parameters first (to get trigger list and timestamps)
         MasterFilterParams params = gatherFilterParams();
 
-        // 2. Check for FILTER selection (Must be first)
+        // 2. CRITICAL: Inject the current user ID into the parameters
+        if (currentUserId == null) {
+            Toast.makeText(this, "Error: User ID not available for filtering.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        // Assuming MasterFilterParams has a setter or public field named 'userId'
+        params.username = currentUserId;
+
+
+        // 3. Check for FILTER selection (Must be first)
         boolean isSymptomFilterOn =
                 ((CheckBox) findViewById(R.id.nwCbFilterMain)).isChecked() ||
                         ((CheckBox) findViewById(R.id.alCbFilterMain)).isChecked() ||
@@ -307,13 +359,13 @@ public class HistoryFilterActivity extends AppCompatActivity {
             return;
         }
 
-        // 3. Basic Date Order Validity Check: Start must be before End
+        // 4. Basic Date Order Validity Check: Start must be before End
         if (params.startTimestamp > params.endTimestamp) {
             Toast.makeText(this, "Error: Start Date cannot be after End Date.", Toast.LENGTH_LONG).show();
             return;
         }
 
-        // 4. Enforce Minimum and Maximum Range
+        // 5. Enforce Minimum and Maximum Range
         long rangeMillis = params.endTimestamp - params.startTimestamp;
 
         // Shorter message for minimum range
@@ -330,6 +382,7 @@ public class HistoryFilterActivity extends AppCompatActivity {
 
 
         // ASYNCHRONOUS FETCH CALL
+        // Note: historyRepository must be designed to use params.userId to filter the query.
         historyRepository.fetchAndFilterDataAsync(params, new HistoryDataCallback() {
             @Override
             public void onDataReceived(List<DailyCheckIn> results) {
@@ -353,6 +406,20 @@ public class HistoryFilterActivity extends AppCompatActivity {
             Toast.makeText(this, "No records match your selected filters.", Toast.LENGTH_LONG).show();
             return; // Exit if no results
         }
+
+        // FIX: Sort the data in descending order of timestamp (newest first)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            finalResults.sort(Comparator.comparing(DailyCheckIn::getCheckInTimestamp).reversed());
+        } else {
+            // Fallback for older API levels using Collections.sort
+            Collections.sort(finalResults, new Comparator<DailyCheckIn>() {
+                @Override
+                public int compare(DailyCheckIn e1, DailyCheckIn e2) {
+                    return Long.compare(e2.getCheckInTimestamp(), e1.getCheckInTimestamp());
+                }
+            });
+        }
+
 
         resultsToExport = finalResults;
         startSaveIntent();
@@ -538,7 +605,24 @@ public class HistoryFilterActivity extends AppCompatActivity {
         paint.setTextSize(12);
         paint.setStyle(Paint.Style.FILL);
 
+        // --- NEW: Draw Title and User Info ---
+        paint.setTextSize(16);
+        paint.setFakeBoldText(true);
+        canvas.drawText("Asthma Check-in History Report", x, y, paint);
+
+        paint.setTextSize(12);
+        paint.setFakeBoldText(false);
+        canvas.drawText("User: " + currentUsername, x, y + 20, paint);
+        canvas.drawText("Date Range: " + displayDateFormat.format(startDateCalendar.getTime()) + " - " + displayDateFormat.format(endDateCalendar.getTime()), x, y + 40, paint);
+
+        // Adjust starting Y position for the table headers
+        y += 60;
+        // --- END: Draw Title and User Info ---
+
+
         // Draw Headers
+        paint.setTextSize(12);
+        paint.setFakeBoldText(true); // Bold for headers
         for (int i = 0; i < columns; i++) {
             canvas.drawText(headers[i], x + (columnWidth * i) + 5, y + cellHeight - 5, paint);
         }
@@ -547,6 +631,7 @@ public class HistoryFilterActivity extends AppCompatActivity {
 
         // Draw Data Rows
         paint.setTextSize(10);
+        paint.setFakeBoldText(false); // Normal text for data
         int startItem = pageIndex * itemsPerPage;
         int endItem = Math.min(startItem + itemsPerPage, data.size());
 

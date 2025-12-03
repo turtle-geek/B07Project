@@ -39,15 +39,19 @@ import com.example.myapplication.models.TechniqueQuality;
 import com.example.myapplication.ui.ChildUI.TriageAndResponse.*;
 import com.example.myapplication.ui.Inventory.*;
 import com.example.myapplication.ui.TrendSnippet;
+// FIX: Import DailyCheckInActivity from its correct package
+import com.example.myapplication.ui.DailyCheckInActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -90,6 +94,11 @@ public class ChildHomeActivity extends AppCompatActivity {
     private String selectedChildId;
     private int selectedChildPersonalBest = 400;
 
+    // --- Daily Check-in Timestamps ---
+    private long startOfDayTimestamp;
+    private long endOfDayTimestamp;
+    // ---------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +115,9 @@ public class ChildHomeActivity extends AppCompatActivity {
 
             mAuth = FirebaseAuth.getInstance();
             db = FirebaseFirestore.getInstance();
+
+            // NEW: Calculate the start and end of the current day
+            calculateDayTimestamps();
 
             retrieveIntentData();
             initializeViews();
@@ -126,6 +138,68 @@ public class ChildHomeActivity extends AppCompatActivity {
             hideLoading();
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    // ==================== DAILY CHECK-IN LOGIC (COPIED FROM OLD CODE) ====================
+
+    /**
+     * Calculates the start (00:00:00) and end (23:59:59) timestamps for the current day.
+     */
+    private void calculateDayTimestamps() {
+        Calendar calendar = Calendar.getInstance();
+
+        // Set end date to the very end of today (23:59:59)
+        calendar.setTime(new Date()); // Ensure we start with the current time
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        endOfDayTimestamp = calendar.getTimeInMillis();
+
+        // Set start date to the very start of today (00:00:00)
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        startOfDayTimestamp = calendar.getTimeInMillis();
+        Log.d(TAG, "Day Timestamps calculated: Start=" + startOfDayTimestamp + ", End=" + endOfDayTimestamp);
+    }
+
+    /**
+     * Queries Firestore to check if a DailyCheckIn has already been submitted today.
+     */
+    private void checkForExistingCheckIn() {
+        if (!isDataLoaded || selectedChildId == null) {
+            Toast.makeText(this, "Please wait while data loads", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("daily_checkins")
+                // Assuming the check-ins contain the current user's ID
+                .whereEqualTo("userId", selectedChildId)
+                .whereGreaterThanOrEqualTo("checkInTimestamp", startOfDayTimestamp)
+                .whereLessThanOrEqualTo("checkInTimestamp", endOfDayTimestamp)
+                .limit(1) // We only need to find one document to confirm a duplicate
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot snapshot = task.getResult();
+                        if (snapshot != null && !snapshot.isEmpty()) {
+                            // A check-in for today exists
+                            Toast.makeText(this, "Daily Check-in for today already completed.", Toast.LENGTH_LONG).show();
+                        } else {
+                            // No check-in for today, proceed to the activity
+                            Toast.makeText(this, "Navigating to Daily Check-in...", Toast.LENGTH_SHORT).show();
+                            // FIX: Use the imported DailyCheckInActivity class reference
+                            startActivity(new Intent(this, DailyCheckInActivity.class));
+                        }
+                    } else {
+                        Log.e(TAG, "Error checking for existing check-in: " + task.getException());
+                        // As a fallback, allow the user to proceed if the check fails, to avoid blocking them.
+                        Toast.makeText(this, "Could not verify today's entry status. Proceeding...", Toast.LENGTH_SHORT).show();
+                        // FIX: Use the imported DailyCheckInActivity class reference
+                        startActivity(new Intent(this, DailyCheckInActivity.class));
+                    }
+                });
     }
 
     // ==================== ANR PREVENTION METHODS ====================
@@ -633,14 +707,9 @@ public class ChildHomeActivity extends AppCompatActivity {
         try {
             // FIX: Removed duplicated listeners and kept the combined, complete logic.
             if (graphCard1 != null) {
-                graphCard1.setOnClickListener(v -> {
-                    if (!isDataLoaded) {
-                        Toast.makeText(this, "Please wait while data loads", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    Toast.makeText(this, "Daily Check-in", Toast.LENGTH_SHORT).show();
-                    // TODO: Navigate to Daily Check-in Activity
-                });
+                // FIX: Update the listener to check for existing check-ins
+                // graphCard1 is the daily check-in button
+                graphCard1.setOnClickListener(v -> checkForExistingCheckIn());
             }
 
             if (graphCard2 != null) {

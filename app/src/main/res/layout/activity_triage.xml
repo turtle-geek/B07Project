@@ -134,17 +134,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
-                    android:text="Gasping for air"
+                    android:text="Difficulty speaking"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip4"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
-                    android:text="Difficulty speaking"
+                    android:text="Gasping for air"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
 
@@ -154,10 +153,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
-                    android:text="Severe sweating"
+                    android:text="Short breaths"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip6"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -167,7 +165,6 @@
                     android:text="Chest pain or tightness"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip7"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -177,17 +174,15 @@
                     android:text="Wheezing"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip8"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
-                    android:text="Short breaths"
+                    android:text="Severe sweating"
                     android:minHeight="56dp"
                     android:textSize="18sp" />
-
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip9"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -263,14 +258,6 @@
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="4dp" android:layout_marginTop="16dp"/>
-
-                <EditText
-                    android:id="@+id/TriagePEF"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:hint="Enter Peak Flow Value (L/min)"
-                    android:layout_marginBottom="8dp"/>
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/TriagePEFSlider"

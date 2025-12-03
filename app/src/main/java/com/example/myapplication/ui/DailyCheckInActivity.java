@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent; // Added for Intent
 
 // Java Utility Imports
 import java.text.SimpleDateFormat;
@@ -123,21 +124,22 @@ public class DailyCheckInActivity extends AppCompatActivity {
                 .collection("users")
                 .document(id)
                 .get().addOnSuccessListener(documentSnapshot -> {
-                            if (documentSnapshot.exists()) {
-                                String role = documentSnapshot.getString("role");
-                                if ("parents".equals(role)) {
-                                    sosButton.setVisibility(View.GONE);
-                                    return;
-                                } else if ("child".equals(role)) {
-                                    sosButton.setVisibility(View.VISIBLE);
-                                    return;
-                                }
-                            }
-                        });
+                    if (documentSnapshot.exists()) {
+                        String role = documentSnapshot.getString("role");
+                        if ("parents".equals(role)) {
+                            sosButton.setVisibility(View.GONE);
+                            return;
+                        } else if ("child".equals(role)) {
+                            sosButton.setVisibility(View.VISIBLE);
+                            return;
+                        }
+                    }
+                });
         sosButton.setOnClickListener(v -> {
             sosButtonResponse action = new sosButtonResponse();
             action.response(id, this);
-
+            // FIX: Close the DailyCheckInActivity to prevent looping back here.
+            finish();
         });
 
         // Runs handleSubmitCheckIn() when the button is clicked

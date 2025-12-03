@@ -29,6 +29,11 @@ public class DailyCheckIn {
         return username;
     }
 
+    // FIX: Added the missing public setter for the 'username' field
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public long getCheckInTimestamp() {
         return checkInTimestamp;
     }

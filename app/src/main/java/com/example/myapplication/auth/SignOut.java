@@ -22,10 +22,12 @@ import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.auth.LogInModule.*;
+import com.example.myapplication.auth.LogInModule.LogInViewActivity;
 import com.example.myapplication.ui.ChildUI.TriageAndResponse.HomeStepsRecovery;
 import com.example.myapplication.ui.ParentUI.ParentHomeActivity;
 import com.example.myapplication.ui.ParentUI.ParentManagement;
+import com.example.myapplication.ui.TriageHistoryActivity; // Kept, but no longer used in reportCard logic
+import com.example.myapplication.ui.ChildUI.TriageAndResponse.TriageActivity; // <-- ADDED IMPORT FOR TRIAGEACTIVITY
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -101,12 +103,22 @@ public class SignOut extends AppCompatActivity {
             });
         }
 
+        // --- MODIFIED CODE BLOCK START: Launching TriageActivity ---
         if (reportCard != null) {
             reportCard.setOnClickListener(v -> {
-                Toast.makeText(this, "Opening Report", Toast.LENGTH_SHORT).show();
-                // TODO: Implement report feature
+                Toast.makeText(this, "Opening Triage History", Toast.LENGTH_SHORT).show();
+                // Redirect to TriageActivity
+                Intent intent = new Intent(this, TriageHistoryActivity.class);
+
+                // IMPORTANT: Since TriageActivity requires the user ID, we pass it here.
+                if (currentUserId != null) {
+                    intent.putExtra("id", currentUserId);
+                }
+
+                startActivity(intent);
             });
         }
+        // --- MODIFIED CODE BLOCK END ---
 
         // Logout button
         if (logoutButton != null) {
@@ -197,7 +209,7 @@ public class SignOut extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String name = documentSnapshot.getString("name");
-                        // **FIXED:** Fetching the email using the custom 'emailUsername' key
+                        // Fetching the email using the custom 'emailUsername' key
                         String email = documentSnapshot.getString("emailUsername");
 
                         // Update userNameText
